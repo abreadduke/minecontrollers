@@ -1,0 +1,30 @@
+{
+    "name": "Labels and segments",
+    "icon": "minecraft:crimson_sign",
+    "category": "minecontrollers:casm",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Labels and segment labels are important part of CASM. In machine level they both doesn't exist because they are is just a convenient way for writing offsets regarding the segments."
+        },
+        {
+            "title": "Labels",
+            "type": "patchouli:text",
+            "text": "To define label use:$(br)$(bold)[<label>]:$()$(br)There is also extended version of this signature.$(br)$(bold)[<label>]:(optional) (db|dw) [<number>] dup([<number_of_duplication>])(optional)$(). The second signature will generate bytes or words(double byte) of typed number dup times in program, and the label will point to the beggining of data."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Casm automatically sets offset of labels as $(l:minecontrollers:casm/registers#segments)DS$().$(br)But don't worry about your jumps will not be breaked because all jump commands supports only $(l:minecontrollers:casm/registers#segments)CS, SS and ES$() offsets.$(br)There is another one defination of label:$(br)$(bold)[<your_label>] proc$(br)... your code ...$(br)[<your_label>] endp$(br)$()This will transfer the procedure code to the end of current segment and create label."
+        },
+        {
+            "title": "Segment labels",
+            "type": "patchouli:text",
+            "text": "To define segment use:$(br)$(bold)section [<segment_name>]$()$(br)Just creates a label in sections table but instead of normal labels that contains offset regarding the segments that contains them, these labels contains only program global addresses."
+        },
+        {
+            "title": "EXAMPLE",
+            "type": "patchouli:text",
+            "text": "$(bold)section .text$(br)mov ds, .data$(br)_start:$(br)add ax, [five]$(br)jmp _start$(br)section .data$(br)five: dw 5$(br2)$()This example increments ax by value from \"five\" variable."
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+	"itemGroup.minecontrollers" : "Minecontrollers",
+	"container.minecontrollers.formatter" : "Форматер",
+	"container.minecontrollers.bundled_programmer" : "Программатор",
+	"block.minecontrollers.formatter" : "Форматер ",
+	"block.minecontrollers.microcontroller" : "Микроконтроллер",
+	"block.minecontrollers.bundled_programmer" : "Программатор",
+	"container.minecontrollers.assembler" : "Ассемблер",
+	"block.minecontrollers.assembler" : "Ассемблер",
+	"item.minecontrollers.controller_debug_display" : "Отладчик",
+	"block.minecontrollers.redstone_controller" : "Редстоун контроллер",
+	"block.minecontrollers.redstone_core" : "Редстоун ядро",
+	"item.minecontrollers.guide": "CASM для чайников",
+	"gui.minecontrollers.dump_message": "Адрес дампа памяти: "
+}

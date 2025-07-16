@@ -1,0 +1,25 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "RCR",
+        "CAC",
+        "RCR"
+    ],
+    "key": {
+        "A": {
+            "item": "minecraft:amethyst_block"
+        },
+        "R": {
+            "item": "minecraft:redstone_block"
+        },
+        "C": {
+            "item": "minecontrollers:redstone_core"
+        }
+
+    },
+    "result": {
+        "item": "minecontrollers:redstone_controller",
+        "nbt": "{SkullOwner:{Id:[I;2080793942,-524468218,-1541115779,1949756395],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWFlNTY0MWY3YmI5ZTg3NWNkNDEyZDRiYTIwYjIyZjg3NjczYTZmMWJlMzI3OGE2MzFjODgxZDg0YzA0NDZmYiJ9fX0=\"}]}}}",
+        "count": 1
+    }
+}

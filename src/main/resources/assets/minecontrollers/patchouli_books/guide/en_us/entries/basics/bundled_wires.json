@@ -1,0 +1,15 @@
+{
+    "name": "Morered wires",
+    "icon": "morered:bundled_network_cable",
+    "category": "minecontrollers:basics",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Morered wires have own unique logic for redstone signal emission. Normal redsone dust has only 16 levels of emission including 0 level (no signal). If you've been experimenting with morered cables, then you already know that signal on them is transmitted over longer distances than when using ordinary redstone dust."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "This is due to the fact that morered cables have 32 levels instead of default 16, but when you decide to supply power to normal redstone components, the power of signal will convert to normal 16 levels."
+        }
+    ]
+}

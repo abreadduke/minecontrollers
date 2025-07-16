@@ -1,0 +1,30 @@
+{
+    "name": "Debugging",
+    "icon": "minecontrollers:controller_debug_display",
+    "category": "minecontrollers:microcontroller",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "title": "DEBUGGER",
+            "text": "The microcontroller is a black box which you usually can't interact. But sometimes you wanna look inside to fix your bugs or study the work mechanisms.$(br)Luckily there is some ways to know it.$(li)You can just write in code debug mechanisms such as powering on pins or $(strike)playing specific sound$()."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "This way has own pluses but it takes a machine time that means the slow microcontroller will work even slower.$(li)Second way means you should to use $(l:minecontrollers:microcontroller/pinout#special_pins)special pins$(). Just read needful cells from memory. This is the worst way to debug your programm"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "because you will have to convert output value and you can't read registers values.$(li)Last way is more preffered and recommended, it consists in using $(l:minecontrollers:microcontroller/debug#debugger_icon)debugger$()."
+        },
+        {
+            "anchor": "debugger_icon",
+            "type": "patchouli:spotlight",
+            "item": "minecontrollers:controller_debug_display",
+            "text": "With debugger, you can explore your microcontroller and get all helpful information. To debug you need to click by debugger in main hand on the microcontroller and debugger will print all about registers and some dump of memory.$(br)To determine start address of memory dump you need to press $(bold)[SHIFT]$()"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "and then start to scroll mouse wheel.$(br)To select mode of scrolling you need to click $(bold)RIGHT BUTTON OF MOUSE$(), while you keep pressing $(bold)[SHIFT]$()."
+        }
+    ]
+}

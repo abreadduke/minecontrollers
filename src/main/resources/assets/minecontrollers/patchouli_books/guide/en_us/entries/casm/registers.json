@@ -1,0 +1,88 @@
+{
+    "name": "Registers",
+    "icon": "minecraft:repeater",
+    "category": "minecontrollers:casm",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Registers are energy-dependent memory cells. When you turn off the power, registers will be reset. Every register has own meaning but it doesn't mean that you can't use them by your own opinion."
+        },
+        {
+            "type": "patchouli:text",
+            "title": "AX",
+            "text": "This register is used as accumulator for arithmetic operations and for containing values for future reference.$(br)Has subregisters such as AH - high bits register and AL - low bits register."
+        },
+        {
+            "type": "patchouli:text",
+            "title": "BX",
+            "text": "Usually it's for pointing at address in memory or contains data. Also can be used as AX register.$(br)Has subregisters such as BH - high bits register and BL - low bits register."
+        },
+        {
+            "type": "patchouli:text",
+            "title": "CX",
+            "text": "This register is used as counter for cycling operations. Also used in $(l:minecontrollers:casm/commands#loop)LOOP command$().$(br)Has subregisters such as CH - high bits register and CL - low bits register."
+        },
+        {
+            "type": "patchouli:text",
+            "title": "DX",
+            "text": "For arithmetic and I/O operations. $(br)Has subregisters such as DH - high bits register and DL - low bits register."
+        },
+        {
+            "type": "patchouli:text",
+            "title": "DI",
+            "text": "Pointer to the destination in operations with arrays."
+        },
+        {
+            "type": "patchouli:text",
+            "title": "SI",
+            "text": "Pointer to the source during operations with an array."
+        },
+        {
+            "anchor": "bp",
+            "type": "patchouli:text",
+            "title": "BP",
+            "text": "Pointer to the stack base inside the function. It's used with SP and CS. May be useful in recursions and functions because it's static and can be used as offset base for getting local data and arguments."
+        },
+        {
+            "anchor": "sp",
+            "type": "patchouli:text",
+            "title": "SP",
+            "text": "Pointer to the stack top. PUSH command decrements the register by 2 and puts its operand value to address ss:sp. POP clear and return data from ss:sp to command's operand and increments the register also by 2."
+        },
+        {
+            "type": "patchouli:text",
+            "title": "IP",
+            "text": "Pointer to  address of current command. With combination cs:ip you can know location of code fragment in memory.$(br)$(#ff0000)WARNING: DON'T TRY CHANGE THIS REGISTER YOURSELF. THE RESULT MAY BE UNPREDICTABLE."
+        },
+        {
+            "type": "patchouli:text",
+            "title": "FLAGS",
+            "text": "This register contains flags, that changes and used by commands. All flags is 1 bit and next list will show sequence from higher to lower bits.$(br2)$(bold)FLAGS:$()$(li)$(bold)CF$() - carry flag. It is set if an unsigned overflow occurs, that is, when the sum is carried over or subtracted with borrowing"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "(for example, when the numbers 0FFh and 1 are combined by ADD command). If no overflow occurs, then the flag is not set.$(li)$(bold)ZF$() - zero flag. It is set if the result of the calculation gives 0.$(li)$(bold)SF$() - sign flag. It is set if the highest bit of the result is set to 1.$(li)$(bold)IF$() - interrupt flag. It allows using external interrupts if it set to 1."
+        },
+        {
+            "anchor": "segments",
+            "type": "patchouli:text",
+            "title": "SEGMENT REGISTERS",
+            "text": "Segment registers play a key role in segmentation. You can work with offsets only by using these registers. Every segment register operates own code area.$(br2)$(bold)DS$() - points to your data segment where you will store named variables and arrays.$(br2)$(bold)SS$() - points to stack segment. It's a default offset for sp and bp registers."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "$(bold)CS$() - points to code segment. usually used with ip register to get absolute address of current command.$(br)$(#ff0000)WARNING: DON'T TRY CHANGE THIS REGISTER YOURSELF. THE RESULT MAY BE UNPREDICTABLE.$()$(br2)$(bold)ES$() - this register is used for containing extra segment."
+        },
+        {
+            "type": "patchouli:text",
+            "title": "PIN REGISTERS",
+            "text": "These registers allows reading and writing pins. To use this type of registers you should use r[<number of pin>]."
+        },
+        {
+            "anchor": "it",
+            "type": "patchouli:text",
+            "title": "IT",
+            "text": "Unusual register, that point to the table of interrupts. To activate external interruts set IF to 1."
+        }
+    ]
+}

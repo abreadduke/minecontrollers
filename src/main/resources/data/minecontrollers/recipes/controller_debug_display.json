@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " B ",
+        "SBS",
+        "DDD"
+    ],
+    "key": {
+        "B": {
+            "item": "morered:bundled_network_cable"
+        },
+        "S": {
+            "item": "minecraft:stone_button"
+        },
+        "D": {
+            "item": "morered:hexidecrubrometer"
+        }
+    },
+    "result": {
+        "item": "minecontrollers:controller_debug_display",
+        "count": 1
+    }
+}

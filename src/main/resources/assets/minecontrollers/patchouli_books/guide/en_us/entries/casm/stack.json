@@ -1,0 +1,19 @@
+{
+    "name": "Stack",
+    "icon": "minecraft:creeper_banner_pattern",
+    "category": "minecontrollers:casm",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "The stack is an imroptant segment that contains all of your temporary data. it is a LIFO structure (Last In, First Out or Last In, First Out), which means that data is received from the stack in the reverse order of its addition. To add data to the stack use $(l:minecontrollers:casm/commands#push)PUSH$(), to get data from the top of the stack use $(l:minecontrollers:casm/commands#pop)POP$(). Stack segment has next structure:"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "$(l:minecontrollers:casm/registers#segments)SS$()(0x0001) - points to this segment$(br)|$(br)| free$(br)| space$(br)|$(br)$(l:minecontrollers:casm/registers#sp)SP$()(0x0010) - points to the high of stack$(br)|$(br)| busy$(br)| space$(br)|$(br)$(l:minecontrollers:casm/registers#bp)BP$()(0x0100) - points to the beggining of the stack"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "As you might have noticed, the top of the stack grows from higher to lower addresses. To get concrete data from stack you can use bp register:$(br)$(bold)MOV BX, bp$(br)ADD BX, 4$(br)MOV AX, SS:[BX]"
+        }
+    ]
+}

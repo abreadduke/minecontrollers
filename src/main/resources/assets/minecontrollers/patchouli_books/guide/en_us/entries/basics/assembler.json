@@ -1,0 +1,11 @@
+{
+    "name": "Assembler",
+    "icon": "minecontrollers:assembler",
+    "category": "minecontrollers:basics",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "This block translates code from input slot to machine code to output slot. All slots are for writable books only."
+        }
+    ]
+}

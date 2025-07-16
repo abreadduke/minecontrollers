@@ -1,0 +1,21 @@
+{
+    "name": "Memory",
+    "icon": "minecontrollers:microcontroller",
+    "category": "minecontrollers:microcontroller",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "title": "MEMORY",
+            "text": "Memory in this mod is unique. It is a non-volatile massive that is represented as cells by 8 bit. Maximum count of cells is 65535 (63KB of real space). It will contain all your programms, intermediate and constant data. Memory management is only in your hands. Only you decide how you will use whole memory."
+        },
+        {
+            "type": "patchouli:text",
+            "title": "SEGMENTS",
+            "text": "Of course you can use memory without segmentation but with segmentation you can use your microcontroller more flexible and modular. This is done by using $(l:minecontrollers:basics)segment registers$(), that points to memory addresses and play their own roles. Segmentation is not garant that you couldn't accidentally rewrite or execute another segment,"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "because segments just implements by registers as addresses and $(l:minecontrollers:basics)offsets$(). Remember $(bold)$(#ff0000)MEMORY MANAGEMENT IS ONLY IN YOUR HANDS!$()"
+        }
+    ]
+}

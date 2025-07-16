@@ -1,0 +1,32 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "LBO",
+        "BCB",
+        "NBM"
+    ],
+    "key": {
+        "B": {
+            "item": "morered:bundled_network_cable"
+        },
+        "C": {
+            "item": "minecontrollers:redstone_controller"
+        },
+        "O": {
+            "item": "minecraft:observer"
+        },
+        "L": {
+            "item": "minecraft:daylight_detector"
+        },
+        "N": {
+            "item": "minecraft:note_block"
+        },
+        "M": {
+            "item": "minecraft:writable_book"
+        }
+    },
+    "result": {
+        "item": "minecontrollers:microcontroller",
+        "count": 1
+    }
+}

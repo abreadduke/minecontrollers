@@ -1,0 +1,11 @@
+{
+    "name": "Ассемблер",
+    "icon": "minecontrollers:assembler",
+    "category": "minecontrollers:basics",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Этот блок преобразует код из входного слота в машинный код выходного слота. Все слоты предназначены только для книг c возможностью записи текста."
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "name": "Стек",
+    "icon": "minecraft:creeper_banner_pattern",
+    "category": "minecontrollers:casm",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Стек - это важный сегмент, содержащий все ваши временные данные. Является LIFO структурой (последний вошел, первый вышел), которая означает, что данные принимаются из стека в порядке, обратном их добавлению. Чтобы добавить данные в стек, используйте $(l:minecontrollers:casm/commands#push)PUSH$(), чтобы получить данные с вершины стека, используйте $(l:minecontrollers:casm/commands#pop)POP$()."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Сегмент стека имеет следующую структуру:$(br)$(l:minecontrollers:casm/registers#segments)SS$()(0x0001) - указывает на этот сегмент$(br)|$(br)| свободное$(br)| пространство$(br)|$(br)$(l:minecontrollers:casm/registers#sp)SP$()(0x0010) - указывает на вершину стека$(br)|$(br)| занятое$(br)| пространство$(br)|$(br)$(l:minecontrollers:casm/registers#bp)BP$()(0x0100) - указывает на начало стека"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Как вы могли заметить, вершина стека увеличивается от более высоких адресов к более низким. Чтобы получить конкретные данные из стека, вы можете использовать регистр bp:$(br)$(bold)MOV BX, bp$(br)ADD BX, 4$(br)MOV AX, SS:[BX]"
+        }
+    ]
+}

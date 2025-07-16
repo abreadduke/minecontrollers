@@ -1,0 +1,251 @@
+{
+    "name": "Команды и опкоды",
+    "icon": "minecraft:redstone_torch",
+    "category": "minecontrollers:casm",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "$(l:minecontrollers:casm/commands#nop)NOP - 0$()          $(l:minecontrollers:casm/commands#jle)JLE - 19$()$(br)$(l:minecontrollers:casm/commands#mov)MOV - 1$()          $(l:minecontrollers:casm/commands#jc)JC - 20$()$(br)$(l:minecontrollers:casm/commands#add)ADD - 2$()          $(l:minecontrollers:casm/commands#jnc)JNC - 21$()$(br)$(l:minecontrollers:casm/commands#sub)SUB - 3$()          $(l:minecontrollers:casm/commands#shl)SHL - 22$()$(br)$(l:minecontrollers:casm/commands#mul)MUL - 4$()          $(l:minecontrollers:casm/commands#shr)SHR - 23$()$(br)$(l:minecontrollers:casm/commands#div)DIV - 5$()          $(l:minecontrollers:casm/commands#sar)SAR - 24$()$(br)$(l:minecontrollers:casm/commands#inc)INC - 6$()          $(l:minecontrollers:casm/commands#rol)ROL - 25$()$(br)$(l:minecontrollers:casm/commands#dec)DEC - 7$()          $(l:minecontrollers:casm/commands#ror)ROR - 26$()$(br)$(l:minecontrollers:casm/commands#and)AND - 8$()          $(l:minecontrollers:casm/commands#rcl)RCL - 27$()$(br)$(l:minecontrollers:casm/commands#or)OR - 9$()           $(l:minecontrollers:casm/commands#rcr)RCR - 28$()$(br)$(l:minecontrollers:casm/commands#xor)XOR - 10$()         $(l:minecontrollers:casm/commands#push)PUSH - 29$()$(br)$(l:minecontrollers:casm/commands#not)NOT - 11$()         $(l:minecontrollers:casm/commands#pop)POP - 30$()"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "$(l:minecontrollers:casm/commands#cmp)CMP - 12$()          $(l:minecontrollers:casm/commands#call)CALL - 31$()$(br)$(l:minecontrollers:casm/commands#jmp)JMP - 13$()          $(l:minecontrollers:casm/commands#ret)RET - 32$()$(br)$(l:minecontrollers:casm/commands#jz)JZ - 14$()           $(l:minecontrollers:casm/commands#int)INT - 33$()$(br)$(l:minecontrollers:casm/commands#jnz)JNZ - 15$()          $(l:minecontrollers:casm/commands#lea)LEA - 34$()$(br)$(l:minecontrollers:casm/commands#jg)JG - 16$()           $(l:minecontrollers:casm/commands#pusha)PUSHA - 35$()$(br)$(l:minecontrollers:casm/commands#jl)JL - 17$()           $(l:minecontrollers:casm/commands#popa)POPA - 36$()$(br)$(l:minecontrollers:casm/commands#jge)JGE - 18$()          $(l:minecontrollers:casm/commands#loop)LOOP - 37$()"
+        },
+        {
+            "anchor": "nop",
+            "type": "patchouli:text",
+            "title": "NOP",
+            "text": "Отсутствие операции. Эта команда ничего не делает и отнимает время у микроконтроллера. Полезно для таймеров."
+        },
+        {
+            "anchor": "mov",
+            "type": "patchouli:text",
+            "title": "MOV",
+            "text": "Перемещает значение из второго операнда в первый.$(br2)ПРИМЕР: mov ax, bx; bx = 3$(br)копирует значение из bx в ax. Теперь ax равно 3."
+        },
+        {
+            "anchor": "add",
+            "type": "patchouli:text",
+            "title": "ADD",
+            "text": "Суммирует значения из первого и второго операндов. Результат операции присваивается первому операнду. Влияет на регистр флагов $(br2)ПРИМЕР: sum ax, bx; ax = 2, bx = 3$(br)после выполнения ax содержит 5."
+        },
+        {
+            "anchor": "sub",
+            "type": "patchouli:text",
+            "title": "SUB",
+            "text": "Вычитает второй операнд из первого. Результат операции присваивается первому операнду. Влияет на регистр флагов.$(br2)ПРИМЕР: sub ax, bx; ax = 6, bx = 2$(br)после выполнения ax содержит 4."
+        },
+        {
+            "anchor": "mul",
+            "type": "patchouli:text",
+            "title": "MUL",
+            "text": "Умножает значения из первого и второго операндов. Результат операции присваивается первому операнду. Влияет на регистр флагов.$(br2)ПРИМЕР: mul ax, bx; ax = 6, bx = 2$(br)после выполнения ax содержит 12."
+        },
+        {
+            "anchor": "div",
+            "type": "patchouli:text",
+            "title": "DIV",
+            "text": "Делит первый операнд на второй. Результат операции присваивается первому операнду. Влияет на регистр флагов.. Остаток от деления отбрасывается$(br2)ПРИМЕР: div ax, bx; ax = 6, bx = 2$(br)после выполнения ax содержит 3."
+        },
+        {
+            "anchor": "inc",
+            "type": "patchouli:text",
+            "title": "INC",
+            "text": "Увеличивает первый операнд на 1. Влияет на регистр флагов.$(br2)ПРИМЕР: inc ax; ax = 6$(br)после выполнения ax содержит 7."
+        },
+        {
+            "anchor": "dec",
+            "type": "patchouli:text",
+            "title": "DEC",
+            "text": "Уменьшает первый операнд на 1. Влияет на регистр флагов.$(br2)ПРИМЕР: inc ax; ax = 6$(br)после выполнения ax содержит 5."
+        },
+        {
+            "anchor": "and",
+            "type": "patchouli:text",
+            "title": "AND",
+            "text": "Выполняет конъюкцию с помощью двух операндов. Влияет на регистр флагов.$(br2)ПРИМЕР: and ax, bx; ax = 101b bx = 100b$(br)после выполнения ax содержит 100b."
+        },
+        {
+            "anchor": "or",
+            "type": "patchouli:text",
+            "title": "OR",
+            "text": "Выполняет дизъюнкцию с использованием двух операндов. Влияет на регистр флагов.$(br2)ПРИМЕР: or ax, bx; ax = 100b bx = 1b$(br)после выполнения ax содержит 101b."
+        },
+        {
+            "anchor": "xor",
+            "type": "patchouli:text",
+            "title": "XOR",
+            "text": "Выполняет исключение, используя два операнда. Влияет на регистр флагов.$(br2)ПРИМЕР: xor ax, bx; ax = 100b bx = 101b$(br)после выполнения ax содержит 1b."
+        },
+        {
+            "anchor": "not",
+            "type": "patchouli:text",
+            "title": "NOT",
+            "text": "Инвертирует все биты из первого операнда. Влияет на регистр флагов$(br2)ПРИМЕР: not ax; ax = 00000101b$(br)после выполнения ax содержит 11111010b."
+        },
+        {
+            "anchor": "cmp",
+            "type": "patchouli:text",
+            "title": "CMP",
+            "text": "Сравнивает значения путем вычитания второго операнда из первого и изменяет регистр флагов$(br2)ПРИМЕР: cmp ax, bx; ax = bx$(br)после выполнения ZF устанавливается в значение 1 (Flags = 100b)"
+        },
+        {
+            "anchor": "jmp",
+            "type": "patchouli:text",
+            "title": "JMP",
+            "text": "Устанавливает в регистре ip значение из первого операнда. Если первый операнд имеет смещение, то регистр cs установит его$(br2)ПРИМЕР: jmp foo; установит ip на адрес foo$(br)         jmp es:foo; установит ip на адрес foo и cs будет содержать значение из es"
+        },
+        {
+            "anchor": "jz",
+            "type": "patchouli:text",
+            "title": "JZ",
+            "text": "Выполняет jmp если ZF - 1."
+        },
+        {
+            "anchor": "jnz",
+            "type": "patchouli:text",
+            "title": "JNZ",
+            "text": "Выполняет jmp если ZF - 0."
+        },
+        {
+            "anchor": "jg",
+            "type": "patchouli:text",
+            "title": "JG",
+            "text": "Выполняет jmp если ZF и SF - 0."
+        },
+        {
+            "anchor": "jl",
+            "type": "patchouli:text",
+            "title": "JL",
+            "text": "Выполняет jmp если SF - 1."
+        },
+        {
+            "anchor": "jge",
+            "type": "patchouli:text",
+            "title": "JGE",
+            "text": "Выполняет jmp если SF - 0 или ZF - 1."
+        },
+        {
+            "anchor": "jle",
+            "type": "patchouli:text",
+            "title": "JLE",
+            "text": "Выполняет jmp если SF - 1 или ZF - 1."
+        },
+        {
+            "anchor": "jc",
+            "type": "patchouli:text",
+            "title": "JC",
+            "text": "Выполняет jmp если CF - 1."
+        },
+        {
+            "anchor": "jnc",
+            "type": "patchouli:text",
+            "title": "JNC",
+            "text": "Выполняет jmp если CF - 0."
+        },
+        {
+            "anchor": "shl",
+            "type": "patchouli:text",
+            "title": "SHL",
+            "text": "Сдвигает биты влево.$(br2)ПРИМЕР: shr ax, 2; ax = 10100000b$(br)после выполнения ax содержит 10000000b"
+        },
+        {
+            "anchor": "shr",
+            "type": "patchouli:text",
+            "title": "SHR",
+            "text": "Сдвигает биты вправо.$(br2)ПРИМЕР: shl ax, 2; ax = 10100000b$(br)после выполнения ax содержит 00101000b"
+        },
+        {
+            "anchor": "sar",
+            "type": "patchouli:text",
+            "title": "SAR",
+            "text": "Сдвигает биты вправо без изменения знака бита.$(br2)ПРИМЕР: shr ax, 2; ax = 10100000b$(br)после выполнения ax содержит 11101000b"
+        },
+        {
+            "anchor": "rol",
+            "type": "patchouli:text",
+            "title": "ROL",
+            "text": "Прокручивает биты вправо. Это означает, что вместо удаления старшего бита команда добавит его в конец значения. $(br2)ПРИМЕР: rol ax, 2; ax = 10100000b$(br)после выполнения ax содержит 10000010b"
+        },
+        {
+            "anchor": "ror",
+            "type": "patchouli:text",
+            "title": "ROR",
+            "text": "То же самое, что и rol, но в обратном порядке. $(br2)ПРИМЕР: ror ax, 2; ax = 10100001b$(br)после выполнения ax содержит 01101000b"
+        },
+        {
+            "anchor": "rcl",
+            "type": "patchouli:text",
+            "title": "RCL",
+            "text": "Устанавливает старший бит на CF и выполняет сдвиг. $(br2)ПРИМЕР: rcl ax, 1; ax = 10100000b$(br)после выполнения ax содержит 01000000b и CF = 1"
+        },
+        {
+            "anchor": "rcr",
+            "type": "patchouli:text",
+            "title": "RCR",
+            "text": "То же самое, что и rcl, но в обратном порядке. $(br2)ПРИМЕР: rcl ax, 1; ax = 10100001b$(br)после выполнения ax содержит 01010000b и CF = 1"
+        },
+        {
+            "anchor": "push",
+            "type": "patchouli:text",
+            "title": "PUSH",
+            "text": "Копирует значение из первого операнда на вершину стека."
+        },
+        {
+            "anchor": "pop",
+            "type": "patchouli:text",
+            "title": "POP",
+            "text": "Берет значение с вершины стека в первый операнд."
+        },
+        {
+            "anchor": "call",
+            "type": "patchouli:text",
+            "title": "CALL",
+            "text": "Сначала выполняет push для ip регистра а затем выполняет jmp. Если операнд имеет смещение, то выполняется push регистра cs."
+        },
+        {
+            "anchor": "ret",
+            "type": "patchouli:text",
+            "title": "RET",
+            "text": "Очищает стек по значению первого операнда, а затем устанавливает в регистр ip значение из стека, которое было заполнено CALL. Если второй операнд равен 1, то регистр cs также будет установлен из вершины стека. Если второй операнд равен 0xFF, то он установит регистр cs из вершины стека и уменьшит ip на длину команды (необходимо, если вы хотите выйти из внешнего прерывания)."
+        },
+        {
+            "anchor": "int",
+            "type": "patchouli:text",
+            "title": "INT",
+            "text": "Выполняет внутренние прерывания, которые могут выполнять множество различных функций. Первый операнд - это код прерывания. Более подробную информацию о кодах прерываний вы можете увидеть в таблице прерываний."
+        },
+        {
+            "anchor": "lea",
+            "type": "patchouli:text",
+            "title": "LEA",
+            "text": "Вычисляет действующий адрес. Это самая необычная команда, поскольку ее назначение - работать с большим количеством различных значений, которые имеют разные типы.$()Команда имеет следующую структуру: $(bold)lea регистр_назначения, [регистр_базы * размер + смещение + регистр_индекса]$() or $(bold)lea регистр_назначения,"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "$(bold)регистр_базы[смещение + регистр_индекса]$().Байты операндов этой команды имеют также другую схему.$(br2)Байт модификатора этой команды должен быть установлен в значение 3.$(br2)$(bold)Байты первого операнда:$()$(li)$(bold)1-4 биты$() - регистр назначения, который будет хранить результат операции.$(li)$(bold)5 бит$() - если 1, то индекс будет суммироваться"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "$(li)$(bold)6 бит$() - если 1, то смещение будет суммироваться$(li)$(bold)7-8 биты$() - размер, который может быть только 00b - 0; 01 - 2; 10b - 4; 11b - 8$(li)$(bold)9-16 биты$() - номер регистра базы$(br2)$(bold)Байты второго операнда$() - полностью используется для смещения"
+        },
+        {
+            "anchor": "pusha",
+            "type": "patchouli:text",
+            "title": "PUSHA",
+            "text": "Сохраняет ax, bx, cx, dx, di, si, flags, ds, ex в стек."
+        },
+        {
+            "anchor": "popa",
+            "type": "patchouli:text",
+            "title": "POPA",
+            "text": "загружает регистры ax, bx, cx, dx, di, si, flags, ds, ex из стека."
+        },
+        {
+            "anchor": "loop",
+            "type": "patchouli:text",
+            "title": "LOOP",
+            "text": "Если cx != 0, происходит прыжок на заданный адресс и затем декрементирует регистр cx."
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "name": "Введение",
+    "icon": "minecraft:book",
+    "category": "minecontrollers:basics",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Этот мод добавляет в майнкрафт редстоун микроконтроллер, а также собственный диалект языка ассемблера CASM (craft assembler) и набор команд."
+        }
+    ]
+}

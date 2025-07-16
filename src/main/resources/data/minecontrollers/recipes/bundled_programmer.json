@@ -1,0 +1,29 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "#C#",
+        "WLW",
+        "#B#"
+    ],
+    "key": {
+        "#": {
+            "item": "minecraft:polished_andesite"
+        },
+        "L": {
+            "item": "minecraft:lectern"
+        },
+        "W": {
+            "item": "morered:red_alloy_wire"
+        },
+        "C": {
+            "item": "morered:bundled_network_cable"
+        },
+        "B": {
+            "item": "minecraft:stone_button"
+        }
+    },
+    "result": {
+        "item": "minecontrollers:bundled_programmer",
+        "count": 1
+    }
+}

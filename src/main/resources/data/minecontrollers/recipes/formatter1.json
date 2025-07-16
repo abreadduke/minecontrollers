@@ -1,0 +1,29 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "RL#",
+        "OMO",
+        "#O#"
+    ],
+    "key": {
+        "#": {
+            "item": "morered:hexidecrubrometer"
+        },
+        "L": {
+            "item": "minecraft:lectern"
+        },
+        "O": {
+            "item": "minecraft:observer"
+        },
+        "M": {
+            "item": "minecontrollers:microcontroller"
+        },
+        "R": {
+            "item": "minecraft:lightning_rod"
+        }
+    },
+    "result": {
+        "item": "minecontrollers:formatter",
+        "count": 1
+    }
+}

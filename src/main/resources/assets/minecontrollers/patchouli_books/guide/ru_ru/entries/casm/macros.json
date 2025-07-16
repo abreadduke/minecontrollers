@@ -1,0 +1,48 @@
+{
+    "name": "Макросы",
+    "icon": "minecraft:ink_sac",
+    "category": "minecontrollers:casm",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "CASM позволяет использовать макросы - разделы кода, которые позволяют заменять длинные повторяющиеся последовательности кода более короткими записями."
+        },
+        {
+            "type": "patchouli:text",
+            "title": "Однострочный макрос",
+            "text": "Он заменяет имя вашего макроса на определенную строку.$(br)Пример:$(br)$(bold)%define value 5$(br)%define ax_mov mov ax, $(br)ax_mov value$(br)$()Сгенерированный код - $(bold) MOV AX, 5"
+        },
+        {
+            "type": "patchouli:text",
+            "title": "Многострочный макрос",
+            "text": "Чтобы использовать макрос, состоящий из более чем одной строки есть $(bold)%macro$() и $(bold)%endmacro$() директивы.$(br)Пример:$(br)$(bold)%macro my_macro$(br)mov ax, bx$(br)mov cx, dx$(br)%endmacro$(br)my_macro$(br)int 0$(br)my_macro"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Сгенерированный код - $(bold)$(br)MOV AX, BX$(br)MOV CX, DX$(br)INT 0$(br)MOV AX, BX$(br)MOV CX, DX"
+        },
+        {
+            "type": "patchouli:text",
+            "title": "Условные макросы",
+            "text": "$(bold)%if$() директива будет вставлять раздел кода до тех пор, пока не встретит $(bold)%endif$() если значение после $(bold)%if$() больше 0. В противоположном случае существует $(bold)%else$() директива.$(br)Пример:$(br)$(bold)%if 1$(br)mov ax, bx$(br)%else$(br)mov cx, dx$(br)%endif$(br)$()Сгенерированный код - $(bold)MOV AX, BX$()"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Также есть $(bold)%ifdef$() директива. Она работает так же, как $(bold)%if$() но он проверяет существование имени макроса$(br)Пример:$(br)$(bold)%define macro_name$(br)%ifdef macro_name$(br)mov ax, bx$(br)%else$(br)mov cx, dx$(br)%endif$(br)$()Сгенерированный код - $(bold)MOV AX, BX$()"
+        },
+        {
+            "type": "patchouli:text",
+            "title": "ORG",
+            "text": "Эта директива предназначена для определения программного смещения для памяти микроконтроллера. Эта директива просто вставляет OFFSET: [<смещение>]$(br)Пример:$(br)$(bold)org FF$(br)mov ax, bx$(br)$()Когда вы соберете этот код и прошьете его, программа будет расположена, начиная с байта 0xFF."
+        },
+        {
+            "type": "patchouli:text",
+            "title": "Спец. символы",
+            "text": "В макросах могут использоваться специальные символы, которые будут добавлены в ваш макрокод.$(li)$(bold)$[<число>]$() - расширяется в аргумент в переданной последовательности.$(li)$(bold)$#$() - расширяется в количество аргументов$(li)$(bold)$*$() - расширяется во все аргументы$(br)Пример:$(br)$(bold)%macro my_macro$(br)mov $1, $0"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "%endmacro$(br)my_macro(5, ax)$(br)$()Сгенерированный код - $(bold)MOV AX, 5"
+        }
+    ]
+}

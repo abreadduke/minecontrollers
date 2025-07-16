@@ -1,0 +1,172 @@
+package com.abadon.minecontrollers.interrupts;
+
+import com.abadon.minecontrollers.api.MinecontrollersAPI;
+import com.abadon.minecontrollers.entityblocks.microprocessor.MicrocontrollerBlockEntity;
+import com.google.common.collect.Lists;
+import commoble.morered.plate_blocks.PlateBlockStateProperties;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+
+import java.util.List;
+
+public class MinecontrollersInterrupts {
+    public static void getGameTimeInt(MicrocontrollerBlockEntity microcontrollerBlockEntity){
+        ClientLevel level = Minecraft.getInstance().level;
+        if(level == null) return;
+        long gameTime = level.getGameTime();
+        microcontrollerBlockEntity.registerA = (short) ((gameTime >>> 48) & 0xFFFF);
+        microcontrollerBlockEntity.registerB = (short) ((gameTime >>> 32) & 0xFFFF);
+        microcontrollerBlockEntity.registerC = (short) ((gameTime >>> 16) & 0xFFFF);
+        microcontrollerBlockEntity.registerD = (short) (gameTime & 0xFFFF);
+    }
+    public static void getDayTimeInt(MicrocontrollerBlockEntity microcontrollerBlockEntity){
+        ClientLevel level = Minecraft.getInstance().level;
+        if(level == null) return;
+        long gameTime = level.getDayTime();
+        microcontrollerBlockEntity.registerA = (short) ((gameTime >>> 48) & 0xFFFF);
+        microcontrollerBlockEntity.registerB = (short) ((gameTime >>> 32) & 0xFFFF);
+        microcontrollerBlockEntity.registerC = (short) ((gameTime >>> 16) & 0xFFFF);
+        microcontrollerBlockEntity.registerD = (short) (gameTime & 0xFFFF);
+    }
+    public static void getSinCos(MicrocontrollerBlockEntity microcontrollerBlockEntity){
+        double sin = Math.sin(Math.toRadians(microcontrollerBlockEntity.registerA));
+        double cos = Math.cos(Math.toRadians(microcontrollerBlockEntity.registerA));
+        microcontrollerBlockEntity.registerA = (short)(sin * 1000);
+        microcontrollerBlockEntity.registerB = (short)(cos * 1000);
+    }
+    public static void getLogn(MicrocontrollerBlockEntity microcontrollerBlockEntity){
+        microcontrollerBlockEntity.registerA = (short)(Math.log(microcontrollerBlockEntity.registerA) * 1000);
+    }
+    public static void getPow(MicrocontrollerBlockEntity microcontrollerBlockEntity){
+        int a = microcontrollerBlockEntity.registerA;
+        int b = microcontrollerBlockEntity.registerB;
+        microcontrollerBlockEntity.registerA = (short)Math.pow(a, (double)b / 1000D);
+    }
+    public static void getDayStatus(MicrocontrollerBlockEntity microcontrollerBlockEntity){
+        ClientLevel level = Minecraft.getInstance().level;
+        if(level == null) return;
+        microcontrollerBlockEntity.registerA = (short)(level.isDay() ? 1 : 0);
+    }
+    public static void getRainingStatus(MicrocontrollerBlockEntity microcontrollerBlockEntity){
+        ClientLevel level = Minecraft.getInstance().level;
+        if(level == null) return;
+        microcontrollerBlockEntity.registerA = (short)(level.isRaining() ? 1 : 0);
+    }
+    public static void getThunderingStatus(MicrocontrollerBlockEntity microcontrollerBlockEntity){
+        ClientLevel level = Minecraft.getInstance().level;
+        if(level == null) return;
+        microcontrollerBlockEntity.registerA = (short)(level.isThundering() ? 1 : 0);
+    }
+    public static void getRandomNumber(MicrocontrollerBlockEntity microcontrollerBlockEntity){
+        ClientLevel level = Minecraft.getInstance().level;
+        if(level == null) return;
+        microcontrollerBlockEntity.registerA = (short)(level.getRandom().nextInt());
+    }
+    public static void getSelfCoordinates(MicrocontrollerBlockEntity microcontrollerBlockEntity){
+        ClientLevel level = Minecraft.getInstance().level;
+        if(level == null) return;
+        BlockPos blockPos = microcontrollerBlockEntity.getBlockPos();
+        microcontrollerBlockEntity.pushStack((blockPos.getX() >>> 16) & 0xFFFF);
+        microcontrollerBlockEntity.pushStack(blockPos.getX() & 0xFFFF);
+        microcontrollerBlockEntity.pushStack((blockPos.getY() >>> 16) & 0xFFFF);
+        microcontrollerBlockEntity.pushStack(blockPos.getY() & 0xFFFF);
+        microcontrollerBlockEntity.pushStack((blockPos.getZ() >>> 16) & 0xFFFF);
+        microcontrollerBlockEntity.pushStack(blockPos.getZ() & 0xFFFF);
+    }
+    public static void getWatchCoordinates(MicrocontrollerBlockEntity microcontrollerBlockEntity){
+        ClientLevel level = Minecraft.getInstance().level;
+        if(level == null) return;
+        BlockPos blockPos = microcontrollerBlockEntity.getBlockPos();
+        BlockState blockState = level.getBlockState(blockPos);
+        Direction direction = blockState.getValue(PlateBlockStateProperties.ATTACHMENT_DIRECTION).getOpposite();
+        for(int i = 1; i < 128; i++){
+            BlockPos foundBlockPos = blockPos.relative(direction, i);
+            Block foundBlock = level.getBlockState(foundBlockPos).getBlock();
+            if(!foundBlock.getDescriptionId().equals("block.minecraft.air")){
+                microcontrollerBlockEntity.registerA = (short)1;
+                microcontrollerBlockEntity.registerB = (short)(foundBlockPos.getX() - blockPos.getX());
+                microcontrollerBlockEntity.registerC = (short)(foundBlockPos.getY() - blockPos.getY());
+                microcontrollerBlockEntity.registerD = (short)(foundBlockPos.getZ() - blockPos.getZ());
+                return;
+            }
+        }
+        microcontrollerBlockEntity.registerA = (short)0;
+    }
+    public static void getNearbyEntitiesCount(MicrocontrollerBlockEntity microcontrollerBlockEntity){
+        ClientLevel level = Minecraft.getInstance().level;
+        if(level == null) return;
+        BlockPos blockPos = microcontrollerBlockEntity.getBlockPos();
+        int cubeRadius = microcontrollerBlockEntity.registerA;
+        int maxCubeRadius = 32;
+        cubeRadius = Math.abs(cubeRadius);
+        cubeRadius = cubeRadius > maxCubeRadius ? maxCubeRadius : cubeRadius;
+        BlockPos firstPos = blockPos.offset(-cubeRadius, -cubeRadius, -cubeRadius);
+        BlockPos secondPos = blockPos.offset(cubeRadius, cubeRadius, cubeRadius);
+        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(LivingEntity.class, new AABB(firstPos, secondPos));
+        microcontrollerBlockEntity.registerA = (short)nearbyEntities.size();
+    }
+    public static void getNearbyPlayers(MicrocontrollerBlockEntity microcontrollerBlockEntity){
+        ClientLevel level = Minecraft.getInstance().level;
+        if(level == null) return;
+        BlockPos blockPos = microcontrollerBlockEntity.getBlockPos();
+        int cubeRadius = microcontrollerBlockEntity.registerA;
+        int maxCubeRadius = 32;
+        cubeRadius = Math.abs(cubeRadius);
+        cubeRadius = cubeRadius > maxCubeRadius ? maxCubeRadius : cubeRadius;
+        BlockPos firstPos = blockPos.offset(-cubeRadius, -cubeRadius, -cubeRadius);
+        BlockPos secondPos = blockPos.offset(cubeRadius, cubeRadius, cubeRadius);
+        List<Player> nearbyPlayers = Lists.newArrayList();
+        for(Player player : level.players()) {
+            if (new AABB(firstPos, secondPos).contains(player.getX(), player.getY(), player.getZ())) {
+                nearbyPlayers.add(player);
+            }
+        }
+        microcontrollerBlockEntity.registerA = (short)nearbyPlayers.size();
+    }
+    public static void playSound(MicrocontrollerBlockEntity microcontrollerBlockEntity){
+        try{
+            ClientLevel level = Minecraft.getInstance().level;
+            if(level == null) return;
+            BlockPos blockPos = microcontrollerBlockEntity.getBlockPos();
+            int cubeRadius = microcontrollerBlockEntity.registerA;
+            int maxCubeRadius = 32;
+            cubeRadius = Math.abs(cubeRadius);
+            cubeRadius = cubeRadius > maxCubeRadius ? maxCubeRadius : cubeRadius;
+            BlockPos firstPos = blockPos.offset(-cubeRadius, -cubeRadius, -cubeRadius);
+            BlockPos secondPos = blockPos.offset(cubeRadius, cubeRadius, cubeRadius);
+            SoundEvent sound = MinecontrollersAPI.formatNumberToSound(microcontrollerBlockEntity.registerB);
+            for(Player player : level.players()) {
+                if (new AABB(firstPos, secondPos).contains(player.getX(), player.getY(), player.getZ())) {
+                    level.addParticle(ParticleTypes.NOTE, (double)blockPos.getX()+0.5D, blockPos.getY(), (double)blockPos.getZ()+0.5D, ((double)microcontrollerBlockEntity.registerC + microcontrollerBlockEntity.registerB) / 24.0D, 0.0D, 0.0D);
+                    player.playSound(sound, 1, (float) microcontrollerBlockEntity.registerC / 1000F); //CX register must be 0-2000 but it works only between 500 and 1000
+                }
+            }
+        }
+        catch (IllegalStateException exception){}
+    }
+    public static void register(){
+        MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getGameTimeInt, 0);
+        MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getDayTimeInt, 1);
+        MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getDayStatus, 2);
+        MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getRainingStatus, 3);
+        MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getThunderingStatus, 4);
+        MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getSinCos, 5);
+        MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getLogn, 6);
+        MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getPow, 7);
+        MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getRandomNumber, 8);
+        MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getSelfCoordinates, 9);
+        MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getWatchCoordinates, 10);
+        MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getNearbyEntitiesCount, 11);
+        MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getNearbyPlayers, 12);
+        MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::playSound, 13);
+    }
+}

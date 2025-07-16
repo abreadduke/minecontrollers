@@ -1,0 +1,251 @@
+{
+    "name": "Commands and opcodes",
+    "icon": "minecraft:redstone_torch",
+    "category": "minecontrollers:casm",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "$(l:minecontrollers:casm/commands#nop)NOP - 0$()          $(l:minecontrollers:casm/commands#jle)JLE - 19$()$(br)$(l:minecontrollers:casm/commands#mov)MOV - 1$()          $(l:minecontrollers:casm/commands#jc)JC - 20$()$(br)$(l:minecontrollers:casm/commands#add)ADD - 2$()          $(l:minecontrollers:casm/commands#jnc)JNC - 21$()$(br)$(l:minecontrollers:casm/commands#sub)SUB - 3$()          $(l:minecontrollers:casm/commands#shl)SHL - 22$()$(br)$(l:minecontrollers:casm/commands#mul)MUL - 4$()          $(l:minecontrollers:casm/commands#shr)SHR - 23$()$(br)$(l:minecontrollers:casm/commands#div)DIV - 5$()          $(l:minecontrollers:casm/commands#sar)SAR - 24$()$(br)$(l:minecontrollers:casm/commands#inc)INC - 6$()          $(l:minecontrollers:casm/commands#rol)ROL - 25$()$(br)$(l:minecontrollers:casm/commands#dec)DEC - 7$()          $(l:minecontrollers:casm/commands#ror)ROR - 26$()$(br)$(l:minecontrollers:casm/commands#and)AND - 8$()          $(l:minecontrollers:casm/commands#rcl)RCL - 27$()$(br)$(l:minecontrollers:casm/commands#or)OR - 9$()           $(l:minecontrollers:casm/commands#rcr)RCR - 28$()$(br)$(l:minecontrollers:casm/commands#xor)XOR - 10$()         $(l:minecontrollers:casm/commands#push)PUSH - 29$()$(br)$(l:minecontrollers:casm/commands#not)NOT - 11$()         $(l:minecontrollers:casm/commands#pop)POP - 30$()"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "$(l:minecontrollers:casm/commands#cmp)CMP - 12$()          $(l:minecontrollers:casm/commands#call)CALL - 31$()$(br)$(l:minecontrollers:casm/commands#jmp)JMP - 13$()          $(l:minecontrollers:casm/commands#ret)RET - 32$()$(br)$(l:minecontrollers:casm/commands#jz)JZ - 14$()           $(l:minecontrollers:casm/commands#int)INT - 33$()$(br)$(l:minecontrollers:casm/commands#jnz)JNZ - 15$()          $(l:minecontrollers:casm/commands#lea)LEA - 34$()$(br)$(l:minecontrollers:casm/commands#jg)JG - 16$()           $(l:minecontrollers:casm/commands#pusha)PUSHA - 35$()$(br)$(l:minecontrollers:casm/commands#jl)JL - 17$()           $(l:minecontrollers:casm/commands#popa)POPA - 36$()$(br)$(l:minecontrollers:casm/commands#jge)JGE - 18$()          $(l:minecontrollers:casm/commands#loop)LOOP - 37$()"
+        },
+        {
+            "anchor": "nop",
+            "type": "patchouli:text",
+            "title": "NOP",
+            "text": "None operation. This command does nothing and takes microcontroller time. It's useful to create a timer."
+        },
+        {
+            "anchor": "mov",
+            "type": "patchouli:text",
+            "title": "MOV",
+            "text": "Moves value from second operand to first.$(br2)EXAMPLE: mov ax, bx; bx = 3$(br)copies value from bx to ax. Now ax is 3."
+        },
+        {
+            "anchor": "add",
+            "type": "patchouli:text",
+            "title": "ADD",
+            "text": "Sums values from first and second operand. The result of operation sets to first operand. Changes flags register$(br2)EXAMPLE: sum ax, bx; ax = 2, bx = 3$(br)after execution ax contains 5."
+        },
+        {
+            "anchor": "sub",
+            "type": "patchouli:text",
+            "title": "SUB",
+            "text": "Subtracts second operand from first operand. The result of operation sets to first operand. Changes flags register.$(br2)EXAMPLE: sub ax, bx; ax = 6, bx = 2$(br)after execution ax contains 4."
+        },
+        {
+            "anchor": "mul",
+            "type": "patchouli:text",
+            "title": "MUL",
+            "text": "Multiplies values from first and second operand. The result of operation sets to first operand. Changes flags register.$(br2)EXAMPLE: mul ax, bx; ax = 6, bx = 2$(br)after execution ax contains 12."
+        },
+        {
+            "anchor": "div",
+            "type": "patchouli:text",
+            "title": "DIV",
+            "text": "Divides first operand by second operand. The result of operation sets to first operand. Changes flags register. The remainder of the division is discarded$(br2)EXAMPLE: div ax, bx; ax = 6, bx = 2$(br)after execution ax contains 3."
+        },
+        {
+            "anchor": "inc",
+            "type": "patchouli:text",
+            "title": "INC",
+            "text": "Increments first operand by 1. Changes flags register$(br2)EXAMPLE: inc ax; ax = 6$(br)after execution ax contains 7."
+        },
+        {
+            "anchor": "dec",
+            "type": "patchouli:text",
+            "title": "DEC",
+            "text": "Decrements first operand by 1. Changes flags register$(br2)EXAMPLE: inc ax; ax = 6$(br)after execution ax contains 5."
+        },
+        {
+            "anchor": "and",
+            "type": "patchouli:text",
+            "title": "AND",
+            "text": "Performs a conjunction using two operands. Changes flags register$(br2)EXAMPLE: and ax, bx; ax = 101b bx = 100b$(br)after execution ax contains 100b."
+        },
+        {
+            "anchor": "or",
+            "type": "patchouli:text",
+            "title": "OR",
+            "text": "Performs a disjunction using two operands. Changes flags register$(br2)EXAMPLE: or ax, bx; ax = 100b bx = 1b$(br)after execution ax contains 101b."
+        },
+        {
+            "anchor": "xor",
+            "type": "patchouli:text",
+            "title": "XOR",
+            "text": "Performs an exclusion using two operands. Changes flags register$(br2)EXAMPLE: xor ax, bx; ax = 100b bx = 101b$(br)after execution ax contains 1b."
+        },
+        {
+            "anchor": "not",
+            "type": "patchouli:text",
+            "title": "NOT",
+            "text": "Inverts all bits from first operand. Changes flags register$(br2)EXAMPLE: not ax; ax = 00000101b$(br)after execution ax contains 11111010b."
+        },
+        {
+            "anchor": "cmp",
+            "type": "patchouli:text",
+            "title": "CMP",
+            "text": "Compares values by subtracting second operand from first operand and changes flags register$(br2)EXAMPLE: cmp ax, bx; ax = bx$(br)after execution ZF sets to 1 (Flags = 100b)"
+        },
+        {
+            "anchor": "jmp",
+            "type": "patchouli:text",
+            "title": "JMP",
+            "text": "Sets ip register to value from first operand. If first operand has offset then cs register will set it$(br2)EXAMPLE: jmp foo; will set ip to foo address$(br)         jmp es:foo; will set ip to foo address and cs will contain value from es"
+        },
+        {
+            "anchor": "jz",
+            "type": "patchouli:text",
+            "title": "JZ",
+            "text": "Does jmp if ZF is 1."
+        },
+        {
+            "anchor": "jnz",
+            "type": "patchouli:text",
+            "title": "JNZ",
+            "text": "Does jmp if ZF is 0."
+        },
+        {
+            "anchor": "jg",
+            "type": "patchouli:text",
+            "title": "JG",
+            "text": "Does jmp if ZF and SF is 0."
+        },
+        {
+            "anchor": "jl",
+            "type": "patchouli:text",
+            "title": "JL",
+            "text": "Does jmp if SF is 1."
+        },
+        {
+            "anchor": "jge",
+            "type": "patchouli:text",
+            "title": "JGE",
+            "text": "Does jmp if SF is 0 or ZF is 1."
+        },
+        {
+            "anchor": "jle",
+            "type": "patchouli:text",
+            "title": "JLE",
+            "text": "Does jmp if SF is 1 or ZF is 1."
+        },
+        {
+            "anchor": "jc",
+            "type": "patchouli:text",
+            "title": "JC",
+            "text": "Does jmp if CF is 1."
+        },
+        {
+            "anchor": "jnc",
+            "type": "patchouli:text",
+            "title": "JNC",
+            "text": "Does jmp if CF is 0."
+        },
+        {
+            "anchor": "shl",
+            "type": "patchouli:text",
+            "title": "SHL",
+            "text": "Shifts bits left.$(br2)EXAMPLE: shr ax, 2; ax = 10100000b$(br)after execution ax contains 10000000b"
+        },
+        {
+            "anchor": "shr",
+            "type": "patchouli:text",
+            "title": "SHR",
+            "text": "Shifts bits right.$(br2)EXAMPLE: shl ax, 2; ax = 10100000b$(br)after execution ax contains 00101000b"
+        },
+        {
+            "anchor": "sar",
+            "type": "patchouli:text",
+            "title": "SAR",
+            "text": "Shifts bits right without changing sign bit.$(br2)EXAMPLE: shr ax, 2; ax = 10100000b$(br)after execution ax contains 11101000b"
+        },
+        {
+            "anchor": "rol",
+            "type": "patchouli:text",
+            "title": "ROL",
+            "text": "Rolls bits right. It means that instead of destroying high bit, command will append it to the back of value. $(br2)EXAMPLE: rol ax, 2; ax = 10100000b$(br)after execution ax contains 10000010b"
+        },
+        {
+            "anchor": "ror",
+            "type": "patchouli:text",
+            "title": "ROR",
+            "text": "The same thing as rol but in backwards. $(br2)EXAMPLE: ror ax, 2; ax = 10100001b$(br)after execution ax contains 01101000b"
+        },
+        {
+            "anchor": "rcl",
+            "type": "patchouli:text",
+            "title": "RCL",
+            "text": "Sets high bit to CF and do shift. $(br2)EXAMPLE: rcl ax, 1; ax = 10100000b$(br)after execution ax contains 01000000b and CF = 1"
+        },
+        {
+            "anchor": "rcr",
+            "type": "patchouli:text",
+            "title": "RCR",
+            "text": "The same thing as rcl but in backwards. $(br2)EXAMPLE: rcl ax, 1; ax = 10100001b$(br)after execution ax contains 01010000b and CF = 1"
+        },
+        {
+            "anchor": "push",
+            "type": "patchouli:text",
+            "title": "PUSH",
+            "text": "Copies value from first operand to the top of stack."
+        },
+        {
+            "anchor": "pop",
+            "type": "patchouli:text",
+            "title": "POP",
+            "text": "Takes value from top of stack to the first operand."
+        },
+        {
+            "anchor": "call",
+            "type": "patchouli:text",
+            "title": "CALL",
+            "text": "First makes push of ip register and then jmp. If operand has offset then it pushes cs register too."
+        },
+        {
+            "anchor": "ret",
+            "type": "patchouli:text",
+            "title": "RET",
+            "text": "Pops stack by first operand value and then sets ip register to value from stack, that was puted by CALL. If second operand is 1, then it will set cs register from stack top too. If second operand is 0xFF, then it will set cs register from stack top and decrement ip address by command length (need if you would like to exit from interrupt)."
+        },
+        {
+            "anchor": "int",
+            "type": "patchouli:text",
+            "title": "INT",
+            "text": "Do interrupts that can do many different things. First operand is a code of interruption. More detailed information about interruptions codes you can see in interruptions table."
+        },
+        {
+            "anchor": "lea",
+            "type": "patchouli:text",
+            "title": "LEA",
+            "text": "Calculates effective address. This is the most unusuall command because its purpose is working with many different numbers that have different types.$()The command have next structure: $(bold)lea destination_register, [base_register * size + displasement + index]$() or $(bold)lea destination_register, base_register[displasement + index]$()."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Operand bytes of this command have another scheme.$(br2)Also modifier byte of this command must be set to 3.$(br2)$(bold)First operand bytes:$()$(li)$(bold)1-4 bits$() - destination register that will constain result of operation.$(li)$(bold)5 bit$() - if set to 1 then index will sum$(li)$(bold)6 bit$() - if set to 1 then displasement will sum"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "$(li)$(bold)7-8 bits$() - size that can be only 00b - 0; 01 - 2; 10b - 4; 11b - 8$(li)$(bold)9-16 bits$() - number of register for base$(br2)$(bold)Second operand bytes$() - is almost used for displasement"
+        },
+        {
+            "anchor": "pusha",
+            "type": "patchouli:text",
+            "title": "PUSHA",
+            "text": "Saves registers ax, bx, cx, dx, di, si, flags, ds, ex into the stack."
+        },
+        {
+            "anchor": "popa",
+            "type": "patchouli:text",
+            "title": "POPA",
+            "text": "Loads registers ax, bx, cx, dx, di, si, flags, ds, ex from the stack."
+        },
+        {
+            "anchor": "loop",
+            "type": "patchouli:text",
+            "title": "LOOP",
+            "text": "If cx != 0, it jumps to given address and then decrements register cx."
+        }
+    ]
+}

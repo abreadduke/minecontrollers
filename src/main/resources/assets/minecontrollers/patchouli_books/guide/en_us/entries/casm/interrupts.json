@@ -1,0 +1,77 @@
+{
+    "name": "Interrupts",
+    "icon": "minecraft:comparator",
+    "category": "minecontrollers:casm",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "There is two types of interrupts.$(br)First type is internal interrupts. You can invoke them by using INT $(l:minecontrollers:casm/interrupts#internal_ints)[<int_number>]$() command. You can read standart interrupts table here.$(br)Second type is external interrupts. These interrupts use internal interrupts table, that $(l:minecontrollers:casm/registers#it)IT$() register points to."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "This table is an array that should be reserved by 64 words. Every word in array is binded to pins with the same number. Word has to contain absolute address of interrupt that will invoke by changing redstone signal of binded pin. If word is 0 then controller will not execute interrupt. To enable external interrupts you should to set flags register to 1. $(br)$(bold)$(#ff0000)PAY ATTENTION:$() never set flags to 1 before you set IT register to prepared table."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Otherwise every redstone sinal changing on pins will execute interrupt from your random code areas.$(br)When internal interrupts invoke, the microcontroller saves registers as PUSHA command and execute CALL by [<interrups_table_offset>]:0 address. To restore your registers and do exit from your interrupt you have to add this code to end of your interrupt:$(br)$(bold)POPA$(br)RET 0, 0xFF$()"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Of course, you must reset your stack to the interrupt invocation state if you work with it."
+        },
+        {
+            "anchor": "internal_ints",
+            "type": "patchouli:text",
+            "title": "INTERNAL INTS TABLE",
+            "text": "$(li)$(bold)0$() - puts game time value to ax, bx, cx and dx registers. In order from higher to lower bits.$(li)$(bold)1$() - puts day time value to ax, bx, cx and dx registers. In order from higher to lower bits.$(li)$(bold)2$() - if it's daytime then ax will set to 1. Otherwise ax will be 0."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "$(li)$(bold)3$() - if it's raining then ax will set to 1. Otherwise ax will be 0.$(li)$(bold)4$() - if it's thundering then ax will set to 1. Otherwise ax will be 0.$(li)$(bold)5$() - puts the sine and cosine to ax and bx, respectively. Angle is defined from ax as degrees.$(li)$(bold)6$() - puts the natural logarithm from ax to ax."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "$(li)$(bold)7$() - raises ax to the bx / 1000 power. Division by 1000 is necessary to working with floathing numbers.$(li)$(bold)8$() - puts random number to ax$(li)$(bold)9$() - puts microcontroller coordinates into the stack.$(li)$(bold)10$() - puts local coordinates of first block that microcontroller looking to. Max distance of observing usually is 128."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "$(li)$(bold)11$() - gets count of entities in ax radius. The result puts into ax.$(li)$(bold)12$() - gets count of players in ax radius. The result puts into ax.$(li)$(bold)13$() - plays sound with pith from cx and radius from ax. bx registers contains the number of musical instrument."
+        },
+        {
+            "type": "patchouli:text",
+            "title": "MUSICAL INSTRUMENTS",
+            "text": "$(bold)0 - BASEDRUM$(br)1 - BASS$(br)2 - BELL$(br)3 - CHIME$(br)4 - FLUTE$(br)5 - GUITAR$(br)6 - HARP$(br)7 - HAT$(br)8 - PLING$(br)9 - SNARE$(br)10 - XYLOPHONE$(br)11 - IRON XYLOPHONE$(br)12 - COW BELL$(br)13 - DIDGERIDOO$(br)"
+        },
+        {
+            "type": "patchouli:text",
+            "title": "MUSICAL INSTRUMENTS",
+            "text": "$(bold)14 - BIT$(br)15 - BANJO$(br)16 - ZOMBIE$(br)17 - SKELETON$(br)18 - CREEPER$(br)19 - ENDER_DRAGON$(br)20 - WITHER SKELETON$(br)21 - PIGLIN$(br)"
+        },
+        {
+            "type": "patchouli:text",
+            "title": "EXTERNAL INTS EXAMPLE",
+            "text": "$(bold)section .text$(br)mov ss, 0xFF$(br)mov bp, 0xFF$(br)mov sp, bp$(br)mov it, table_section$(br)mov [it], exint$(br)mov flags, 1$(br)mov ax, 5$(br)mov bx, 2$(br)mov cx, 500$(br)back:$(br)int 13"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "$(bold)jmp back$(br)section exint$(br)jfe:$(br)cmp r0, 0$(br)jnz jfe$(br)popa$(br)ret 0, 0xFF$(br)section table_section$(br)dw 0 dup(64)"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "In this example, microcontroller rings before you set white pin on forward controller face to a value other than 0. In that case microcontroller will wait untill you set 0 pin again to 0."
+        },
+        {
+            "type": "patchouli:text",
+            "title": "EXTERNAL INTS EXAMPLE",
+            "text": "$(bold)section .text$(br)mov ss, 0xFF$(br)mov bp, 0xFF$(br)mov sp, bp$(br)mov it, table_section$(br)mov ax, it$(br)add ax, 2$(br)mov [ax], exint$(br)mov flags, 1$(br)mov ax, 5$(br)mov bx, 2$(br)mov cx, 500$(br)back:$(br)int 13"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "$(bold)jmp back$(br)section exint$(br)jfe:$(br)cmp r0, 0$(br)jnz jfe$(br)popa$(br)ret 0, 0xFF$(br)section table_section$(br)dw 0 dup(64)"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "The second example does the same that first one but stop pin is orange (pin 1)"
+        }
+    ]
+}
