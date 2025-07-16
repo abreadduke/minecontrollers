@@ -3,15 +3,21 @@ package com.abadon.minecontrollers.interrupts;
 import com.abadon.minecontrollers.api.MinecontrollersAPI;
 import com.abadon.minecontrollers.entityblocks.microprocessor.MicrocontrollerBlockEntity;
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import commoble.morered.plate_blocks.PlateBlockStateProperties;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -133,25 +139,24 @@ public class MinecontrollersInterrupts {
         microcontrollerBlockEntity.registerA = (short)nearbyPlayers.size();
     }
     public static void playSound(MicrocontrollerBlockEntity microcontrollerBlockEntity){
-        try{
-            ClientLevel level = Minecraft.getInstance().level;
-            if(level == null) return;
-            BlockPos blockPos = microcontrollerBlockEntity.getBlockPos();
-            int cubeRadius = microcontrollerBlockEntity.registerA;
-            int maxCubeRadius = 32;
-            cubeRadius = Math.abs(cubeRadius);
-            cubeRadius = cubeRadius > maxCubeRadius ? maxCubeRadius : cubeRadius;
-            BlockPos firstPos = blockPos.offset(-cubeRadius, -cubeRadius, -cubeRadius);
-            BlockPos secondPos = blockPos.offset(cubeRadius, cubeRadius, cubeRadius);
-            SoundEvent sound = MinecontrollersAPI.formatNumberToSound(microcontrollerBlockEntity.registerB);
-            for(Player player : level.players()) {
-                if (new AABB(firstPos, secondPos).contains(player.getX(), player.getY(), player.getZ())) {
-                    level.addParticle(ParticleTypes.NOTE, (double)blockPos.getX()+0.5D, blockPos.getY(), (double)blockPos.getZ()+0.5D, ((double)microcontrollerBlockEntity.registerC + microcontrollerBlockEntity.registerB) / 24.0D, 0.0D, 0.0D);
-                    player.playSound(sound, 1, (float) microcontrollerBlockEntity.registerC / 1000F); //CX register must be 0-2000 but it works only between 500 and 1000
-                }
+        ClientLevel level = Minecraft.getInstance().level;
+        if(Minecraft.getInstance().getSingleplayerServer() == null || Minecraft.getInstance().level == null) return;
+        ServerLevel serverlevel = Minecraft.getInstance().getSingleplayerServer().getLevel(Minecraft.getInstance().level.dimension());
+        if(level == null) return;
+        BlockPos blockPos = microcontrollerBlockEntity.getBlockPos();
+        int cubeRadius = microcontrollerBlockEntity.registerA;
+        int maxCubeRadius = 32;
+        cubeRadius = Math.abs(cubeRadius);
+        cubeRadius = cubeRadius > maxCubeRadius ? maxCubeRadius : cubeRadius;
+        BlockPos firstPos = blockPos.offset(-cubeRadius, -cubeRadius, -cubeRadius);
+        BlockPos secondPos = blockPos.offset(cubeRadius, cubeRadius, cubeRadius);
+        SoundEvent sound = MinecontrollersAPI.formatNumberToSound(microcontrollerBlockEntity.registerB);
+        for(Player player : level.players()) {
+            if (new AABB(firstPos, secondPos).contains(player.getX(), player.getY(), player.getZ())) {
+                serverlevel.sendParticles(ParticleTypes.NOTE, (double)blockPos.getX()+0.5D, (double)blockPos.getY(), (double)blockPos.getZ()+0.5D, 1, 0, 0, 0D, microcontrollerBlockEntity.registerB + microcontrollerBlockEntity.registerC);
+                serverlevel.playSound(player, blockPos, sound, SoundSource.PLAYERS, 1, (float) microcontrollerBlockEntity.registerC / 1000F); //CX register must be 0-2000 but it works only between 500 and 1000
             }
         }
-        catch (IllegalStateException exception){}
     }
     public static void register(){
         MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getGameTimeInt, 0);

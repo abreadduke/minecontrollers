@@ -67,7 +67,7 @@
         },
         {
             "type": "patchouli:text",
-            "text": "$(bold)jmp back$(br)section exint$(br)jfe:$(br)cmp r0, 0$(br)jnz jfe$(br)popa$(br)ret 0, 0xFF$(br)section table_section$(br)dw 0 dup(64)"
+            "text": "$(bold)jmp back$(br)section exint$(br)jfe:$(br)cmp r1, 0$(br)jnz jfe$(br)popa$(br)ret 0, 0xFF$(br)section table_section$(br)dw 0 dup(64)"
         },
         {
             "type": "patchouli:text",
