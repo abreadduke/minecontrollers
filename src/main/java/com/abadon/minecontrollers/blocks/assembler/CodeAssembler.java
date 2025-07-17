@@ -687,16 +687,26 @@ public class CodeAssembler {
         int index = 0;
         final int commandSize = 6;
         int prevSection = 0;
+        int actualSegmentOffset = 0;
         for(String line : code.split("\n+")){
+            //offsets
+            String[] keys = line.split("\\s+");
+            if(keys[0].toUpperCase().equals("ORG") && keys.length > 1){
+                ArgumentParser offsetParser = new ArgumentParser("0x" + keys[1]);
+                offsetParser.analyze();
+                actualSegmentOffset += offsetParser.getParsedNumber();
+                continue;
+            }
+
             Matcher labelSearcher = sectionPattern.matcher(line);
             if(labelSearcher.matches()){
-                sectionLabels.put(labelSearcher.group("section"), index);
-                prevSection = index;
+                sectionLabels.put(labelSearcher.group("section"), index + actualSegmentOffset);
+                prevSection = index + actualSegmentOffset;
                 code = code.replace(labelSearcher.group(0), "\n");
             } else if ((labelSearcher = labelPattern.matcher(line)).matches()) {
                 if(labelSearcher.group("label") != null){
                     String label = labelSearcher.group("label");
-                    labels.put(label, index - prevSection);
+                    labels.put(label, index - prevSection + actualSegmentOffset);
                 }
                 if(labelSearcher.group("data") != null){
                     String type = labelSearcher.group("type");
@@ -723,12 +733,14 @@ public class CodeAssembler {
                 return keys[0];
             } catch (NumberFormatException ex){}
         }
+        //offsets
         if(keys[0].toUpperCase().equals("ORG")){
             if(keys.length > 1) {
                 return "OFFSET: " + keys[1];
             }
             else return "\n";
         }
+
         if(!opcodesTable.containsKey(keys[0].toUpperCase())) return command + " <- unknown command";
         LogUtils.getLogger().info("commandlet - " + keys[0] + "\tcomandlet code - " + opcodesTable.get(keys[0].toUpperCase()));
         String  firstValue = "0000";
