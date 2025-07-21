@@ -4,22 +4,25 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class MicrocontrollerMemory {
-    protected HashMap<Short, Byte> memory = new HashMap<>();
-    protected HashSet<Short> usedAddresses = new HashSet<>();
-    public HashSet<Short> getUsedAddresses(){
+    protected HashMap<Integer, Byte> memory = new HashMap<>();
+    protected HashSet<Integer> usedAddresses = new HashSet<>();
+    public HashSet<Integer> getUsedAddresses(){
         return usedAddresses;
     }
     protected boolean checkForZeroValue(Byte value){
         return value == 0;
     }
-    public byte[] getMemorySequence(short from, short to){
+    public byte[] getMemorySequence(int from, int to){
         byte[] sequence = new byte[to];
-        for(short i = from; i < from + to; i++){
+        from = from & 0xFFFF;
+        to = to & 0xFFFF;
+        for(int i = from; i < from + to; i++){
             sequence[i - from] = readValue(i);
         }
         return sequence;
     }
-    public boolean setValue(Short address, Byte value){
+    public boolean setValue(Integer address, Byte value){
+        address = address & 0xFFFF;
         if(!memory.containsKey(address)){
             if(checkForZeroValue(value)) return false;
             memory.put(address, value);
@@ -38,11 +41,12 @@ public class MicrocontrollerMemory {
             return false;
         }
     }
-    public boolean setValue(Short address, byte value){
+    public boolean setValue(Integer address, byte value){
         return setValue(address, Byte.valueOf(value));
     }
-    public byte readValue(Short address){
+    public byte readValue(Integer address){
         //LogUtils.getLogger().info("checking key - " + String.valueOf(address));
+        address = address & 0xFFFF;
         if(memory.containsKey(address)){
             //LogUtils.getLogger().info("Success");
             return memory.get(address);

@@ -114,7 +114,7 @@ public class DebugDisplay extends Item {
         dumpInfoBuilder.append("memory dump: ");
         for(int i = memoryDumpStartAddress; i < memoryDumpStartAddress + dumpSize; i++){
             if(i > 65535) break;
-            dumpInfoBuilder.append(Integer.toString(i, 16)).append(':').append(Integer.toString(microcontroller.getValueByAddress((short)i) & 0xFF, 16)).append(' ');
+            dumpInfoBuilder.append(Integer.toString(i, 16)).append(':').append(Integer.toString(microcontroller.getValueByAddress(i) & 0xFF, 16)).append(' ');
         }
         return MutableComponent.create(new LiteralContents(dumpInfoBuilder.toString())).setStyle(Style.EMPTY.withColor(2619179)); // set lime color
     }

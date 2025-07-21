@@ -53,7 +53,7 @@ public class MicrocontrollerBlockEntity extends ChanneledPowerStorageBlockEntity
     private HashMap<Byte, String> highBitRegisters = new HashMap<>();
     private HashMap<Byte, String> segmentRegisters = new HashMap<>();
     private HashMap<Byte, String> redstonePins = new HashMap<>();
-    public int getValueByAddress(short address){
+    public int getValueByAddress(Integer address){
         return memory.readValue(address);
     }
     public Collection<String> getRegistersNames(){
@@ -349,7 +349,7 @@ public class MicrocontrollerBlockEntity extends ChanneledPowerStorageBlockEntity
                         address.address = getAbsoluteAdress(address);
                         int offset = address.offset;
                         address.offset = 0;
-                        Byte value = memory.readValue(Short.valueOf((short)address.address));
+                        Byte value = memory.readValue(address.address);
                         address.address = oldAddress;
                         address.offset = offset;
                         return value;
@@ -359,7 +359,7 @@ public class MicrocontrollerBlockEntity extends ChanneledPowerStorageBlockEntity
                         address.address = getAbsoluteAdress(address);
                         int offset = address.offset;
                         address.offset = 0;
-                        Short value = (short)((Byte.toUnsignedInt(memory.readValue(Short.valueOf((short)address.address))) << 8) + Byte.toUnsignedInt(memory.readValue(Short.valueOf((short)(address.address + 1)))));
+                        Short value = (short)((Byte.toUnsignedInt(memory.readValue(address.address)) << 8) + Byte.toUnsignedInt(memory.readValue(address.address + 1)));
                         address.address = oldAddress;
                         address.offset = offset;
                         return value;
@@ -416,10 +416,10 @@ public class MicrocontrollerBlockEntity extends ChanneledPowerStorageBlockEntity
                 address.useValueAsAddress = true;
                 //LogUtils.getLogger().info(String.valueOf((short)memoryAddress));
                 if(!address.IsAddress16bit)
-                    memory.setValue(Short.valueOf((short)memoryAddress), Byte.valueOf((byte)value));
+                    memory.setValue(Integer.valueOf(memoryAddress), Byte.valueOf((byte)value));
                 else{
-                    memory.setValue(Short.valueOf(memoryAddress), Byte.valueOf((byte)(value >>> 8)));
-                    memory.setValue(Short.valueOf((short) (memoryAddress + 1)), Byte.valueOf((byte)(value & (lowWordMask))));
+                    memory.setValue(Integer.valueOf(memoryAddress), Byte.valueOf((byte)(value >>> 8)));
+                    memory.setValue(Integer.valueOf(memoryAddress + 1), Byte.valueOf((byte)(value & (lowWordMask))));
                 }
             }
         }
@@ -469,22 +469,22 @@ public class MicrocontrollerBlockEntity extends ChanneledPowerStorageBlockEntity
         }
         //Read flag
         if(ControllerMath.digitalize(power[backwardSideOffset * chanelSideCount + 7]) == maxCableSignal){
-            outputPins[backwardSideOffset * chanelSideCount + 4] = (byte)(((memory.readValue((short)address) & 0xFF) >>> channelBits) + 2);
-            outputPins[backwardSideOffset * chanelSideCount + 5] = (byte)((memory.readValue((short)address) & 0xF) + 2);
+            outputPins[backwardSideOffset * chanelSideCount + 4] = (byte)(((memory.readValue(address) & 0xFF) >>> channelBits) + 2);
+            outputPins[backwardSideOffset * chanelSideCount + 5] = (byte)((memory.readValue(address) & 0xF) + 2);
         } else {
             outputPins[backwardSideOffset * chanelSideCount + 4] = 0;
             outputPins[backwardSideOffset * chanelSideCount + 5] = 0;
         }
         //Address Write
         if(ControllerMath.digitalize(power[backwardSideOffset * chanelSideCount + 6]) == maxCableSignal){
-            memory.setValue(Short.valueOf((short) address), Byte.valueOf((byte) value));
+            memory.setValue(Integer.valueOf(address), Byte.valueOf((byte) value));
             //LogUtils.getLogger().info("vriting value - " + String.valueOf(value) + "\thigh - " + String.valueOf(power[backwardSideOffset * chanelSideCount + 4] << channelBits) + "\tlow - " + String.valueOf(power[backwardSideOffset * chanelSideCount + 5]));
         }
         changeIOState();
         //Exec flag
         if(ControllerMath.digitalize(power[backwardSideOffset * chanelSideCount + 8]) == maxCableSignal){
-            executeInstruction((short)(codeSegment + registerIp));
-            registerIp+=instructionSize;
+            executeInstruction((short)((codeSegment & 0xFFFF) + (registerIp & 0xFFFF)));
+            registerIp = (short)((registerIp & 0xFFFF) + instructionSize);
         }
     }
     private void applyFlags(int result, Address destinationAddress){
@@ -838,7 +838,7 @@ public class MicrocontrollerBlockEntity extends ChanneledPowerStorageBlockEntity
                 }
                 if(addressIO.getValueFromAddress(secondAddress) == 0xFF || addressIO.getValueFromAddress(secondAddress) == 1) codeSegment = (short)popStack();
                 registerIp = (short)popStack();
-                if(addressIO.getValueFromAddress(secondAddress) == 0xFF) registerIp -= instructionSize;
+                if(addressIO.getValueFromAddress(secondAddress) == 0xFF) registerIp = (short)((registerIp & 0xFFFF) - instructionSize);
                 break;
             }
             case INT:{
@@ -942,7 +942,7 @@ public class MicrocontrollerBlockEntity extends ChanneledPowerStorageBlockEntity
         compound.putBoolean("isActive", startFlag);
         compound.putShort("IT", registerI);
         CompoundTag memoryCompound = new CompoundTag();
-        for (Short address : memory.getUsedAddresses()) {
+        for (int address : memory.getUsedAddresses()) {
             memoryCompound.putByte(String.valueOf((int) address), memory.readValue(address));
         }
         compound.put("memory", memoryCompound);
@@ -974,7 +974,7 @@ public class MicrocontrollerBlockEntity extends ChanneledPowerStorageBlockEntity
         this.flags = compound.getShort("FLAGS");
         this.startFlag = compound.getBoolean("isActive");
         for(String address : compound.getCompound("memory").getAllKeys()){
-            memory.setValue(Short.valueOf(address), compound.getCompound("memory").getByte(address));
+            memory.setValue(Integer.valueOf(address), compound.getCompound("memory").getByte(address));
         }
         this.registerI = compound.getShort("IT");
     }
