@@ -1,12 +1,10 @@
 package com.abadon.minecontrollers.api;
 
-import com.abadon.minecontrollers.entityblocks.microprocessor.MicrocontrollerBlockEntity;
+import com.abadon.minecontrollers.entityblocks.microcontroller.MicrocontrollerBlockEntity;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 
 import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
 
 public class MinecontrollersAPI {
     private static HashMap<Integer, InterruptSupplier> interrupts = new HashMap<>();

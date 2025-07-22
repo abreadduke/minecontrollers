@@ -2,8 +2,8 @@ package com.abadon.minecontrollers.entityblocks;
 
 import com.abadon.minecontrollers.Minecontrollers;
 import com.abadon.minecontrollers.blocks.assembler.Assembler;
-import com.abadon.minecontrollers.entityblocks.microprocessor.MicrocontrollerBlockEntity;
-import com.abadon.minecontrollers.entityblocks.microprocessor.MicroprocessorBlock;
+import com.abadon.minecontrollers.entityblocks.microcontroller.MicrocontrollerBlock;
+import com.abadon.minecontrollers.entityblocks.microcontroller.MicrocontrollerBlockEntity;
 import com.abadon.minecontrollers.entityblocks.programmer.Programmer;
 import com.abadon.minecontrollers.entityblocks.programmer.ProgrammerBlockEntity;
 import com.mojang.logging.LogUtils;
@@ -15,6 +15,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.PlayerHeadBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -29,7 +30,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import com.abadon.minecontrollers.blocks.formatter.Formatter;
-
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -68,7 +68,7 @@ public class MinecontrollersBlocks {
     public static final SoundType defaultComponentSound = SoundType.WOOD;
     public static final int defaultDestroyTime = 2;
     public static final int defaultStrength = 3;
-    public static RegistryObject<MicroprocessorBlock> MICROCONTROLLER_BLOCK = registerBlockItem(MICROCONTROLLER_ID, items, blocks, b -> new BlockItem(b, new Item.Properties()), () -> new MicroprocessorBlock(BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).instrument(NoteBlockInstrument.BASEDRUM).strength(0.0F).sound(SoundType.WOOD)));
+    public static RegistryObject<MicrocontrollerBlock> MICROCONTROLLER_BLOCK = registerBlockItem(MICROCONTROLLER_ID, items, blocks, b -> new BlockItem(b, new Item.Properties()), () -> new MicrocontrollerBlock(BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).instrument(NoteBlockInstrument.BASEDRUM).strength(0.0F).sound(SoundType.WOOD)));
     public static RegistryObject<BlockEntityType<MicrocontrollerBlockEntity>> MICROCONTROLLER_BE = blockEntities.register(MICROCONTROLLER_ID, () -> Builder.of(MicrocontrollerBlockEntity::new, new Block[]{MICROCONTROLLER_BLOCK.get()}).build(null));
     public static RegistryObject<Programmer> PROGRAMMER = registerBlockItem(PROGRAMMER_ID, items, blocks, b -> new BlockItem(b, new Item.Properties()), () -> new Programmer(BlockBehaviour.Properties.of().strength(defaultDestroyTime, defaultStrength).mapColor(MapColor.WOOD)));
     public static RegistryObject<BlockEntityType<ProgrammerBlockEntity>> PROGRAMMER_BE = blockEntities.register(PROGRAMMER_ID, () -> Builder.of(ProgrammerBlockEntity::new, new Block[]{PROGRAMMER.get()}).build(null));
@@ -116,18 +116,25 @@ public class MinecontrollersBlocks {
         }
     }, () -> new PlayerHeadBlock(BlockBehaviour.Properties.of().strength(1.0F).pushReaction(PushReaction.DESTROY)));
     public static void registerSkullBlocks(){
-        try {
-            Field validBlocksField = BlockEntityType.SKULL.getClass().getDeclaredField("validBlocks");
-            validBlocksField.setAccessible(true);
-            Set<Block> validBlocks = (Set<Block>)validBlocksField.get(BlockEntityType.SKULL);
-            HashSet<Block> newValidBlocks = new HashSet<>();
-            newValidBlocks.addAll(validBlocks);
-            newValidBlocks.add(MinecontrollersBlocks.REDSTONE_CORE.get());
-            newValidBlocks.add(MinecontrollersBlocks.REDSTONE_CONTROLLER.get());
-            validBlocksField.set(BlockEntityType.SKULL, newValidBlocks);
+        for(Field validBlocksField : BlockEntityType.SKULL.getClass().getDeclaredFields()){
+            boolean acces = validBlocksField.isAccessible();
+            boolean wasRegistered = false;
+            try{
+                validBlocksField.setAccessible(true);
+                if(validBlocksField.get(BlockEntityType.SKULL) instanceof Set<?> validBlocks && validBlocks.contains(Blocks.PLAYER_HEAD)){
+                    HashSet<Block> newValidBlocks = new HashSet<>();
+                    newValidBlocks.addAll((Set<Block>)validBlocks);
+                    newValidBlocks.add(MinecontrollersBlocks.REDSTONE_CORE.get());
+                    newValidBlocks.add(MinecontrollersBlocks.REDSTONE_CONTROLLER.get());
+                    validBlocksField.set(BlockEntityType.SKULL, newValidBlocks);
+                    wasRegistered = true;
+                }
+            } catch (IllegalAccessException exception){
 
-        } catch (Exception ex){
-            LogUtils.getLogger().info(ex.toString());
+            } finally {
+                validBlocksField.setAccessible(acces);
+            }
+            if(!wasRegistered) LogUtils.getLogger().error("Minecontrollers: registerSkullBlocks error");
         }
     }
     public static void register(IEventBus eventBus){
@@ -137,9 +144,9 @@ public class MinecontrollersBlocks {
         blockEntities.register(eventBus);
     }
     public static void HighPriorityCommonSetup(FMLCommonSetupEvent event){
-        MicroprocessorBlock microprocessorBlock = MICROCONTROLLER_BLOCK.get();
+        MicrocontrollerBlock microcontrollerBlock = MICROCONTROLLER_BLOCK.get();
         Programmer programmer = PROGRAMMER.get();
-        MoreRedAPI.getCableConnectabilityRegistry().put(microprocessorBlock, (WireConnector)(world, thisPos, thisState, wirePos, wireState, wireFace, directionToWire) -> microprocessorBlock.canConnectToAdjacentCable(world, thisPos, thisState, wirePos, wireState, wireFace, directionToWire));
+        MoreRedAPI.getCableConnectabilityRegistry().put(microcontrollerBlock, (WireConnector)(world, thisPos, thisState, wirePos, wireState, wireFace, directionToWire) -> microcontrollerBlock.canConnectToAdjacentCable(world, thisPos, thisState, wirePos, wireState, wireFace, directionToWire));
         MoreRedAPI.getCableConnectabilityRegistry().put(programmer, (WireConnector)(world, thisPos, thisState, wirePos, wireState, wireFace, directionToWire) -> programmer.canConnectToAdjacentCable(world, thisPos, thisState, wirePos, wireState, wireFace, directionToWire));
     }
 }

@@ -1,4 +1,4 @@
-package com.abadon.minecontrollers.entityblocks.microprocessor;
+package com.abadon.minecontrollers.entityblocks.microcontroller;
 
 import com.abadon.minecontrollers.api.MinecontrollersAPI;
 import com.abadon.minecontrollers.blockstates.ControllersSide;

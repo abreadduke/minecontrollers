@@ -1,4 +1,4 @@
-package com.abadon.minecontrollers.entityblocks.microprocessor;
+package com.abadon.minecontrollers.entityblocks.microcontroller;
 
 import com.abadon.minecontrollers.blockstates.ControllersSide;
 import com.abadon.minecontrollers.entityblocks.MinecontrollersBlocks;
@@ -18,9 +18,9 @@ import org.apache.commons.lang3.ArrayUtils;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 
-public class MicroprocessorBlock extends BitwiseLogicPlateBlock {
+public class MicrocontrollerBlock extends BitwiseLogicPlateBlock {
 
-    public MicroprocessorBlock(Properties properties) {
+    public MicrocontrollerBlock(Properties properties) {
         super(properties);
     }
 

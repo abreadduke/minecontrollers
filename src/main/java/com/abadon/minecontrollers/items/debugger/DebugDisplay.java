@@ -1,6 +1,6 @@
 package com.abadon.minecontrollers.items.debugger;
 
-import com.abadon.minecontrollers.entityblocks.microprocessor.MicrocontrollerBlockEntity;
+import com.abadon.minecontrollers.entityblocks.microcontroller.MicrocontrollerBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.LiteralContents;
