@@ -9,30 +9,36 @@ import com.abadon.minecontrollers.entityblocks.programmer.ProgrammerBlockEntity;
 import com.mojang.logging.LogUtils;
 import commoble.morered.api.MoreRedAPI;
 import commoble.morered.api.WireConnector;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.*;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.PlayerHeadBlock;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.item.PlayerHeadItem;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.BlockEntityType.Builder;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import com.abadon.minecontrollers.blocks.formatter.Formatter;
+
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -44,6 +50,43 @@ public class MinecontrollersBlocks {
         RegistryObject<I> item = items.register(blockId, () -> itemFactory.apply(regb.get()));
         blockItems.put(blockId, item);
         return regb;
+    }
+    public static HashSet<RegistryObject<? extends Block>> skullBlocks = new HashSet<>();
+    public static RegistryObject<PlayerHeadBlock> registerSkullBlockItem(String blockId, String texture, DeferredRegister<Item> items, DeferredRegister<Block> blocks){
+        RegistryObject<PlayerHeadBlock> skullBlock = blocks.register(blockId, () -> new PlayerHeadBlock(BlockBehaviour.Properties.of().strength(1.0F).pushReaction(PushReaction.DESTROY)));
+        RegistryObject<PlayerWallHeadBlock> skullBlockWall = blocks.register(blockId + "_wall", () -> new PlayerWallHeadBlock(BlockBehaviour.Properties.of().strength(1.0F).pushReaction(PushReaction.DESTROY).dropsLike(skullBlock.get())){
+            public void setPlacedBy(Level level, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
+                skullBlock.get().setPlacedBy(level, blockPos, blockState, livingEntity, itemStack);
+            }
+
+            public List<ItemStack> getDrops(BlockState blockState, LootParams.Builder builder) {
+                return skullBlock.get().getDrops(blockState, builder);
+            }
+        });
+        RegistryObject<PlayerHeadItem> item = items.register(blockId, () -> new PlayerHeadItem(skullBlock.get(), skullBlockWall.get(), new Item.Properties()){
+            @Override
+            public String getCreatorModId(ItemStack itemStack)
+            {
+                applySkullTexture(itemStack, texture);
+                return super.getCreatorModId(itemStack);
+            }
+            @Override
+            public ItemStack getDefaultInstance() {
+                ItemStack itemStack = super.getDefaultInstance();
+                applySkullTexture(itemStack, texture);
+                return itemStack;
+            }
+
+            @Override
+            public int getMaxStackSize(ItemStack stack){
+                applySkullTexture(stack, texture);
+                return super.getMaxStackSize(stack);
+            }
+        });
+        blockItems.put(blockId, item);
+        skullBlocks.add(skullBlock);
+        skullBlocks.add(skullBlockWall);
+        return skullBlock;
     }
     private static void applySkullTexture(ItemStack itemStack, String texture_data){
         CompoundTag skullOwnerTag = new CompoundTag();
@@ -76,45 +119,8 @@ public class MinecontrollersBlocks {
     public static RegistryObject<Assembler> ASSEMBLER_BLOCK = registerBlockItem(ASSEMBLER_ID, items, blocks, b -> new BlockItem(b, new Item.Properties()), () -> new Assembler(BlockBehaviour.Properties.of().strength(defaultDestroyTime, defaultStrength).sound(defaultComponentSound)));
     public static final String REDSTONE_CORE_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODg0ZTkyNDg3YzY3NDk5OTViNzk3MzdiOGE5ZWI0YzQzOTU0Nzk3YTZkZDZjZDliNGVmY2UxN2NmNDc1ODQ2In19fQ==";
     public static final String REDSTONE_CONTROLLER_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWFlNTY0MWY3YmI5ZTg3NWNkNDEyZDRiYTIwYjIyZjg3NjczYTZmMWJlMzI3OGE2MzFjODgxZDg0YzA0NDZmYiJ9fX0=";
-    public static RegistryObject<PlayerHeadBlock> REDSTONE_CORE = registerBlockItem("redstone_core", items, blocks, b -> new BlockItem(b, new Item.Properties()){
-        @Override
-        public String getCreatorModId(ItemStack itemStack)
-        {
-            applySkullTexture(itemStack, REDSTONE_CORE_TEXTURE);
-            return super.getCreatorModId(itemStack);
-        }
-        @Override
-        public ItemStack getDefaultInstance() {
-            ItemStack itemStack = super.getDefaultInstance();
-            applySkullTexture(itemStack, REDSTONE_CORE_TEXTURE);
-            return itemStack;
-        }
-
-        @Override
-        public int getMaxStackSize(ItemStack stack){
-            applySkullTexture(stack, REDSTONE_CORE_TEXTURE);
-            return super.getMaxStackSize(stack);
-        }
-    }, () -> new PlayerHeadBlock(BlockBehaviour.Properties.of().strength(1.0F).pushReaction(PushReaction.DESTROY)));
-    public static RegistryObject<PlayerHeadBlock> REDSTONE_CONTROLLER = registerBlockItem("redstone_controller", items, blocks, b -> new BlockItem(b, new Item.Properties()){
-        @Override
-        public String getCreatorModId(ItemStack itemStack)
-        {
-            applySkullTexture(itemStack, REDSTONE_CONTROLLER_TEXTURE);
-            return super.getCreatorModId(itemStack);
-        }
-        @Override
-        public ItemStack getDefaultInstance() {
-            ItemStack itemStack = super.getDefaultInstance();
-            applySkullTexture(itemStack, REDSTONE_CONTROLLER_TEXTURE);
-            return itemStack;
-        }
-        @Override
-        public int getMaxStackSize(ItemStack stack){
-            applySkullTexture(stack, REDSTONE_CONTROLLER_TEXTURE);
-            return super.getMaxStackSize(stack);
-        }
-    }, () -> new PlayerHeadBlock(BlockBehaviour.Properties.of().strength(1.0F).pushReaction(PushReaction.DESTROY)));
+    public static RegistryObject<PlayerHeadBlock> REDSTONE_CORE = registerSkullBlockItem("redstone_core", REDSTONE_CORE_TEXTURE, items, blocks);
+    public static RegistryObject<PlayerHeadBlock> REDSTONE_CONTROLLER = registerSkullBlockItem("redstone_controller", REDSTONE_CONTROLLER_TEXTURE, items, blocks);
     public static void registerSkullBlocks(){
         for(Field validBlocksField : BlockEntityType.SKULL.getClass().getDeclaredFields()){
             boolean acces = validBlocksField.isAccessible();
@@ -124,8 +130,8 @@ public class MinecontrollersBlocks {
                 if(validBlocksField.get(BlockEntityType.SKULL) instanceof Set<?> validBlocks && validBlocks.contains(Blocks.PLAYER_HEAD)){
                     HashSet<Block> newValidBlocks = new HashSet<>();
                     newValidBlocks.addAll((Set<Block>)validBlocks);
-                    newValidBlocks.add(MinecontrollersBlocks.REDSTONE_CORE.get());
-                    newValidBlocks.add(MinecontrollersBlocks.REDSTONE_CONTROLLER.get());
+                    for(RegistryObject<? extends Block> skull : skullBlocks)
+                        newValidBlocks.add(skull.get());
                     validBlocksField.set(BlockEntityType.SKULL, newValidBlocks);
                     wasRegistered = true;
                 }
