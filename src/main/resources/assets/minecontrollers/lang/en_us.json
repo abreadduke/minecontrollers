@@ -10,6 +10,6 @@
 	"item.minecontrollers.controller_debug_display" : "Debugger",
 	"block.minecontrollers.redstone_controller" : "Redstone controller",
 	"block.minecontrollers.redstone_core" : "Redstone core",
-	"item.minecontrollers.guide": "CASM for begginers",
-	"gui.minecontrollers.dump_message": "DUMP ADDRESS: "
+	"item.minecontrollers.guide": "CASM for noobs",
+	"gui.minecontrollers.dump_message": "Memory dump address: "
 }

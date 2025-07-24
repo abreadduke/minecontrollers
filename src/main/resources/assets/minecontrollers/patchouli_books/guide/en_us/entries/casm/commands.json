@@ -1,5 +1,5 @@
 {
-    "name": "Commands and opcodes",
+    "name": "Commands and Opcodes",
     "icon": "minecraft:redstone_torch",
     "category": "minecontrollers:casm",
     "pages": [
@@ -15,237 +15,237 @@
             "anchor": "nop",
             "type": "patchouli:text",
             "title": "NOP",
-            "text": "None operation. This command does nothing and takes microcontroller time. It's useful to create a timer."
+			"text": "Null operation. This command doesn't do anything, but still takes up a tick of runtime to execute. Useful for timers."
         },
         {
             "anchor": "mov",
             "type": "patchouli:text",
             "title": "MOV",
-            "text": "Moves value from second operand to first.$(br2)EXAMPLE: mov ax, bx; bx = 3$(br)copies value from bx to ax. Now ax is 3."
+            "text": "Moves the value of the second operand into the first.$(br2)EXAMPLE: mov ax, bx; bx = 3$(br)copies the value of bx into ax (3)."
         },
         {
             "anchor": "add",
             "type": "patchouli:text",
             "title": "ADD",
-            "text": "Sums values from first and second operand. The result of operation sets to first operand. Changes flags register$(br2)EXAMPLE: sum ax, bx; ax = 2, bx = 3$(br)after execution ax contains 5."
+			"text": "Adds the values of the first and second operands. The result is stored in the first operand. Affects the flags register $(br2)EXAMPLE: sum ax, bx; ax = 2, bx = 3$(br)ax now equals 5."
         },
         {
             "anchor": "sub",
             "type": "patchouli:text",
             "title": "SUB",
-            "text": "Subtracts second operand from first operand. The result of operation sets to first operand. Changes flags register.$(br2)EXAMPLE: sub ax, bx; ax = 6, bx = 2$(br)after execution ax contains 4."
+            "text": "Subtracts the second operand from the first. The result is stored in the first operand. Affects the flags register$(br2)EXAMPLE: sub ax, bx; ax = 6, bx = 2$(br)ax now equals 4."
         },
         {
             "anchor": "mul",
             "type": "patchouli:text",
             "title": "MUL",
-            "text": "Multiplies values from first and second operand. The result of operation sets to first operand. Changes flags register.$(br2)EXAMPLE: mul ax, bx; ax = 6, bx = 2$(br)after execution ax contains 12."
+            "text": "Multiplies the values of the first and second operands. The result is stored in the first operand. Affects the flags register.$(br2)EXAMPLE: mul ax, bx; ax = 6, bx = 2$(br)ax now equals 12."
         },
         {
             "anchor": "div",
             "type": "patchouli:text",
             "title": "DIV",
-            "text": "Divides first operand by second operand. The result of operation sets to first operand. Changes flags register. The remainder of the division is discarded$(br2)EXAMPLE: div ax, bx; ax = 6, bx = 2$(br)after execution ax contains 3."
+            "text": "Divides the first operand by the second. The result is stored in the first operand. Affects the flags register. The remainder is not stored$(br2)EXAMPLE: div ax, bx; ax = 6, bx = 2$(br)ax now equals 3."
         },
         {
             "anchor": "inc",
             "type": "patchouli:text",
             "title": "INC",
-            "text": "Increments first operand by 1. Changes flags register$(br2)EXAMPLE: inc ax; ax = 6$(br)after execution ax contains 7."
+            "text": "Increments the first operand by 1. Affects the flags register.$(br2)EXAMPLE: inc ax; ax = 6$(br)ax now equals 7."
         },
         {
             "anchor": "dec",
             "type": "patchouli:text",
             "title": "DEC",
-            "text": "Decrements first operand by 1. Changes flags register$(br2)EXAMPLE: inc ax; ax = 6$(br)after execution ax contains 5."
+            "text": "Decrements the first operand by 1. Affects the flags register.$(br2)EXAMPLE: inc ax; ax = 6$(br)ax now equals 5."
         },
         {
             "anchor": "and",
             "type": "patchouli:text",
             "title": "AND",
-            "text": "Performs a conjunction using two operands. Changes flags register$(br2)EXAMPLE: and ax, bx; ax = 101b bx = 100b$(br)after execution ax contains 100b."
+            "text": "Performs a bitwise AND operations between the two operands. Affects the flags register.$(br2)EXAMPLE: and ax, bx; ax = 101b bx = 100b$(br)ax now equals 100b."
         },
         {
             "anchor": "or",
             "type": "patchouli:text",
             "title": "OR",
-            "text": "Performs a disjunction using two operands. Changes flags register$(br2)EXAMPLE: or ax, bx; ax = 100b bx = 1b$(br)after execution ax contains 101b."
+            "text": "Performs a bitwise OR between the two operands. Affects the flags register.$(br2)EXAMPLE: or ax, bx; ax = 100b bx = 1b$(br)ax now equals 101b."
         },
         {
             "anchor": "xor",
             "type": "patchouli:text",
             "title": "XOR",
-            "text": "Performs an exclusion using two operands. Changes flags register$(br2)EXAMPLE: xor ax, bx; ax = 100b bx = 101b$(br)after execution ax contains 1b."
+            "text": "Performs a bitwise XOR (exclusive or) operation between the two operands. Affects the flags register.$(br2)EXAMPLE: xor ax, bx; ax = 100b bx = 101b$(br)ax now equals 1b."
         },
         {
             "anchor": "not",
             "type": "patchouli:text",
             "title": "NOT",
-            "text": "Inverts all bits from first operand. Changes flags register$(br2)EXAMPLE: not ax; ax = 00000101b$(br)after execution ax contains 11111010b."
+            "text": "Inverts all bits of the first operand. Affects the flags register$(br2)EXAMPLE: not ax; ax = 00000101b$(br)ax now equals 11111010b."
         },
         {
             "anchor": "cmp",
             "type": "patchouli:text",
             "title": "CMP",
-            "text": "Compares values by subtracting second operand from first operand and changes flags register$(br2)EXAMPLE: cmp ax, bx; ax = bx$(br)after execution ZF sets to 1 (Flags = 100b)"
+            "text": "Compares both operands by subtracting the second from the first. The result is not stored, but the flags register is updated$(br2)EXAMPLE: cmp ax, bx; ax = bx$(br)ZF is set to 1 (Flags = 100b)"
         },
         {
             "anchor": "jmp",
             "type": "patchouli:text",
             "title": "JMP",
-            "text": "Sets ip register to value from first operand. If first operand has offset then cs register will set it$(br2)EXAMPLE: jmp foo; will set ip to foo address$(br)         jmp es:foo; will set ip to foo address and cs will contain value from es"
+            "text": "Sets the IP register to the value of the first operand. If the operand includes a segment offset, the CS register will also be updated accordingly.$(br2)EXAMPLE: jmp foo; sets IP to the address of foo$(br)         jmp es:foo; sets IP to foo and updates CS with the value from ES"
         },
         {
             "anchor": "jz",
             "type": "patchouli:text",
             "title": "JZ",
-            "text": "Does jmp if ZF is 1."
+            "text": "Performs jmp if ZF - 1."
         },
         {
             "anchor": "jnz",
             "type": "patchouli:text",
             "title": "JNZ",
-            "text": "Does jmp if ZF is 0."
+            "text": "Performs jmp if ZF - 0."
         },
         {
             "anchor": "jg",
             "type": "patchouli:text",
             "title": "JG",
-            "text": "Does jmp if ZF and SF is 0."
+            "text": "Performs jmp if ZF and SF - 0."
         },
         {
             "anchor": "jl",
             "type": "patchouli:text",
             "title": "JL",
-            "text": "Does jmp if SF is 1."
+            "text": "Performs jmp if SF - 1."
         },
         {
             "anchor": "jge",
             "type": "patchouli:text",
             "title": "JGE",
-            "text": "Does jmp if SF is 0 or ZF is 1."
+            "text": "Performs jmp if SF - 0 or ZF - 1."
         },
         {
             "anchor": "jle",
             "type": "patchouli:text",
             "title": "JLE",
-            "text": "Does jmp if SF is 1 or ZF is 1."
+            "text": "Performs jmp if SF - 1 or ZF - 1."
         },
         {
             "anchor": "jc",
             "type": "patchouli:text",
             "title": "JC",
-            "text": "Does jmp if CF is 1."
+            "text": "Performs jmp if CF - 1."
         },
         {
             "anchor": "jnc",
             "type": "patchouli:text",
             "title": "JNC",
-            "text": "Does jmp if CF is 0."
+            "text": "Performs jmp if CF - 0."
         },
         {
             "anchor": "shl",
             "type": "patchouli:text",
             "title": "SHL",
-            "text": "Shifts bits left.$(br2)EXAMPLE: shr ax, 2; ax = 10100000b$(br)after execution ax contains 10000000b"
+            "text": "Shifts bits to the left.$(br2)EXAMPLE: shl ax, 2; ax = 10100000b$(br)ax now equals 10000000b"
         },
         {
             "anchor": "shr",
             "type": "patchouli:text",
             "title": "SHR",
-            "text": "Shifts bits right.$(br2)EXAMPLE: shl ax, 2; ax = 10100000b$(br)after execution ax contains 00101000b"
+            "text": "Shifts bits to the right.$(br2)EXAMPLE: shr ax, 2; ax = 10100000b$(br)ax now equals 00101000b"
         },
         {
             "anchor": "sar",
             "type": "patchouli:text",
             "title": "SAR",
-            "text": "Shifts bits right without changing sign bit.$(br2)EXAMPLE: shr ax, 2; ax = 10100000b$(br)after execution ax contains 11101000b"
+            "text": "Shifts bits to the right while preserving the sign bit.$(br2)EXAMPLE: shr ax, 2; ax = 10100000b$(br)ax now equals 11101000b"
         },
         {
             "anchor": "rol",
             "type": "patchouli:text",
             "title": "ROL",
-            "text": "Rolls bits right. It means that instead of destroying high bit, command will append it to the back of value. $(br2)EXAMPLE: rol ax, 2; ax = 10100000b$(br)after execution ax contains 10000010b"
+            "text": "Rotates bits to the left, meaning the most significant bit is moved to the least significant positions instead of being discarded.$(br2)EXAMPLE: rol ax, 2; ax = 10100000b$(br)ax now equals 10000010b"
         },
         {
             "anchor": "ror",
             "type": "patchouli:text",
             "title": "ROR",
-            "text": "The same thing as rol but in backwards. $(br2)EXAMPLE: ror ax, 2; ax = 10100001b$(br)after execution ax contains 01101000b"
+            "text": "Same as ROL, but in the opposite direction. $(br2)EXAMPLE: ror ax, 2; ax = 10100001b$(br)ax now equals 01101000b"
         },
         {
             "anchor": "rcl",
             "type": "patchouli:text",
             "title": "RCL",
-            "text": "Sets high bit to CF and do shift. $(br2)EXAMPLE: rcl ax, 1; ax = 10100000b$(br)after execution ax contains 01000000b and CF = 1"
+            "text": "Moves the most significant bit into CF and performs a left shift. The previous value of CF is shifted into the least significant bit.$(br2)EXAMPLE: rcl ax, 1; ax = 10100000b$(br)ax now equals 01000000b and CF = 1"
         },
         {
             "anchor": "rcr",
             "type": "patchouli:text",
             "title": "RCR",
-            "text": "The same thing as rcl but in backwards. $(br2)EXAMPLE: rcl ax, 1; ax = 10100001b$(br)after execution ax contains 01010000b and CF = 1"
+            "text": "Same as RCL, but in the opposite direction. $(br2)EXAMPLE: rcl ax, 1; ax = 10100001b$(br)ax now equals 01010000b and CF = 1"
         },
         {
             "anchor": "push",
             "type": "patchouli:text",
             "title": "PUSH",
-            "text": "Copies value from first operand to the top of stack."
+            "text": "Copies the value from the first operand onto the top of the stack."
         },
         {
             "anchor": "pop",
             "type": "patchouli:text",
             "title": "POP",
-            "text": "Takes value from top of stack to the first operand."
+            "text": "Loads the value from the top of the stack into the first operand."
         },
         {
             "anchor": "call",
             "type": "patchouli:text",
             "title": "CALL",
-            "text": "First makes push of ip register and then jmp. If operand has offset then it pushes cs register too."
+            "text": "First performs a push of the IP register, then executes a jmp. If the operand includes a segment offset, the CS register is also pushed"
         },
         {
             "anchor": "ret",
             "type": "patchouli:text",
             "title": "RET",
-            "text": "Pops stack by first operand value and then sets ip register to value from stack, that was puted by CALL. If second operand is 1, then it will set cs register from stack top too. If second operand is 0xFF, then it will set cs register from stack top and decrement ip address by command length (need if you would like to exit from interrupt)."
+            "text": "Clears the stack by the number of bytes specified in the first operand, then sets the IP register to the value previously pushed by CALL. If the second operand is 1, the CS register is also restored from the stack. If the second operand is 0xFF, it restores CS from the stack and subtracts the instruction length from IP, which is necessary when returning from an external interrupt."
         },
         {
             "anchor": "int",
             "type": "patchouli:text",
             "title": "INT",
-            "text": "Do interrupts that can do many different things. First operand is a code of interruption. More detailed information about interruptions codes you can see in interruptions table."
+            "text": "Executes an internal interrupt, which can perform a variety of functions. The first operand is the interrupt code. For more details on available interrupt codes, refer to the interrupt table."
         },
         {
             "anchor": "lea",
             "type": "patchouli:text",
             "title": "LEA",
-            "text": "Calculates effective address. This is the most unusuall command because its purpose is working with many different numbers that have different types.$()The command have next structure: $(bold)lea destination_register, [base_register * size + displasement + index]$() or $(bold)lea destination_register, base_register[displasement + index]$()."
+            "text": "Calculates the effective address. This is one of the most unique instructions, as it is designed to work with a wide variety of values and addressing modes.$()The syntax is as follows: $(bold)lea destination_register, [base_register * scale + offset + index_register]$() or $(bold)lea destination_register,"
         },
         {
             "type": "patchouli:text",
-            "text": "Operand bytes of this command have another scheme.$(br2)Also modifier byte of this command must be set to 3.$(br2)$(bold)First operand bytes:$()$(li)$(bold)1-4 bits$() - destination register that will constain result of operation.$(li)$(bold)5 bit$() - if set to 1 then index will sum$(li)$(bold)6 bit$() - if set to 1 then displasement will sum"
+            "text": "$(bold)base_register[offset + index_register]$(). The operand bytes for this instruction follow a different format.$(br2)The modifier byte for this instruction must be set to 3.$(br2)$(bold)First operand byte layout:$()$(li)$(bold)Bits 1–4$() – Destination register that will hold the result of the operation.$(li)$(bold)Bit 5$() – If set to 1, the index will be added."
         },
         {
             "type": "patchouli:text",
-            "text": "$(li)$(bold)7-8 bits$() - size that can be only 00b - 0; 01 - 2; 10b - 4; 11b - 8$(li)$(bold)9-16 bits$() - number of register for base$(br2)$(bold)Second operand bytes$() - is almost used for displasement"
+            "text": "$(li)$(bold)Bit 6$() – if set to 1, the offset will be included in the sum.$(li)$(bold)Bits 7–8$() – scale factor, which can be only: 00b = 0; 01b = 2; 10b = 4; 11b = 8.$(li)$(bold)Bits 9–16$() – base register ID.$(br2)$(bold)Second operand bytes$() – fully used for the offset value."
         },
         {
             "anchor": "pusha",
             "type": "patchouli:text",
             "title": "PUSHA",
-            "text": "Saves registers ax, bx, cx, dx, di, si, flags, ds, ex into the stack."
+            "text": "Stores the registers ax, bx, cx, dx, di, si, flags, ds, and ex onto the stack."
         },
         {
             "anchor": "popa",
             "type": "patchouli:text",
             "title": "POPA",
-            "text": "Loads registers ax, bx, cx, dx, di, si, flags, ds, ex from the stack."
+            "text": "Loads the registers ax, bx, cx, dx, di, si, flags, ds, and ex from the stack."
         },
         {
             "anchor": "loop",
             "type": "patchouli:text",
             "title": "LOOP",
-            "text": "If cx != 0, it jumps to given address and then decrements register cx."
+            "text": "If cx != 0, a jump occurs to the specified address and the cx register is decremented."
         }
     ]
 }

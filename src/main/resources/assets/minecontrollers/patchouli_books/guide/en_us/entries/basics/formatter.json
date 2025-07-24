@@ -5,15 +5,15 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "This block translates machine code from input slot to programmer instructions to output slot. All slots are for writable books only."
+			"text": "This block converts  machine code from the input slot to instructions in the output slot. Both slots only take writable books."
         },
         {
             "type": "patchouli:text",
-            "text": "You also can controll memory address for writing. To change global memory address you can write [GLOFFSET: <offset you want to change>]."
+			"text": "You can also set the starting address for writing. In order to change the global offset of the program in memory, write [GLOFFSET: <global offset>]."
         },
         {
             "type": "patchouli:text",
-            "text": "To set offset relatively global offset you can write [OFFSET: <local offset you want to change>]."
+			"text": "In order to set the local offset relative to the global offset, write [OFFSET: <local offset>]."
         }
     ]
 }

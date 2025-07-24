@@ -1,37 +1,37 @@
 {
-    "name": "Reading and writing",
+    "name": "Reading and Writing",
     "icon": "minecontrollers:microcontroller",
     "category": "minecontrollers:microcontroller",
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "Microcontrollers can share data between each other. This opportunity is achieved by $(l:minecontrollers:microcontroller/pinout#special_pins)32-37 pins$().$(br)For writinig data into microcontroller you can use 36 pin. For reading data from microcontroller you can use 37 pin."
+			"text": "Microcontrollers can transfer data to each other. This is done through $(l:minecontrollers:microcontroller/pinout#special_pins)32-37 pins$().$(br)You can use 36 pins for writing data and 37 for reading."
         },
         {
             "type": "patchouli:text",
-            "title": "Channel level",
-            "text": "If you have already read about $(l:minecontrollers:basics/bundled_wires)morered wires$() you have  probably realized that when you write or read data you will have to pay attention on impact of cables length to redstone signal that can distort original data. To avoid data distorting you should use bundled cable relay from morered. This will distort data by 2 constant levels."
+            "title": "Channel Levels",
+			"text": "If you have read about $(l:minecontrollers:basics/bundled_wires)Morered cables$(), you probably already know that cable length can affect redstone signal strength when reading or writing data. A cable relay from Morered should be used to avoid data distortion by introducing a fixed signal drop of 2 levels."
         },
         {
             "type": "patchouli:text",
-            "text": "This behavior has been taken into account, so microcontroller automatically will increment data from memory by 2 for both $(l:minecontrollers:microcontroller/pinout#special_pins)value pins$() when $(l:minecontrollers:microcontroller/pinout#special_pins)37 pin$() gets redstone impulse.$(br2)On the next page you can see scheme with using these pins."
+			"text": "This behavior is already taken into account. The microcontroller automatically increases the signal from memory by 2 for both $(l:minecontrollers:microcontroller/pinout#special_pins)numeric pins$(), when $(l:minecontrollers:microcontroller/pinout#special_pins)37 pins$() receieve a redstone signal.$(br2)The next page contains a diagram of these pins."
         },
         {
             "type": "patchouli:image",
             "images": ["minecontrollers:textures/gui/guidebook/io_example.png"],
-            "text": "GEN - frequency generator from 2 observers. Sets the speed of commands execution."
+            "text": "GEN - a redstone clock made with 2 observers. It sets the execution speed"
         },
         {
             "type": "patchouli:text",
-            "text": "L1 - power lever. It's connected to $(l:minecontrollers:microcontroller/pinout#special_pins)41 pin$() and feeds all microcontrollers.$(br2)L2 - reading lever. Connected to $(l:minecontrollers:microcontroller/pinout#special_pins)39 pin$().$(br2)C1 - microcontroller that we would like to read. Because scheme doesn't contain redstone sources for $(l:minecontrollers:microcontroller/pinout#special_pins)32-35 pins$(), current address that we read is 0."
+            "text": "of instructions.$(br)L1 - the power lever. It is connected to $(l:minecontrollers:microcontroller/pinout#special_pins)pin 41$() and powers every microcontroller.$(br2)L2 - the read lever. Connected to $(l:minecontrollers:microcontroller/pinout#special_pins)pin 39$().$(br2)C1 - the microcontroller we want to read. Since the circuit doesn't include a redstone source for $(l:minecontrollers:microcontroller/pinout#special_pins)pins 32-35$(), the current address being read is 0."
         },
         {
             "type": "patchouli:text",
-            "text": "C2 - intermediate microcontroller that have already been flashed. It powers his 6 pin to activate 38 pin on C3, and also it transmits signals from back side to front side except 39 pin to avoid reading data from C3 controller.$(br2)C3 - microcontroller that we would like to write data from C1."
+            "text": "C2 - an intermediate microcontroller that has already been loaded. It powers its pin 6 to activate pin 38 on C3. It also passes signals from its back side to the front, with the exception of pin 39 in order to prevent reading data from controller C3 .$(br2)C3 - the microcontroller we want to write data to from C1."
         },
         {
             "type": "patchouli:text",
-            "text": "You can also experiment with I/O pins. It allows to copy data between controllers on hardware level. Meanwhile you can use microcontroller as disk for extension your controller memory."
+			"text": "You can also experiment with the I/O pins. This allows you to copy data between controllers at the hardware level. Using a microcontroller as a disk to expand the memory of your main microcontroller is another option."
         },
         {
             "type": "patchouli:image",

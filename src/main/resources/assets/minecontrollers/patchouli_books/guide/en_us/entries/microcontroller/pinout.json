@@ -6,39 +6,38 @@
         {
             "type": "patchouli:image",
             "images": ["minecontrollers:textures/gui/guidebook/microcontroller_pinout.png"],
-            "text": "Microcontroller has 4 sides for cables."
+            "text": "The microcontroller has 4 sides for connections."
         },
         {
             "type": "patchouli:text",
-            "text": "As you can know morered cable can combine 16 various colorized cables. This provides 64 independent pins to interact with controller. Numeration of pins goes by clockwise like in the picture on the left.$(br)To find out which pin belongs to which color, there is a simple math formula for this: $(bold)pin_number % 16$(), where % is division where you count only remainder (example 5 % 16 = 5; 18 % 16 = 2; 31 % 16 = 15). Result number is a code of color sheme of cables."
-
+            "text": "As you may know, MoreRed cables can carry 16 different colored wires. This provides 64 independent pins for interaction with the controller. Pins are numbered clockwise, as shown in the image on the left.$(br)To determine which pin corresponds to which color, use this simple formula: $(bold)pin_number % 16$(), where % means modulo (example: 5 % 16 = 5; 18 % 16 = 2; 31 % 16 = 15). The result gives the wire color code from the color table."
         },
         {
             "type": "patchouli:text",
-            "title": "COLOR SCHEME",
-            "text": "$(br2)$(bold)$(#e4e4e4)White cable: 0$(br)$(#fb8e00)Orange cable: 1$(br)$(#cf6dd1)Magenta cable: 2$(br)$(#a6ebf3)Light blue cable: 3$(br)$(#fcf925)Yellow cable: 4$(br)$(#b7fc25)Lime cable: 5$(br)$(#fcd4e8)Pink cable: 6$(br)$(#383838)Gray cable: 7$(br)$(#a3a3a3)Light gray cable: 8$(br)$(#0e989a)Cyan cable: 9$(br)$(#8d39c2)Purple cable: 10$(br)$(#2522b3)Blue cable: 11"
+            "title": "COLOR TABLE",
+            "text": "$(br2)$(bold)$(#e4e4e4)White wire: 0$(br)$(#fb8e00)Orange wire: 1$(br)$(#cf6dd1)Magenta wire: 2$(br)$(#a6ebf3)Light Blue wire: 3$(br)$(#fcf925)Yellow wire: 4$(br)$(#b7fc25)Lime wire: 5$(br)$(#fcd4e8)Pink wire: 6$(br)$(#383838)Gray wire: 7$(br)$(#a3a3a3)Light Gray wire: 8$(br)$(#0e989a)Cyan wire: 9$(br)$(#8d39c2)Purple wire: 10$(br)$(#2522b3)Blue wire: 11"
         },
         {
             "type": "patchouli:text",
-            "text": "$(bold)$(br)$(#7d5835)Brown cable: 12$(br)$(#357627)Green cable: 13$(br)$(#be1612)Red cable: 14$(br)$(#101010)Black cable: 15"
+            "text": "$(bold)$(br)$(#7d5835)Brown wire: 12$(br)$(#357627)Green wire: 13$(br)$(#be1612)Red wire: 14$(br)$(#101010)Black wire: 15"
         },
         {
             "anchor": "special_pins",
             "type": "patchouli:text",
-            "title": "SPECIAL PINS",
-            "text": "Besides existence of pins for general usage there is also special pins that are needed to controll and configure microcontroller modes. All of them are located at the back side of microcontroller ($(bold)32-47 pins area$()). At the moment, the number of special pins is only 10.$(br)Here's list of them:$(li)$(bold)32-35 pins$() - this is address pins that points"
+            "title": "Special Pins",
+            "text": "In addition to general-purpose pins, there are special pins required for controlling and configuring the microcontroller. All of them are located on the back side of the microcontroller ($(bold)pins 32–47$()). Currently, there are 10 special-purpose pins.$(br)List of special pins:$(li)$(bold)Pins 32–35$() – these are address pins used to specify a memory address in the microcontroller."
         },
         {
             "type": "patchouli:text",
-            "text": "to an address in memory of microcontroller. each pin is 4 bit of address value. The pin numeration is from $(l:minecontrollers:basics)higher to lower parts of address value$(). $(li)$(bold)36-37 pins$() - this pins are used for reading and writing values to microcontroller. This pins are used in group with previous pins to flash the microcontroller or read data from it.$(li)$(bold)38 pin$() - is used to write value to address of $(l:minecontrollers:microcontroller/memory)memory$(). Use $(bold)32-37 pins$()."
+            "text": "Each pin represents part of a 4-bit address value, ordered from most significant to least significant. $(li)$(bold)Pins 36–37$() – these pins are used to read from and write to the microcontroller. They are used in combination with the address pins for flashing or reading memory.$(li)$(bold)Pin 38$() – used to write a value to $(l:minecontrollers:microcontroller/memory)memory$(). Uses $(bold)pins 32–37$()."
         },
         {
             "type": "patchouli:text",
-            "text": "$(li)$(bold)39 pin$() - read data from memory by given address to value pins when this pin is powered. Use $(bold)32-37 pins$().$(li)$(bold)40 pin$() - when gets single impulse execute instructions in memory by given ip and cs registers and increment ip register by command length."
+            "text": "$(li)$(bold)Pin 39$() – reads data from memory at the specified address and outputs it to the numeric pins when power is applied to this pin. Uses $(bold)pins 32–37$().$(li)$(bold)Pin 40$() – executes the instruction stored at the address pointed to by the IP and CS registers on a single pulse, and then increments IP by the instruction length."
         },
         {
             "type": "patchouli:text",
-            "text": "$(li)$(bold)41 pin$() - powers microcontroller and sets $(l:minecontrollers:basics)cs register$() to given address ($(bold)32-35$()). Without power on this pin none of previous registers won't work. Also when it's powered off, all registers and pins will be reseted."
+            "text": "$(li)$(bold)Pin 41$() – powers on the microcontroller and sets the $(l:minecontrollers:casm/registers#segments)CS register$() to the address specified by $(bold)pins 32–35$(). None of the previous pins will function unless power is applied to this pin. Additionally, all registers and pins will be reset when power is removed."
         }
     ]
 }

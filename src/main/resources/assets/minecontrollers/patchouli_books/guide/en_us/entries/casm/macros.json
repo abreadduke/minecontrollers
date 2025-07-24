@@ -5,41 +5,44 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "CASM allows you use macros - sections of the code that allows you to replace long repetitive code sequences with much shorter sequences."
+			"text": "CASM supports macros, reusable instructions that help shorten larger blocks of code into shorter ones."
         },
         {
             "type": "patchouli:text",
-            "title": "Single-line macro",
-            "text": "It replaces your macro name to defined line.$(br)Example:$(br)$(bold)%define value 5$(br)%define ax_mov mov ax, $(br)ax_mov value$(br)$()Generated code is $(bold) MOV AX, 5"
+            "title": "Single-line macros",
+            "text": "Replaces the name of your macro with the specified string.$(br)Example:$(br)$(bold)%define value 5$(br)%define ax_mov mov ax, $(br)ax_mov value$(br)$()Generated code - $(bold) MOV AX, 5"
         },
         {
             "type": "patchouli:text",
-            "title": "Multi-line macro",
-            "text": "To use macro consisting of more than one line there is $(bold)%macro$() and $(bold)%endmacro$() directives.$(br)Example:$(br)$(bold)%macro my_macro$(br)mov ax, bx$(br)mov cx, dx$(br)%endmacro$(br)my_macro$(br)int 0$(br)my_macro"
+            "title": "Multi-line macros",
+			"text": "To write macros consisting of more than one line, use the $(bold)%macro$() and $(bold)%endmacro$() directives.$(br)Example:$(br)$(bold)%macro my_macro$(br)mov ax, bx$(br)mov cx, dx$(br)%endmacro$(br)my_macro$(br)int 0$(br)my_macro"
         },
         {
             "type": "patchouli:text",
-            "text": "Generated code is:$(bold)$(br)MOV AX, BX$(br)MOV CX, DX$(br)INT 0$(br)MOV AX, BX$(br)MOV CX, DX"
+            "text": "Generated code - $(bold)$(br)MOV AX, BX$(br)MOV CX, DX$(br)INT 0$(br)MOV AX, BX$(br)MOV CX, DX"
         },
         {
             "type": "patchouli:text",
-            "title": "Сonditional macros",
-            "text": "$(bold)%if$() directive will paste code section untill $(bold)%endif$() if value after $(bold)%if$() is greater than 0. In opposite case there is $(bold)%else$() directive.$(br)Example:$(br)$(bold)%if 1$(br)mov ax, bx$(br)%else$(br)mov cx, dx$(br)%endif$(br)$()Generated code is $(bold)MOV AX, BX$()"
+            "title": "Conditional macros",
+			"text": "The $(bold)%if$() directive includes the code block up to $(bold)%endif$() if the value after $(bold)%if$() is greater than 0. Otherwise, the code following $(bold)%else$() will be included.$(br)Example:$(br)$(bold)%if 1$(br)mov ax, bx$(br)%else$(br)mov cx, dx$(br)%endif$(br)$()Generated code - $(bold)MOV AX, BX$()"
         },
         {
             "type": "patchouli:text",
-            "title": "Сonditional macros",
-            "text": "Also there is $(bold)%ifdef$() directive. It works the same way as $(bold)%if$() but it checks macro name existance$(br)Example:$(br)$(bold)%define macro_name$(br)%ifdef macro_name$(br)mov ax, bx$(br)%else$(br)mov cx, dx$(br)%endif$(br)$()Generated code is $(bold)MOV AX, BX$()"
+			"text": "There's also the $(bold)%ifdef$() directive. It works just like $(bold)%if$(), but it checks if the macro name is already defined$(br)Example:$(br)$(bold)%define macro_name$(br)%ifdef macro_name$(br)mov ax, bx$(br)%else$(br)mov cx, dx$(br)%endif$(br)$()Generated code - $(bold)MOV AX, BX$()"
         },
         {
             "type": "patchouli:text",
             "title": "ORG",
-            "text": "This directive is intended for defination programm offset for microcontroller memory. This directive just pastes OFFSET: [<your_offset>]$(br)Example:$(br)$(bold)org FF$(br)mov ax, bx$(br)$()When you assemble this code and flash it, the programm will be located starting from 0xFF byte."
+			"text": "This directive is used to set the program offset for microcontroller memory by including OFFSET: [<offset>] in the output$(br)Example:$(br)$(bold)org FF$(br)mov ax, bx$(br)$()When you assemble and run this code, the program will start at byte 0xFF. It also takes segment addresses into account."
         },
         {
             "type": "patchouli:text",
-            "title": "Special symbols",
-            "text": "Macros can use special symbols that will be extended into your macro code.$(li)$(bold)$[<number>]$() - extends to argument in squence.$(li)$(bold)$#$() - extends to number of arguments$(li)$(bold)$*$() - extends to all arguments$(br)Example:$(br)$(bold)%macro my_macro$(br)mov $1, $0$(br)%endmacro$(br)my_macro(5, ax)"
+            "title": "Special Characters",
+			"text": "Macros can use special characters as arguments. These are replaced with the actual values when the macro is invoked.$(li)$(bold)$[<number>]$() - expands to the argument at that position. $0 is the first argument, $1 is the second, etc.$(li)$(bold)$#$() - expands to the total number of arguments$(li)$(bold)$*$() - expands to all arguments$(br)Example:$(br)$(bold)%macro my_macro"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "$(bold)mov $1, $0$(br)%endmacro$(br)my_macro(5, ax)$()$(br)$()Generated code - $(bold)MOV AX, 5"
         }
     ]
 }

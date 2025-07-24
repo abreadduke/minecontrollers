@@ -1,43 +1,43 @@
 {
-    "name": "General",
+    "name": "About",
     "icon": "minecraft:book",
     "category": "minecontrollers:casm",
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "CASM is a simple assembler language based on NASM. It's created to simplify the programming process."
+            "text": "CASM is a simple assembly language based on NASM. It was created to simplify the process of programming a microcontroller."
         },
         {
             "type": "patchouli:text",
-            "title": "Commands",
-            "text": "Execution commands in minecontrollers is very simple. To execute command you need to flash your microcontroller by instructions sequence. $(l:minecontrollers:microcontroller/pinout#special_pins)Here you can know how to do this$().$(br)Every command has limited length - 6 bytes. Every byte performs its function.$(li)$(bold)1 byte$() - $(l:minecontrollers:casm/commands)operation code (opcode)$(). It defines the operation that command will do. Example: MOV, ADD, XOR - all these keywords in CASM defines the opcode."
+            "title": "Instructions",
+            "text": "Executing instructions in Minecontrollers is very straightforward. To run code, you need to load your microcontroller with a sequence of instructions. $(l:minecontrollers:microcontroller/pinout#special_pins)Click here to learn how$().$(br)Each instruction has a fixed length of 6 bytes. Each byte serves a specific purpose.$(li)$(bold)Byte 1$() – $(l:minecontrollers:casm/commands)Opcode$(), which determines what operation the instruction performs."
         },
         {
             "type": "patchouli:text",
-            "text": "Number of opcode you can see in opcode table.$(li)$(bold)2 byte$() - modifier. This part defines both arguments of command or one if command use only one argument.$(li2)$(bold)first 4 bits$() - offsets for first and second argument$(li3)$(bold)1-2 bits$() - offset for first operand$(li3)$(bold)3-4 bits$() - offset for second operand$(li2)$(bold)5-6 bits$() - defines will using operands as address link (value 1) or not (value 0)."
+            "text": "Example: MOV, ADD, XOR — these keywords in CASM define opcodes.$(br)You can find the numeric values of each opcode in the opcode table.$(li)$(bold)Byte 2$() – Modifier. This defines the types of both operands, or just one if the instruction only uses a single operand.$(li2)$(bold)Bits 1–4$() – offset types for the two operands."
         },
         {
             "type": "patchouli:text",
-            "text": "First bit - first operand, second - second operand$(li2)$(bold)7-8 bits$() - defines will operand mean register number (value 0) or just a number (value 1). First bit - first operand, second - second operand. $(li)$(bold)3-6 bytes$() - presented as operands. They can be registers, values or links in relation to previous modifiers. 3-4 bytes - first operand, 5-6 - second operand."
+            "text": "$(li3)$(bold)Bits 1–2$() – offset for the first operand$(li3)$(bold)Bits 3–4$() – offset for the second operand$(li2)$(bold)Bits 5–6$() – define whether the operand values are treated as memory addresses (1) or not (0). First bit for operand 1, second bit for operand 2.$(li2)$(bold)Bits 7–8$() – define whether the operand is a register number (0) or a raw value (1)."
         },
         {
             "type": "patchouli:text",
-            "text": "All information about offsets and registers codes you can find in next tables."
+            "text": "First bit is for operand 1, second bit is for operand 2.$(li)$(bold)Bytes 3–6$() – These are the operands. They may represent registers, values, or references depending on the modifier. Bytes 3–4 are the first operand, bytes 5–6 are the second.$(br)You can find all offset and register codes in the tables below."
         },
         {
             "type": "patchouli:text",
-            "title": "OFFSETS TABLE",
-            "text": "$(bold)0 - NO OFFSET$(br2)1 - OFFSET FROM DATA SEGMENT (DS)$(br2)2 - OFFSET FROM STACK SEGMENT (SS)$(br2)3 - OFFSET FROM EXTERNAL SEGMENT (ES)"
+            "title": "OFFSET TABLE",
+            "text": "$(bold)0 – NO OFFSET$(br2)1 – OFFSET FROM DATA SEGMENT (DS)$(br2)2 – OFFSET FROM STACK SEGMENT (SS)$(br2)3 – OFFSET FROM EXTRA SEGMENT (ES)"
         },
         {
             "type": "patchouli:text",
-            "title": "REGISTERS TABLE",
-            "text": "$(bold)0 - AX$(br)1 - AH$(br)2 - AL$(br)3 - BX$(br)4 - BH$(br)5 - BL$(br)6 - CX$(br)7 - CH$(br)8 - CL$(br)9 - DX$(br)10 - DH$(br)11 - DL$(br)12 - DI"
+            "title": "REGISTER TABLE",
+            "text": "$(bold)0 – AX$(br)1 – AH$(br)2 – AL$(br)3 – BX$(br)4 – BH$(br)5 – BL$(br)6 – CX$(br)7 – CH$(br)8 – CL$(br)9 – DX$(br)10 – DH$(br)11 – DL$(br)12 – DI"
         },
         {
             "type": "patchouli:text",
-            "title": "REGISTERS TABLE",
-            "text": "$(bold)13 - SI$(br)14 - BP$(br)15 - SP$(br)16 - IP$(br)17 - FLAGS$(br)18 - DS$(br)19 - SS$(br)20 - CS$(br)21 - ES$(br)22-85 - PINS$(br)86 - IT"
+            "title": "REGISTER TABLE",
+            "text": "$(bold)13 – SI$(br)14 – BP$(br)15 – SP$(br)16 – IP$(br)17 – FLAGS$(br)18 – DS$(br)19 – SS$(br)20 – CS$(br)21 – ES$(br)22–85 – PINS$(br)86 – IT"
         }
     ]
 }

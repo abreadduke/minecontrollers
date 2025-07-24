@@ -5,7 +5,7 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "This mod adds into minecraft redstone microcontroller also adding own assembler syntax CASM (craft assembler) and set of commands"
+			"text": "This mod adds microcontrollers to Minecraft, along with their assembly language, CASM (Craft Assembler), and its instruction set."
         }
     ]
 }

@@ -5,37 +5,37 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "There is two types of interrupts.$(br)First type is internal interrupts. You can invoke them by using INT $(l:minecontrollers:casm/interrupts#internal_ints)[<int_number>]$() command. You can read standart interrupts table here.$(br)Second type is external interrupts. These interrupts use internal interrupts table, that $(l:minecontrollers:casm/registers#it)IT$() register points to."
+			"text": "There are two types of interrupts.$(br)Internal interrupts can be called with INT $(l:minecontrollers:casm/interrupts#internal_ints)[<interrupt_name>]$(). You can view the list of standard internal interrupts $(l:minecontrollers:casm/interrupts#internal_ints)here$().$(br)External interrupts use a dedicated table, pointed to by the $(l:minecontrollers:casm/registers#it)IT$() register."
         },
         {
             "type": "patchouli:text",
-            "text": "This table is an array that should be reserved by 64 words. Every word in array is binded to pins with the same number. Word has to contain absolute address of interrupt that will invoke by changing redstone signal of binded pin. If word is 0 then controller will not execute interrupt. To enable external interrupts you should to set flags register to 1. $(br)$(bold)$(#ff0000)PAY ATTENTION:$() never set flags to 1 before you set IT register to prepared table."
+			"text": "This table is an array of 64 words (1 word = 2 bytes), with each word corresponding to a pin with the same number. Each word should contain the absolute address of the interrupt handler that will be triggered when the redstone signal changes on the associated pin. If the value of the word is 0, the controller will not trigger an interrupt. To enable external interrupts, set bit 0 of the flags register to 1."
         },
         {
             "type": "patchouli:text",
-            "text": "Otherwise every redstone sinal changing on pins will execute interrupt from your random code areas.$(br)When internal interrupts invoke, the microcontroller saves registers as PUSHA command and execute CALL by [<interrups_table_offset>]:0 address. To restore your registers and do exit from your interrupt you have to add this code to end of your interrupt:$(br)$(bold)POPA$(br)RET 0, 0xFF$()"
+            "text": "$(bold)$(#ff0000)WARNING:$() never set IF to 1 before assigning the IT register to a properly reserved interrupt table. If you do, any redstone signal change on the pins may trigger an interrupt from junk data in your code.$(br)When an external interrupt is triggered, the microcontroller saves the registers (similar to the PUSHA operation) and performs a call to the address [<offset_in_interrupt_table>]:0."
         },
         {
             "type": "patchouli:text",
-            "text": "Of course, you must reset your stack to the interrupt invocation state if you work with it."
+			"text": "To restore your registers and complete the interrupt, you must add this code at the end of your interrupt handler:$(br)$(bold)POPA$(br)RET 0, 0xFF$()$(br)You should also reset your stack to the interrupt call state if you have modified it."
         },
         {
             "anchor": "internal_ints",
             "type": "patchouli:text",
-            "title": "INTERNAL INTS TABLE",
-            "text": "$(li)$(bold)0$() - puts game time value to ax, bx, cx and dx registers. In order from higher to lower bits.$(li)$(bold)1$() - puts day time value to ax, bx, cx and dx registers. In order from higher to lower bits.$(li)$(bold)2$() - if it's daytime then ax will set to 1. Otherwise ax will be 0."
+            "title": "INTERNAL INT TABLE",
+            "text": "$(li)$(bold)0$() - write the current game time into the registers ax, bx, cx and dx from most to least significant bit.$(li)$(bold)1$() - writes the current daytime value into the registers ax, bx, cx and dx from most to least significant bit.$(li)$(bold)2$() - if it is currently daytime, ax will be set to 1; otherwise, AX will be set to 0."
         },
         {
             "type": "patchouli:text",
-            "text": "$(li)$(bold)3$() - if it's raining then ax will set to 1. Otherwise ax will be 0.$(li)$(bold)4$() - if it's thundering then ax will set to 1. Otherwise ax will be 0.$(li)$(bold)5$() - puts the sine and cosine to ax and bx, respectively. Angle is defined from ax as degrees.$(li)$(bold)6$() - puts the natural logarithm from ax to ax."
+			"text": "$(li)$(bold)3$() - The value of ax is set to 1 if it is raining. Otherwise, ax is set to 0.$(li)$(bold)4$() - The value of ax is set to 1 if there is a thunderstorm. Otherwise, ax is set to 0.$(li)$(bold)5$() - stores the sine and cosine of ax (in degrees), multiplied by 1000, into ax and bx respectively.$(li)$(bold)6$() - computes the natural log of ax, multiplies it by 1000, and stores it back into ax."
         },
         {
             "type": "patchouli:text",
-            "text": "$(li)$(bold)7$() - raises ax to the bx / 1000 power. Division by 1000 is necessary to working with floathing numbers.$(li)$(bold)8$() - puts random number to ax$(li)$(bold)9$() - puts microcontroller coordinates into the stack.$(li)$(bold)10$() - puts local coordinates of first block that microcontroller looking to. Max distance of observing usually is 128."
+			"text": "$(li)$(bold)7$() - raises ax to the power of [bx / 1000]. Division by 1000 is used to allow for floating-point exponents.$(li)$(bold)8$() - stores a random number in ax$(li)$(bold)9$() - pushes the coordinates of the microcontroller onto the stack.$(li)$(bold)10$() - stores the local coordinates of the first block the microcontroller is facing into bx, cx, and dx. If no block is found, ax is set to 0."
         },
         {
             "type": "patchouli:text",
-            "text": "$(li)$(bold)11$() - gets count of entities in ax radius. The result puts into ax.$(li)$(bold)12$() - gets count of players in ax radius. The result puts into ax.$(li)$(bold)13$() - plays sound with pith from cx and radius from ax. bx registers contains the number of musical instrument."
+            "text": "If found, ax is set to 1. The maximum detection distance is 128.$(li)$(bold)11$() - returns the number of entities within a radius defined by ax and stores the result back in ax.$(li)$(bold)12$() - counts the number of players within a radius defined by ax and stores the result back in ax$(li)$(bold)13$() - plays a note with the pitch cx (500-1000) and a radius defined by ax. bx determines the instrument ID."
         },
         {
             "type": "patchouli:text",
@@ -49,7 +49,7 @@
         },
         {
             "type": "patchouli:text",
-            "title": "EXTERNAL INTS EXAMPLE",
+            "title": "EXTERNAL INT EXAMPLE",
             "text": "$(bold)section .text$(br)mov ss, 0xFF$(br)mov bp, 0xFF$(br)mov sp, bp$(br)mov it, table_section$(br)mov [it], exint$(br)mov flags, 1$(br)mov ax, 5$(br)mov bx, 2$(br)mov cx, 500$(br)back:$(br)int 13"
         },
         {
@@ -58,20 +58,20 @@
         },
         {
             "type": "patchouli:text",
-            "text": "In this example, microcontroller rings before you set white pin on forward controller face to a value other than 0. In that case microcontroller will wait untill you set 0 pin again to 0."
+			"text": "In this example, the microcontroller keeps ringing until you set the white pin on its front side to a value other than 0. The microcontroller then waits until pin 0 is set back to 0."
         },
         {
             "type": "patchouli:text",
-            "title": "EXTERNAL INTS EXAMPLE",
+            "title": "EXTERNAL INT EXAMPLE",
             "text": "$(bold)section .text$(br)mov ss, 0xFF$(br)mov bp, 0xFF$(br)mov sp, bp$(br)mov it, table_section$(br)mov ax, it$(br)add ax, 2$(br)mov [ax], exint$(br)mov flags, 1$(br)mov ax, 5$(br)mov bx, 2$(br)mov cx, 500$(br)back:$(br)int 13"
         },
         {
             "type": "patchouli:text",
-            "text": "$(bold)jmp back$(br)section exint$(br)jfe:$(br)cmp r0, 0$(br)jnz jfe$(br)popa$(br)ret 0, 0xFF$(br)section table_section$(br)dw 0 dup(64)"
+            "text": "$(bold)jmp back$(br)section exint$(br)jfe:$(br)cmp r1, 0$(br)jnz jfe$(br)popa$(br)ret 0, 0xFF$(br)section table_section$(br)dw 0 dup(64)"
         },
         {
             "type": "patchouli:text",
-            "text": "The second example does the same that first one but stop pin is orange (pin 1)"
+            "text": "Same as the first example, but the stop pin is 0 (pin 1)."
         }
     ]
 }

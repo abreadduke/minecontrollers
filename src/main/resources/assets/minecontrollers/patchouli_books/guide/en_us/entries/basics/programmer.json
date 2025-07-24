@@ -5,11 +5,11 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "This block read lines from book with instructions and then by redstone signal from red input from the right side it powers wire cable by sequence that provides in line. That is continue until the programmer move to the end of book instructions. In this case programmer power green output from the left side."
+			"text": "This block reads lines from the instruction book upon receieving a redstone signal from the red input on the right side. It then powers the wired cable in the sequence specified by the instructions. Once the programmer reaches the end of the instructions, it will stop."
         },
         {
             "type": "patchouli:text",
-            "text": "The programmer's logic is cyclical so if you continue applying a pulse to the red input the programmer will start from begin. Programmer instructions are set of 16 digits or letters from A to V. One line - one set."
+			"text": "Once it stops, the programmer will power the green wire on the left side of the block. Keep in mind that if you reapply a signal to the red input, the sequence will start at the beginning again. The programmer's instructions consist of 16 digits or letters from A to V. One row equals one set."
         }
     ]
 }
