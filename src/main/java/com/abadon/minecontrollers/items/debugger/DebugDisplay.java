@@ -1,23 +1,32 @@
 package com.abadon.minecontrollers.items.debugger;
 
+import com.abadon.minecontrollers.Minecontrollers;
 import com.abadon.minecontrollers.entityblocks.microcontroller.MicrocontrollerBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.LiteralContents;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-
 import net.minecraft.network.chat.Style;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class DebugDisplay extends Item {
+    private static final String PROTOCOL_VERSION = "1.0";
+    private static final SimpleChannel SYNC_CHANNEL = NetworkRegistry.newSimpleChannel(
+            ResourceLocation.fromNamespaceAndPath(Minecontrollers.MODID, "debug_display_channel"), () -> PROTOCOL_VERSION,
+            versionFromServer -> PROTOCOL_VERSION.equals(versionFromServer),
+            versionFromClient -> PROTOCOL_VERSION.equals(versionFromClient)
+    );
     public enum DebugSettingsMode{
         ONE,
         TEN,
@@ -25,8 +34,14 @@ public class DebugDisplay extends Item {
         THOUSAND
     }
     protected DebugSettingsMode settingsMode = DebugSettingsMode.ONE;
+    public void sendDataToServer(int msg){
+        SYNC_CHANNEL.sendToServer(msg);
+    }
     public DebugDisplay(Properties p_41383_) {
         super(p_41383_);
+        SYNC_CHANNEL.registerMessage(0, Integer.class, (msg, buffer) -> buffer.writeInt(msg), (buffer) -> buffer.getInt(1), (msg, context) -> {
+            memoryDumpStartAddress = msg;
+        }, Optional.of(NetworkDirection.PLAY_TO_SERVER));
     }
     public int memoryStep = 1;
     public int dumpSize = 32;
@@ -118,13 +133,8 @@ public class DebugDisplay extends Item {
         }
         return MutableComponent.create(new LiteralContents(dumpInfoBuilder.toString())).setStyle(Style.EMPTY.withColor(2619179)); // set lime color
     }
-    private byte usageCounts = 0;
-    @OnlyIn(Dist.CLIENT)
     @Override
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
-        if(++usageCounts % 2 == 0) usageCounts = 0;
-        else return super.onItemUseFirst(stack, context);
-
         Level level = context.getLevel();
         BlockPos blockPos = context.getClickedPos();
         Player player = context.getPlayer();
@@ -133,6 +143,7 @@ public class DebugDisplay extends Item {
                 changeWorkingMode();
                 player.displayClientMessage(MutableComponent.create(new LiteralContents(settingsMode.name())), true);
             }
+            if(level.isClientSide) return InteractionResult.SUCCESS;
             if (level.getBlockEntity(blockPos) instanceof MicrocontrollerBlockEntity microcontroller) {
                 ArrayList<MutableComponent> debugInfo = new ArrayList<>();
                 debugInfo.addAll(getRegistersSegment(microcontroller));

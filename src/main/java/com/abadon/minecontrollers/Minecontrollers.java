@@ -8,6 +8,7 @@ import com.abadon.minecontrollers.items.debugger.PlayerInputCatcher;
 import com.abadon.minecontrollers.tabs.ModTab;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -43,7 +44,7 @@ public class Minecontrollers
         MinecraftForge.EVENT_BUS.register(this);
         // Register the item to a creative tab
         //.addListener(this::addCreative);
-        MinecraftForge.EVENT_BUS.addListener(PlayerInputCatcher::debuggerDisplayDumpScroll);
+        //context.getModEventBus().addListener(PlayerInputCatcher::debuggerDisplayDumpScroll);
         MinecontrollersInterrupts.register();
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         //context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
@@ -70,17 +71,18 @@ public class Minecontrollers
     //@SubscribeEvent
     //public void onServerStarting(ServerStartingEvent event)
     //{
-    //    // Do something when the server starts
-    //    LOGGER.info("HELLO from server starting");
+    //
     //}
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents
     {
+        @OnlyIn(Dist.CLIENT)
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
+            MinecraftForge.EVENT_BUS.addListener(PlayerInputCatcher::debuggerDisplayDumpScroll);
             ModMenu.registerScreens();
             MinecontrollersBlocks.registerSkullBlocks();
         }
