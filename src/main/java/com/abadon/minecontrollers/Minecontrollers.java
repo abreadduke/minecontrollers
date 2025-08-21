@@ -12,7 +12,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
@@ -34,20 +36,16 @@ public class Minecontrollers
     public Minecontrollers(FMLJavaModLoadingContext context)
     {
         IEventBus modEventBus = context.getModEventBus();
+        ModLoadingContext modContext = ModLoadingContext.get();
+        modContext.registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
 
         // Register the commonSetup method for modloading
         //modEventBus.addListener(this::commonSetup);
         //modEventBus.addListener(PlayerInputCatcher::debuggerDisplayDumpScroll);
         LOGGER.info("registration custom blocks/items");
         register(modEventBus);
-        // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
-        // Register the item to a creative tab
-        //.addListener(this::addCreative);
-        //context.getModEventBus().addListener(PlayerInputCatcher::debuggerDisplayDumpScroll);
         MinecontrollersInterrupts.register();
-        // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
-        //context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     //private void commonSetup(final FMLCommonSetupEvent event)

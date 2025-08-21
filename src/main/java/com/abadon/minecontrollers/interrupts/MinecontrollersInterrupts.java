@@ -1,5 +1,6 @@
 package com.abadon.minecontrollers.interrupts;
 
+import com.abadon.minecontrollers.ServerConfig;
 import com.abadon.minecontrollers.api.MinecontrollersAPI;
 import com.abadon.minecontrollers.entityblocks.microcontroller.MicrocontrollerBlockEntity;
 import com.google.common.collect.Lists;
@@ -90,7 +91,8 @@ public class MinecontrollersInterrupts {
             if (level == null || level.getBlockEntity(blockPos) == null || !level.getBlockEntity(blockPos).equals(microcontrollerBlockEntity)) return;
             BlockState blockState = level.getBlockState(blockPos);
             Direction direction = blockState.getValue(PlateBlockStateProperties.ATTACHMENT_DIRECTION).getOpposite();
-            for (int i = 1; i < 128; i++) {
+            int observeDistance = ServerConfig.MAX_OBS_RANGE.get();
+            for (int i = 1; i < observeDistance; i++) {
                 BlockPos foundBlockPos = blockPos.relative(direction, i);
                 Block foundBlock = level.getBlockState(foundBlockPos).getBlock();
                 if (!foundBlock.getDescriptionId().equals("block.minecraft.air")) {
@@ -109,7 +111,7 @@ public class MinecontrollersInterrupts {
             BlockPos blockPos = microcontrollerBlockEntity.getBlockPos();
             if (level == null || level.getBlockEntity(blockPos) == null || !level.getBlockEntity(blockPos).equals(microcontrollerBlockEntity)) return;
             int cubeRadius = microcontrollerBlockEntity.registerA;
-            int maxCubeRadius = 32;
+            int maxCubeRadius = ServerConfig.MAX_ENTITY_FIND_RANGE.get();
             cubeRadius = Math.abs(cubeRadius);
             cubeRadius = cubeRadius > maxCubeRadius ? maxCubeRadius : cubeRadius;
             BlockPos firstPos = blockPos.offset(-cubeRadius, -cubeRadius, -cubeRadius);
@@ -123,7 +125,7 @@ public class MinecontrollersInterrupts {
             BlockPos blockPos = microcontrollerBlockEntity.getBlockPos();
             if (level == null || level.getBlockEntity(blockPos) == null || !level.getBlockEntity(blockPos).equals(microcontrollerBlockEntity)) return;
             int cubeRadius = microcontrollerBlockEntity.registerA;
-            int maxCubeRadius = 32;
+            int maxCubeRadius = ServerConfig.MAX_PLAYER_FIND_RANGE.get();
             cubeRadius = Math.abs(cubeRadius);
             cubeRadius = cubeRadius > maxCubeRadius ? maxCubeRadius : cubeRadius;
             BlockPos firstPos = blockPos.offset(-cubeRadius, -cubeRadius, -cubeRadius);
@@ -142,7 +144,7 @@ public class MinecontrollersInterrupts {
             BlockPos blockPos = microcontrollerBlockEntity.getBlockPos();
             if(level == null || level.getBlockEntity(blockPos) == null || !level.getBlockEntity(blockPos).equals(microcontrollerBlockEntity)) return;
             int cubeRadius = microcontrollerBlockEntity.registerA;
-            int maxCubeRadius = 32;
+            int maxCubeRadius = ServerConfig.MAX_MC_SOUNDING_RANGE.get();
             cubeRadius = Math.abs(cubeRadius);
             cubeRadius = cubeRadius > maxCubeRadius ? maxCubeRadius : cubeRadius;
             BlockPos firstPos = blockPos.offset(-cubeRadius, -cubeRadius, -cubeRadius);
