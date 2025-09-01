@@ -2,6 +2,7 @@ package com.abadon.minecontrollers.blocks.assembler;
 
 import com.abadon.minecontrollers.utils.CommandAction;
 import com.abadon.minecontrollers.utils.MathParser;
+import com.abadon.minecontrollers.utils.NumberParser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -506,10 +507,10 @@ public class CodeAssembler {
     }
     protected class ArgumentParser{
         protected boolean checkKeyForNumber(String key){
-            return key.matches("^-?\\d+$") ||key.matches("^-?0[xX][0-9a-fA-F]+$") || key.matches("^-?\\d+b$");
+            return NumberParser.checkForSignedNumber(key);
         }
         protected boolean checkKeyForRegister(String key){
-            return registersTable.containsKey(key);
+            return registersTable.containsKey(key.toLowerCase());
         }
         protected boolean hasOffset(String key){
             return key.matches("\\w{2}:.*");
@@ -521,13 +522,7 @@ public class CodeAssembler {
             return key.substring(1, key.length()-1);
         }
         protected int getNumberFromKey(String key){
-            if(key.matches("^-?\\d+$")){
-                return Integer.valueOf(key);
-            }else if(key.matches("^-?0[xX][0-9a-fA-F]+$")){
-                return Integer.valueOf(key.substring(2), 16);
-            }else if(key.matches("^-?\\d+b$")){
-                return Integer.valueOf(key.substring(0, key.length() - 1), 2);
-            } else return 0;
+            return NumberParser.getSignedNumber(key);
         }
         protected boolean valid = false;
         protected boolean isValid(){
@@ -605,7 +600,7 @@ public class CodeAssembler {
 
             } else if(checkKeyForRegister(argument)) {
                 valid = true;
-                argumentNum = registersTable.get(argument);
+                argumentNum = registersTable.get(argument.toLowerCase());
             } else if(labels.containsKey(argument)){
                 valid = true;
                 argumentNum = labels.get(argument);

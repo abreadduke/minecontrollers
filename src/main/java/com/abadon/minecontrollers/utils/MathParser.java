@@ -28,18 +28,11 @@ abstract class AbstractMathToken{
     public String getValue(){
         return value;
     }
-    public abstract void act();
 }
 class MathToken extends AbstractMathToken{
     public MathToken(String value) {
         super(value);
     }
-
-    @Override
-    public void act() {
-
-    }
-
     public MathToken getToken(String value){
         return null;
     }
@@ -53,7 +46,7 @@ class ValueToken extends MathToken{
     public ValueToken(){super(null);}
     private ValueToken(String value) {
         super(value);
-        if(!value.matches("\\d+")){
+        if(!(NumberParser.checkForUnignedNumber(value) || NumberParser.checkForHexPrefix(value))){
             throw new IncorrectTokenValueException(value + " isn't a number");
         }
     }
@@ -67,7 +60,7 @@ class SignedValueToken extends MathToken{
     public SignedValueToken(){super(null);}
     private SignedValueToken(String value) {
         super(value);
-        if(!value.matches("-?\\d+")){
+        if(!NumberParser.checkForSignedNumber(value)){
             throw new IncorrectTokenValueException(value + " isn't a number");
         }
     }
@@ -196,9 +189,11 @@ class Tokenizer {
                 }
             }
             if(!succes){
-                begin = i-1;
-                if(parsedToken != null) i--;
-                parsedTokens.add(parsedToken);
+                if(parsedToken != null){
+                    begin = i-1;
+                    i--;
+                    parsedTokens.add(parsedToken);
+                }
                 parsedToken = null;
             }
             if(i == source.length() && parsedToken != null){
@@ -261,36 +256,40 @@ public class MathParser {
                 if(tokens.indexOf(operatorToken)-1 >= 0){
                     if(tokens.get(tokens.indexOf(operatorToken)-1) instanceof ValueToken token) {
                         firstToken = token;
-                        firstValue = Integer.parseInt(token.getValue());
+                        firstValue = NumberParser.getUnsignedNumber(token.getValue());
                     }
                     else if(tokens.get(tokens.indexOf(operatorToken)-1) instanceof SignedValueToken token) {
                         firstToken = token;
-                        firstValue = Integer.parseInt(token.getValue());
+                        firstValue = NumberParser.getSignedNumber(token.getValue());
                     }
                     else if (tokens.get(tokens.indexOf(operatorToken)-1) instanceof ContextToken ctx) {
                         firstToken = ctx;
                         firstValue = ctx.getContext().result;
                     }
+                    else if(operatorToken.getValue().equals("-")){
+                        firstValue = 0;
+                    }
                 }
                 if(tokens.indexOf(operatorToken)+1 < tokens.size()){
                     if(tokens.get(tokens.indexOf(operatorToken)+1) instanceof ValueToken token){
                         secondToken = token;
-                        secondValue = Integer.parseInt(token.getValue());
+                        secondValue = NumberParser.getUnsignedNumber(token.getValue());
                     }
                     if(tokens.get(tokens.indexOf(operatorToken)+1) instanceof SignedValueToken token){
                         secondToken = token;
-                        secondValue = Integer.parseInt(token.getValue());
+                        secondValue = NumberParser.getSignedNumber(token.getValue());
                     }
                     else if (tokens.get(tokens.indexOf(operatorToken)+1) instanceof ContextToken ctx) {
                         secondToken = ctx;
                         secondValue = ctx.getContext().result;
                     }
                 }
-                if(firstToken == null || secondToken == null) return;
                 int result = mathOperation(operatorToken, firstValue, secondValue);
                 tokens.set(tokens.indexOf(operatorToken), new SignedValueToken().getToken(String.valueOf(result)));
-                tokens.remove(firstToken);
-                tokens.remove(secondToken);
+                if(firstToken != null)
+                    tokens.remove(firstToken);
+                if(secondToken != null)
+                    tokens.remove(secondToken);
                 output = result;
             }
             subtree.context.result = output;

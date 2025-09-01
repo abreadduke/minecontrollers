@@ -1,0 +1,16 @@
+{
+    "name": "Numbers",
+    "icon": "minecraft:gold_nugget",
+    "category": "minecontrollers:casm",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "CASM allows the use of hexadecimal, binary and decimal format for writing numbers in the code. An example of writing the number 255 in different formats will be presented below: $(bold)$(li)255 - in decimal format$(li)0xFF - in hexadecimal format$(li)11111111b - in binary format"
+        },
+        {
+            "type": "patchouli:text",
+            "title": "Const. expressions",
+            "text": "In order to make it easier to write code, CASM has a mathematical interpreter. Example:$(br)$(bold)mov ax, (137 & 0xF)^(16 / (5 + 3))$(); equivalent to - mov ax, 81$(br)Note that the interpreter can only work with constant expressions, i.e. expressions should not refer to memory locations or registers."
+        }
+    ]
+}
