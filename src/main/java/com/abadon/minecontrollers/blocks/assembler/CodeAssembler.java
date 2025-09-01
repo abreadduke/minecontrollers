@@ -1,7 +1,7 @@
 package com.abadon.minecontrollers.blocks.assembler;
 
 import com.abadon.minecontrollers.utils.CommandAction;
-import com.mojang.logging.LogUtils;
+import com.abadon.minecontrollers.utils.MathParser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -345,7 +345,9 @@ public class CodeAssembler {
             return applied;
         }
         public void start(){
-            source = source.replaceAll(";.*?\n", "").replaceAll("\\\\.*\n", "");
+            //removing comments and concatenating strings
+            source = source.replaceAll(";.*?\n", "\n").replaceAll("\\\\.*\n", "");
+
             for (int i = 0; i < 128; i++){
                 initMacroTable();
                 if(!applyMacroses()) break;
@@ -589,6 +591,8 @@ public class CodeAssembler {
                         break;
                     }
                 }
+            } else {
+                argument = MathParser.parse(argument);
             }
             if(isKeyAddress(argument)){
                 metaInfo += 100;
@@ -691,7 +695,7 @@ public class CodeAssembler {
         for(String line : code.split("\n+")){
             //offsets
             String[] keys = line.split("\\s+");
-            if(keys[0].toUpperCase().equals("ORG") && keys.length > 1){
+            if(keys[0].equalsIgnoreCase("ORG") && keys.length > 1){
                 ArgumentParser offsetParser = new ArgumentParser("0x" + keys[1]);
                 offsetParser.analyze();
                 actualSegmentOffset += offsetParser.getParsedNumber();
@@ -725,8 +729,7 @@ public class CodeAssembler {
         return code;
     }
     public String defaultCommand(String command){
-        command = command.replace(',', ' ');
-        String keys[] = command.split("\\s+", 3);
+        String keys[] = command.split(",?\\s+", 3);
         if(keys.length == 1){
             try{
                 Integer.parseInt(keys[0], 16);
@@ -742,7 +745,6 @@ public class CodeAssembler {
         }
 
         if(!opcodesTable.containsKey(keys[0].toUpperCase())) return command + " <- unknown command";
-        LogUtils.getLogger().info("commandlet - " + keys[0] + "\tcomandlet code - " + opcodesTable.get(keys[0].toUpperCase()));
         String  firstValue = "0000";
         String  secondValue = "0000";
         String opcodeName = keys[0].toUpperCase();
@@ -782,7 +784,7 @@ public class CodeAssembler {
             String meta = Integer.toString(getCombinedMetaInfo(firstMeta, secondMeta), 16);
             meta = "0".repeat(2 - meta.length()) + meta;
             String compiledCommand = opcode + meta + firstValue + secondValue;
-            LogUtils.getLogger().info(compiledCommand);
+            //LogUtils.getLogger().info(compiledCommand);
             return compiledCommand;
         } catch (Exception exception){
             return command + " <- fatal error";
@@ -794,13 +796,13 @@ public class CodeAssembler {
         assemblerCode += "\n";
         Preprocessor preprocessor = new Preprocessor(assemblerCode);
         preprocessor.start();
-        assemblerCode = assemblerCode.replaceAll("\n+", "\n").replaceAll("^\n", "");
         assemblerCode = preprocessor.getCode();
+        assemblerCode = assemblerCode.replaceAll("\n+", "\n").replaceAll("^\n", "").replaceAll("(\\s|\t)+\n", "\n");
         assemblerCode = initLabels(assemblerCode);
         assemblerCode = assemblerCode.replaceAll("\n+", "\n").replaceAll("^\n", "");
         StringBuilder mashineCodesBuilder = new StringBuilder();
         for(String codeline : assemblerCode.split("\\n+")){
-            mashineCodesBuilder.append(defaultCommand(codeline)).append("\n");
+            mashineCodesBuilder.append(defaultCommand(codeline.replaceAll("\t+", " ").replaceAll("^\\s+", "").replaceAll("\\s+$", ""))).append("\n");
         }
         return mashineCodesBuilder.toString().replaceAll("\n+", "\n").replaceAll("^\n", "").toUpperCase();
     }
