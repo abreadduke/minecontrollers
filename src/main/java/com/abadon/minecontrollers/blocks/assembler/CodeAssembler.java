@@ -586,8 +586,6 @@ public class CodeAssembler {
                         break;
                     }
                 }
-            } else {
-                argument = MathParser.parse(argument);
             }
             if(isKeyAddress(argument)){
                 metaInfo += 100;
@@ -611,6 +609,13 @@ public class CodeAssembler {
                 valid = true;
                 argumentNum = sectionLabels.get(argument);
                 metaInfo += 1000;
+            } else {
+                argument = MathParser.parse(argument);
+                if(checkKeyForNumber(argument)){
+                    valid = true;
+                    metaInfo += 1000;
+                    argumentNum = getNumberFromKey(argument);
+                }
             }
         }
         public int getParsedNumber(){
