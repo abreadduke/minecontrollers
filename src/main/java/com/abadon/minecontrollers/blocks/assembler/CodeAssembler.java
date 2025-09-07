@@ -148,7 +148,7 @@ public class CodeAssembler {
         public boolean applyMacroValue(String line) {
             key += line + "\n";
             if(isElseStatement(line)) {canPaste = !canPaste; return false;};
-            if(!isMacro(line)  && canPaste){
+            if(!isMacro(line) && canPaste){
                 boolean returnValue = super.applyMacroValue(line);
                 value.append("\n");
                 return returnValue;
@@ -178,7 +178,7 @@ public class CodeAssembler {
 
         @Override
         public String removeMacroPattern(String code) {
-            return code.replaceAll(key, value.toString());
+            return code.replaceAll(key.replaceAll("\n+$", ""), value.toString());
         }
     }
     protected class RetWithoutParamsMacros extends Macros{
@@ -259,10 +259,6 @@ public class CodeAssembler {
 
         @Override
         public String removeMacroPattern(String code) {
-            //return code.replace(procedurePrologue,
-            //        procedureName + ":\n"
-            //                    + "push bp\n"
-            //                    + "mov bp, sp").replace(procedureEpilogue, "mov sp, bp\npop bp");
             String lines[] = code.split("\n");
             boolean canFindNextSection = false;
             for(int i = 0; i < lines.length; i++){
@@ -307,9 +303,17 @@ public class CodeAssembler {
                     if(macroInstance != null){
                         macroInstance.applyMacroValue(line);
                         if (macroInstance.isClosed(line)) {
+                            int index = source.indexOf(line);
+                            String sourceBackup = source;
+                            source = source.substring(0, index+line.length());
+                            source = macroInstance.removeMacroPattern(source);
+                            if(macroTable.containsKey(macroKey)){
+                                applyMacroses();
+                                macroTable.remove(macroKey);
+                            }
                             macroTable.put(macroKey, macroInstance.getMacroValue());
                             macroKey = "";
-                            source = macroInstance.removeMacroPattern(source);
+                            source += sourceBackup.substring(index+line.length());
                             macroInstance = null;
                         }
                     }
@@ -323,8 +327,7 @@ public class CodeAssembler {
             boolean applied = false;
             for(String macroKey : macroTable.keySet()){
                 if(macroKey.equals("")) continue;
-                //source = source.replaceAll(macroKey, macroTable.get(macroKey));
-                Pattern macrosUsages = Pattern.compile(macroKey + "(\\(\\s*(.*\\S)\\s*\\))?");
+                Pattern macrosUsages = Pattern.compile(macroKey + "(\\(\\s*(.*)\\s*\\))?");
                 Matcher sourceLines = macrosUsages.matcher(source);
                 while (sourceLines.find()){
                     applied = true;
@@ -336,7 +339,7 @@ public class CodeAssembler {
                             macroString = macroString.replaceAll("\\$" + i, macroParams[i]);
                         }
                         macroString = macroString.replaceAll("\\$#", String.valueOf(paramsCount));
-                        macroString = macroString.replaceAll("\\$\\*", sourceLines.group(2).replaceAll(",\\s*", " "));
+                        macroString = macroString.replaceAll("\\$\\*", sourceLines.group(2));
                         source = source.replace(sourceLines.group(0), macroString);
                     } else{
                         source = source.replace(macroKey, macroTable.get(macroKey).replace("$#", "0").replace("$*", ""));
@@ -377,7 +380,6 @@ public class CodeAssembler {
             int reservedIndexTokens = -1000;
             final int indexTokenSequenseSize = 2;
             int baseTokenIndex = -1;
-            //String tokens[] = addressEval.split("\\s+");
             ArrayList<String> tokens = new ArrayList<>();
             String buffer = "";
             for(char c : addressEval.toCharArray()){
@@ -495,7 +497,6 @@ public class CodeAssembler {
             stringInfoData = "0".repeat(2 - stringInfoData.length()) + stringInfoData;
             stringBaseIndexData = "0".repeat(2 - stringBaseIndexData.length()) + stringBaseIndexData;
             stringDispData = "0".repeat(4 - stringDispData.length()) + stringDispData;
-            //commandArgsBuilder.append(sourceRegister).append(sumIndex ? "1" : "0").append(sumDisp ? "1" : "0").append(Math.round(Math.log(size)) % 4).append(base).append(index).append(disp);
             commandArgsBuilder.append(stringInfoData).append(stringBaseIndexData).append(stringDispData);
             return opcode + "03" + commandArgsBuilder.toString();
         }
@@ -630,12 +631,6 @@ public class CodeAssembler {
         String firstStringMeta = new StringBuilder().append(rawFirstStringMeta).reverse().append(new String("0").repeat(4 - rawFirstStringMeta.length())).toString();
         String secondStringMeta = new StringBuilder().append(rawSecondStringMeta).reverse().append(new String("0").repeat(4 - rawSecondStringMeta.length())).toString();
         StringBuilder resultMetaBuilder = new StringBuilder();
-        //bit resolution
-        //resultMetaBuilder.append(firstStringMeta.substring(0,1) + secondStringMeta.substring(0,1));
-        //address meta
-        //resultMetaBuilder.append(firstStringMeta.substring(1,2) + secondStringMeta.substring(1,2));
-        //operand types
-        //resultMetaBuilder.append(firstStringMeta.substring(2,4) + secondStringMeta.substring(2,4));
 
         //offset
         resultMetaBuilder.append(firstStringMeta.substring(0,2) + secondStringMeta.substring(0,2));
