@@ -333,14 +333,24 @@ public class CodeAssembler {
                     applied = true;
                     if(sourceLines.groupCount() > 1 && sourceLines.group(2) != null){
                         String macroString = macroTable.get(macroKey);
-                        String macroParams[] = sourceLines.group(2).split(",\\s*");
+
+                        //fix of recursive brackets in macros
+                        String argString = sourceLines.group(2);
+                        String sourceArgs = argString;
+                        String wholeGroup = sourceLines.group(0);
+                        while (argString.length() - argString.replaceAll("\\(", "").length() <
+                                argString.length() - argString.replaceAll("\\)", "").length()){
+                            argString = argString.substring(0, argString.lastIndexOf(')'));
+                        }
+                        wholeGroup = wholeGroup.replace(sourceArgs, argString);
+                        String macroParams[] = argString.split(",\\s*");
                         int paramsCount = macroParams.length;
                         for(int i = 0; i < paramsCount; i++){
                             macroString = macroString.replaceAll("\\$" + i, macroParams[i]);
                         }
                         macroString = macroString.replaceAll("\\$#", String.valueOf(paramsCount));
-                        macroString = macroString.replaceAll("\\$\\*", sourceLines.group(2));
-                        source = source.replace(sourceLines.group(0), macroString);
+                        macroString = macroString.replaceAll("\\$\\*", argString);
+                        source = source.replace(wholeGroup, macroString);
                     } else{
                         source = source.replace(macroKey, macroTable.get(macroKey).replace("$#", "0").replace("$*", ""));
                     }
