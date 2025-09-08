@@ -338,15 +338,43 @@ public class CodeAssembler {
                         String argString = sourceLines.group(2);
                         String sourceArgs = argString;
                         String wholeGroup = sourceLines.group(0);
-                        while (argString.length() - argString.replaceAll("\\(", "").length() <
-                                argString.length() - argString.replaceAll("\\)", "").length()){
-                            argString = argString.substring(0, argString.lastIndexOf(')'));
+                        int openBrackets = 0;
+                        for(int i = 0; i < argString.length(); i++){
+                            if(argString.charAt(i) == '('){
+                                openBrackets++;
+                            } else if(argString.charAt(i) == ')'){
+                                if(openBrackets <= 0){
+                                    argString = argString.substring(0, i);
+                                    break;
+                                } else  openBrackets--;
+                            }
                         }
                         wholeGroup = wholeGroup.replace(sourceArgs, argString);
-                        String macroParams[] = argString.split(",\\s*");
-                        int paramsCount = macroParams.length;
+                        //String macroParams[] = argString.split(",\\s*");
+                        ArrayList<String> macroParams = new ArrayList<>();
+                        openBrackets = 0;
+                        StringBuilder bufferBuilder = new StringBuilder();
+                        for(int i = 0; i < argString.length(); i++){
+                            if(argString.charAt(i) == '('){
+                                openBrackets++;
+                            } else if(argString.charAt(i) == ')'){
+                                openBrackets--;
+                            }
+                            if(argString.charAt(i) == ',' && openBrackets == 0){
+                                macroParams.add(bufferBuilder.toString());
+                                bufferBuilder = new StringBuilder();
+                            } else {
+                                bufferBuilder.append(argString.charAt(i));
+                            }
+                            if(i == argString.length() - 1){
+                                macroParams.add(bufferBuilder.toString());
+                                bufferBuilder = new StringBuilder();
+                            }
+                        }
+
+                        int paramsCount = macroParams.size();
                         for(int i = 0; i < paramsCount; i++){
-                            macroString = macroString.replaceAll("\\$" + i, macroParams[i]);
+                            macroString = macroString.replaceAll("\\$" + i, macroParams.get(i));
                         }
                         macroString = macroString.replaceAll("\\$#", String.valueOf(paramsCount));
                         macroString = macroString.replaceAll("\\$\\*", argString);

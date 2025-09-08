@@ -6,7 +6,8 @@ import java.util.*;
 abstract class AbstractMathContext{
     public int result = 0;
     abstract void addToken(AbstractMathToken token);
-    abstract AbstractCollection<AbstractMathToken> getTokens();
+    abstract void setTokens(AbstractCollection<AbstractMathToken> tokens);
+    public abstract AbstractCollection<AbstractMathToken> getTokens();
 }
 class MathContext extends AbstractMathContext{
     private ArrayList<AbstractMathToken> tokens = new ArrayList<>();
@@ -16,7 +17,13 @@ class MathContext extends AbstractMathContext{
     }
 
     @Override
-    AbstractCollection<AbstractMathToken> getTokens() {
+    void setTokens(AbstractCollection<AbstractMathToken> tokens) {
+        this.tokens = new ArrayList<>();
+        this.tokens.addAll(tokens);
+    }
+
+    @Override
+    public AbstractCollection<AbstractMathToken> getTokens() {
         return tokens;
     }
 }
@@ -239,6 +246,20 @@ public class MathParser {
 
             LinkedList<AbstractMathToken> tokens = new LinkedList<>();
             ArrayList<OperatorToken> operatorTokens = new ArrayList<>();
+
+            //open context token if there is only it
+            while (subtree.context.getTokens().size() == 1 && subtree.context.getTokens().stream().toArray()[0] instanceof ContextToken ct){
+                //subtree.context = ct.getContext();
+                subtree.context.setTokens(ct.getContext().getTokens());
+            }
+            //set result as number if there is only it
+            if(subtree.context.getTokens().size() == 1 && subtree.context.getTokens().stream().toArray()[0] instanceof ValueToken vt){
+                subtree.context.result = Integer.parseInt(vt.getValue());
+                if(subtree != tree)
+                    continue;
+                else break;
+            }
+
             for(AbstractMathToken token : subtree.context.getTokens()){
                 if(token instanceof OperatorToken operatorToken){
                     operatorTokens.add(operatorToken);
