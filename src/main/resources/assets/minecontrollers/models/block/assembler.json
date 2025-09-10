@@ -3,8 +3,8 @@
 	"texture_size": [48, 16],
 	"parent": "minecraft:block/cube",
 	"textures": {
-		"0": "minecontrollers:block/formatter",
-		"particle": "minecontrollers:block/formatter"
+		"0": "minecontrollers:block/assembler",
+		"particle": "minecontrollers:block/assembler"
 	},
 	"elements": [
 		{

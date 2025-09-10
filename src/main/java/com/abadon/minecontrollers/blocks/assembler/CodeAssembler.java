@@ -127,6 +127,7 @@ public class CodeAssembler {
         boolean canPaste = false;
         public String key = "";
         private boolean isDefCondition = false;
+        private boolean skipMacros = false;
 
         public ConditionMacros(Preprocessor preprocessor) {
             super(preprocessor);
@@ -166,7 +167,12 @@ public class CodeAssembler {
             if(params[0].equals("%ifdef")){
                 canPaste = preprocessor.macroTable.containsKey(params[1]);
             } else {
-                canPaste = Integer.parseInt(params[1]) > 0;
+                try{
+                    canPaste = Integer.parseInt(params[1]) > 0;
+                } catch (RuntimeException exception){
+                    skipMacros = true;
+                }
+
             }
             return "";
         }
@@ -178,6 +184,7 @@ public class CodeAssembler {
 
         @Override
         public String removeMacroPattern(String code) {
+            if(skipMacros) return code;
             return code.replaceAll(key.replaceAll("\n+$", ""), value.toString());
         }
     }
@@ -294,28 +301,32 @@ public class CodeAssembler {
         protected void initMacroTable(){
             String macroKey = "";
             Macros macroInstance = null;
-            for(Macros macros : macroses){
-                for(String line : source.split("\n")){
-                    if(macroInstance == null && macros.isMacro(line)){
-                        macroInstance = macros.getNewMacro();
-                        macroKey = macroInstance.getMacroKey(line);
-                    }
-                    if(macroInstance != null){
-                        macroInstance.applyMacroValue(line);
-                        if (macroInstance.isClosed(line)) {
-                            int index = source.indexOf(line);
-                            String sourceBackup = source;
-                            source = source.substring(0, index+line.length());
-                            source = macroInstance.removeMacroPattern(source);
-                            if(macroTable.containsKey(macroKey)){
-                                applyMacroses();
-                                macroTable.remove(macroKey);
-                            }
-                            macroTable.put(macroKey, macroInstance.getMacroValue());
-                            macroKey = "";
-                            source += sourceBackup.substring(index+line.length());
-                            macroInstance = null;
+            int recheckCount = 1;
+            while(recheckCount-- != 0){
+                for(Macros macros : macroses){
+                    for(String line : source.split("\n")){
+                        if(macroInstance == null && macros.isMacro(line)){
+                            macroInstance = macros.getNewMacro();
+                            macroKey = macroInstance.getMacroKey(line);
                         }
+                        if(macroInstance != null){
+                            macroInstance.applyMacroValue(line);
+                            if (macroInstance.isClosed(line)) {
+                                int index = source.indexOf(line);
+                                String sourceBackup = source;
+                                source = source.substring(0, index+line.length());
+                                source = macroInstance.removeMacroPattern(source);
+                                if(macroTable.containsKey(macroKey)){
+                                    if(applyMacroses()) recheckCount++;
+                                    macroTable.remove(macroKey);
+                                }
+                                macroTable.put(macroKey, macroInstance.getMacroValue());
+                                macroKey = "";
+                                source += sourceBackup.substring(index+line.length());
+                                macroInstance = null;
+                            }
+                        }
+
                     }
                 }
             }

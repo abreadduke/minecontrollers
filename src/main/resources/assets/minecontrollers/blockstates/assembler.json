@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "minecontrollers:block/formatter"
+      "model": "minecontrollers:block/assembler"
     }
   }
 }

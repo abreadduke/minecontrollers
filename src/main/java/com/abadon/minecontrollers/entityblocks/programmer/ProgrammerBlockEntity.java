@@ -2,7 +2,6 @@ package com.abadon.minecontrollers.entityblocks.programmer;
 
 import com.abadon.minecontrollers.entityblocks.MinecontrollersBlocks;
 import com.abadon.minecontrollers.inventory.ProgrammerMenu;
-import com.mojang.logging.LogUtils;
 import commoble.morered.api.ChanneledPowerSupplier;
 import commoble.morered.api.MoreRedAPI;
 import commoble.morered.plate_blocks.PlateBlockStateProperties;
@@ -21,6 +20,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -29,7 +29,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 public class ProgrammerBlockEntity extends BaseContainerBlockEntity implements ChanneledPowerSupplier {
     protected int page = 0;
@@ -157,6 +156,8 @@ public class ProgrammerBlockEntity extends BaseContainerBlockEntity implements C
     public ItemStack removeItem(int i, int i1) {
         ItemStack itemstack = ContainerHelper.removeItem(items, i, i1);
         if (!itemstack.isEmpty()) {
+            BlockState blockState = getBlockState();
+            RedStoneWireBlock.updateOrDestroy(blockState, blockState.setValue(Programmer.HAS_BOOK, false), getLevel(), getBlockPos(), Block.UPDATE_ALL);
             this.setChanged();
         }
 
@@ -173,8 +174,12 @@ public class ProgrammerBlockEntity extends BaseContainerBlockEntity implements C
         if(itemStack.getItem().getDefaultInstance().getItem().equals(Items.WRITABLE_BOOK) ||
                 itemStack.getItem().getDefaultInstance().getItem().equals(Items.WRITTEN_BOOK)){
             items.set(i, itemStack);
+            BlockState blockState = getBlockState();
+            RedStoneWireBlock.updateOrDestroy(blockState, blockState.setValue(Programmer.HAS_BOOK, true), getLevel(), getBlockPos(), Block.UPDATE_ALL);
         }
         else{
+            BlockState blockState = getBlockState();
+            RedStoneWireBlock.updateOrDestroy(blockState, blockState.setValue(Programmer.HAS_BOOK, false), getLevel(), getBlockPos(), Block.UPDATE_ALL);
             items.set(i, ItemStack.EMPTY);
         }
         setChanged();

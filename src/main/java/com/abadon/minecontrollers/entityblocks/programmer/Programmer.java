@@ -1,51 +1,33 @@
 package com.abadon.minecontrollers.entityblocks.programmer;
 
 import com.abadon.minecontrollers.entityblocks.MinecontrollersBlocks;
-import commoble.morered.MoreRed;
-import commoble.morered.api.ChanneledPowerSupplier;
-import commoble.morered.api.MoreRedAPI;
 import commoble.morered.bitwise_logic.BitwiseLogicPlateBlock;
 import commoble.morered.plate_blocks.PlateBlockStateProperties;
 import commoble.morered.util.BlockStateUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.stats.Stats;
-import net.minecraft.util.RandomSource;
+import net.minecraft.world.Container;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.CraftingMenu;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import com.mojang.logging.LogUtils;
-import net.minecraft.world.ticks.TickPriority;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class Programmer extends BitwiseLogicPlateBlock {
     private boolean neighbourHasSignal = false;
+    public static final BooleanProperty HAS_BOOK = BooleanProperty.create("has_book");
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return MinecontrollersBlocks.PROGRAMMER_BE.get().create(pos, state);
@@ -106,7 +88,28 @@ public class Programmer extends BitwiseLogicPlateBlock {
 
     public Programmer(Properties p_49795_) {
         super(p_49795_);
+        this.registerDefaultState(getStateDefinition().any().setValue(HAS_BOOK, false));
     }
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
+    {
+        super.createBlockStateDefinition(builder);
+        builder.add(HAS_BOOK);
+
+    }
+
+    public void onRemove(BlockState p_51538_, Level p_51539_, BlockPos p_51540_, BlockState p_51541_, boolean p_51542_) {
+        if (!p_51538_.is(p_51541_.getBlock())) {
+            BlockEntity blockentity = p_51539_.getBlockEntity(p_51540_);
+            if (blockentity instanceof Container) {
+                Containers.dropContents(p_51539_, p_51540_, (Container)blockentity);
+                p_51539_.updateNeighbourForOutputSignal(p_51540_, this);
+            }
+
+            super.onRemove(p_51538_, p_51539_, p_51540_, p_51541_, p_51542_);
+        }
+    }
+
     @Override
     public VoxelShape getOcclusionShape(BlockState p_60578_, BlockGetter p_60579_, BlockPos p_60580_) {
         return p_60578_.getShape(p_60579_, p_60580_);
@@ -115,15 +118,6 @@ public class Programmer extends BitwiseLogicPlateBlock {
     public VoxelShape getShape(BlockState p_60555_, BlockGetter p_60556_, BlockPos p_60557_, CollisionContext p_60558_) {
         return Shapes.block();
     }
-    @Override
-    public BlockState updateShape(BlockState thisState, Direction directionToNeighbor, BlockState neighborState, LevelAccessor world, BlockPos thisPos, BlockPos neighborPos) {
-        return thisState;
-    }
-    //@Override
-    //@Nullable
-    //public BlockState getStateForPlacement(BlockPlaceContext p_49820_) {
-    //    return this.defaultBlockState();
-    //}
     @Override
     public InteractionResult use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult hitResult) {
         if (level.isClientSide) {
