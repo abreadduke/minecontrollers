@@ -11,5 +11,11 @@
 	"block.minecontrollers.redstone_controller" : "Редстоун контроллер",
 	"block.minecontrollers.redstone_core" : "Редстоун ядро",
 	"item.minecontrollers.guide": "CASM для чайников",
-	"gui.minecontrollers.dump_message": "Адрес дампа памяти: "
+	"gui.minecontrollers.dump_message": "Адрес дампа памяти: ",
+	"container.minecontrollers.disassembler": "Дизассемблер",
+	"container.minecontrollers.dumper": "Дампер",
+	"container.minecontrollers.dumper.begin_text": "начало",
+	"container.minecontrollers.dumper.bytes_text": "байты",
+	"block.minecontrollers.disassembler": "Дизассемблер",
+	"block.minecontrollers.dumper": "Дампер"
 }

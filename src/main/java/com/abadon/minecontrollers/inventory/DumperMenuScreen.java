@@ -33,8 +33,8 @@ public class DumperMenuScreen extends AbstractContainerScreen<DumperMenu> {
         startValueField = new EditBox(this.font, i + 8, j + 27, 33, 12, Component.literal("0000"));
         endValueField = new EditBox(this.font, i + 8, j + 53, 33, 12, Component.literal("0000"));
 
-        startValueText = new StringWidget((this.width - this.imageWidth) + 43, (this.height - this.imageHeight) + 44, Component.literal("start"), font);
-        endValueText = new StringWidget((this.width - this.imageWidth) + 43, (this.height - this.imageHeight) + 95, Component.literal("bytes"), font);
+        startValueText = new StringWidget((this.width - this.imageWidth) + 43, (this.height - this.imageHeight) + 43, Component.translatable("container.minecontrollers.dumper.begin_text"), font);
+        endValueText = new StringWidget((this.width - this.imageWidth) + 43, (this.height - this.imageHeight) + 95, Component.translatable("container.minecontrollers.dumper.bytes_text"), font);
 
         dumpButton = new ImageButton(i + 76, j + 53, 24, 24, 0, 0, 24, ResourceLocation.fromNamespaceAndPath(Minecontrollers.MODID, "textures/gui/container/start_button.png"), 24, 24, (Button button) -> {
             button.active = false;

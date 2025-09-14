@@ -1,0 +1,11 @@
+{
+    "name": "Disassembler",
+    "icon": "minecontrollers:disassembler",
+    "category": "minecontrollers:basics",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "This block converts machine code from the input slot to assembler code in the output slot. Both slots only take writable books."
+        }
+    ]
+}

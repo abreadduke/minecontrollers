@@ -11,5 +11,11 @@
 	"block.minecontrollers.redstone_controller" : "Redstone controller",
 	"block.minecontrollers.redstone_core" : "Redstone core",
 	"item.minecontrollers.guide": "CASM for noobs",
-	"gui.minecontrollers.dump_message": "Memory dump address: "
+	"gui.minecontrollers.dump_message": "Memory dump address: ",
+	"container.minecontrollers.disassembler": "Disassembler",
+	"container.minecontrollers.dumper": "Dumper",
+	"container.minecontrollers.dumper.begin_text": "begin",
+	"container.minecontrollers.dumper.bytes_text": "bytes",
+	"block.minecontrollers.disassembler": "Disassembler",
+	"block.minecontrollers.dumper": "Dumper"
 }

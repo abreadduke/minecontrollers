@@ -1,0 +1,11 @@
+{
+    "name": "Дампер",
+    "icon": "minecontrollers:dumper",
+    "category": "minecontrollers:basics",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Этот блок предоставляет возможность для записи данных из памяти микроконтроллера в книгу с пером. Полезен в связке с дизассемблером."
+        }
+    ]
+}

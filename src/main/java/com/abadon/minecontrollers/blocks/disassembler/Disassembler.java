@@ -25,7 +25,7 @@ public class Disassembler extends Block {
         }
     }
     public MenuProvider getMenuProvider(BlockState blockState, Level level, BlockPos blockPos) {
-        return new SimpleMenuProvider((value, inventory, player) -> new DisassemblerMenu(value, inventory, ContainerLevelAccess.create(level, blockPos)), Component.translatable("container.minecontrollers.assembler"));
+        return new SimpleMenuProvider((value, inventory, player) -> new DisassemblerMenu(value, inventory, ContainerLevelAccess.create(level, blockPos)), Component.translatable("container.minecontrollers.disassembler"));
     }
     public Disassembler(Properties p_49795_) {
         super(p_49795_);

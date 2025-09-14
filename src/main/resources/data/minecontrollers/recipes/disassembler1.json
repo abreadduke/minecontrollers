@@ -1,0 +1,29 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "RL#",
+        "OMO",
+        "#O#"
+    ],
+    "key": {
+        "#": {
+            "item": "minecraft:polished_andesite"
+        },
+        "L": {
+            "item": "minecraft:lectern"
+        },
+        "O": {
+            "item": "minecraft:observer"
+        },
+        "M": {
+            "item": "minecontrollers:microcontroller"
+        },
+        "R": {
+            "item": "minecraft:lever"
+        }
+    },
+    "result": {
+        "item": "minecontrollers:disassembler",
+        "count": 1
+    }
+}

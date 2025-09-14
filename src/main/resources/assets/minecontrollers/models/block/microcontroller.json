@@ -1,5 +1,4 @@
 {
-	"credit": "Made with Blockbench",
 	"parent": "morered:block/plate_template",
 	"texture_size": [64, 27],
 	"textures": {

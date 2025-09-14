@@ -30,6 +30,6 @@ public class Dumper extends Block {
         }
     }
     public MenuProvider getMenuProvider(BlockState blockState, Level level, BlockPos blockPos) {
-        return new SimpleMenuProvider((value, inventory, player) -> new DumperMenu(value, inventory, ContainerLevelAccess.create(level, blockPos)), Component.translatable("container.minecontrollers.formatter"));
+        return new SimpleMenuProvider((value, inventory, player) -> new DumperMenu(value, inventory, ContainerLevelAccess.create(level, blockPos)), Component.translatable("container.minecontrollers.dumper"));
     }
 }

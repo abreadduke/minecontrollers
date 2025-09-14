@@ -1,0 +1,29 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "RLR",
+        "OMO",
+        "#O#"
+    ],
+    "key": {
+        "#": {
+            "item": "minecraft:polished_andesite"
+        },
+        "L": {
+            "item": "minecraft:lectern"
+        },
+        "O": {
+            "item": "minecraft:observer"
+        },
+        "M": {
+            "item": "minecontrollers:controller_debug_display"
+        },
+        "R": {
+            "item": "minecraft:lightning_rod"
+        }
+    },
+    "result": {
+        "item": "minecontrollers:dumper",
+        "count": 1
+    }
+}

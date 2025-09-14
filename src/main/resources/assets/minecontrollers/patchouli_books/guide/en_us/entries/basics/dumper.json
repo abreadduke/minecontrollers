@@ -1,0 +1,11 @@
+{
+    "name": "Dumper",
+    "icon": "minecontrollers:dumper",
+    "category": "minecontrollers:basics",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "This block provides the ability to write data from the microcontroller's memory into a book. It is useful in conjunction with the disassembler."
+        }
+    ]
+}
