@@ -9,13 +9,11 @@ public class CodeDisassembler {
     protected HashMap<String, String> opcodesTable = new HashMap<>();
     protected HashMap<Integer, String> generatedLabels = new HashMap<>();
     protected HashMap<String, String> generatedSections = new HashMap<>();
-    protected HashMap<Integer, Integer> labelsIndexTable = new HashMap<>();
     protected int actualDSIndex = 0;
     protected int actualESIndex = 0;
     protected int actualSSIndex = 0;
     private int labelsCounter = 0;
     private int sectionsCounter = 0;
-    private int labelsUniqueBaseIndex = 0;
     protected void initOpcodes(){
         for(CommandAction opcode : CommandAction.values()){
             String code = Integer.toString(opcode.ordinal(), 16);
@@ -75,7 +73,7 @@ public class CodeDisassembler {
         return (value.equals("ds") || value.equals("ss") || value.equals("es") || value.equals("cs"));
     }
     protected boolean isOpcodeJumpCommand(String opcode){
-        return (opcode.equals("jmp") || opcode.equals("jz") || opcode.equals("jnz")|| opcode.equals("jg")|| opcode.equals("jge")|| opcode.equals("jl")|| opcode.equals("jle")|| opcode.equals("jc")|| opcode.equals("jnc")|| opcode.equals("loop"));
+        return (opcode.equals("jmp") || opcode.equals("jz") || opcode.equals("jnz")|| opcode.equals("jg")|| opcode.equals("jge")|| opcode.equals("jl")|| opcode.equals("jle")|| opcode.equals("jc")|| opcode.equals("jnc")|| opcode.equals("loop") || opcode.equals("call"));
     }
     protected boolean isOpcodeHasSoloOperand(String opcode){
         return (isOpcodeJumpCommand(opcode) || opcode.equals("inc") || opcode.equals("dec") || opcode.equals("int") || opcode.equals("push") || opcode.equals("pop"));
@@ -131,58 +129,48 @@ public class CodeDisassembler {
         if(isOpcodeJumpCommand(opcodesTable.get(opcode)) && firstOffset.equals("ds:")){
             firstOffset = "cs:";
         }
+        //defining of label/procedure prefix
+        String labelPrefix = "l";
+        if(opcodesTable.get(opcode).equals("call")) labelPrefix = "p";
         //creating links and generating labels
         if(((imod >>> 3) & 1) == 1){
-            //if(firstOffset.isEmpty()) firstOffset = "ds:";
             if(firstOperandIsValue){
-                if(!generatedLabels.containsKey(Integer.parseInt(parsedFirstOperand)+labelsUniqueBaseIndex) ||
-                    (labelsIndexTable.containsKey(Integer.parseInt(parsedFirstOperand)+labelsUniqueBaseIndex) &&
-                    getPolishedIndexOfLabel(firstOffset, parsedFirstOperand) != labelsIndexTable.get(Integer.parseInt(parsedFirstOperand)+labelsUniqueBaseIndex))){
-
-                    generatedLabels.put(Integer.parseInt(parsedFirstOperand)+labelsUniqueBaseIndex, "l" + labelsCounter++);
-                    labelsIndexTable.put(Integer.parseInt(parsedFirstOperand)+labelsUniqueBaseIndex, getPolishedIndexOfLabel(firstOffset, parsedFirstOperand));
+                if(!generatedLabels.containsKey(getPolishedIndexOfLabel(firstOffset, parsedFirstOperand))){
+                    generatedLabels.put(getPolishedIndexOfLabel(firstOffset, parsedFirstOperand), labelPrefix + labelsCounter++);
                 }
-                parsedFirstOperand = "[" + generatedLabels.get(Integer.parseInt(parsedFirstOperand)+ labelsUniqueBaseIndex) + "]";
+                parsedFirstOperand = "[" + generatedLabels.get(getPolishedIndexOfLabel(firstOffset, parsedFirstOperand)) + "]";
             } else {
                 parsedFirstOperand = "[" + parsedFirstOperand + "]";
             }
         } else if (!firstOffset.isEmpty()) {
             if(firstOperandIsValue){
-                if(!generatedLabels.containsKey(Integer.parseInt(parsedFirstOperand)+labelsUniqueBaseIndex) ||
-                    (labelsIndexTable.containsKey(Integer.parseInt(parsedFirstOperand)+labelsUniqueBaseIndex) &&
-                    getPolishedIndexOfLabel(firstOffset, parsedFirstOperand) != labelsIndexTable.get(Integer.parseInt(parsedFirstOperand)+labelsUniqueBaseIndex))){
-
-                    generatedLabels.put(Integer.parseInt(parsedFirstOperand)+labelsUniqueBaseIndex, "l" + labelsCounter++);
-                    labelsIndexTable.put(Integer.parseInt(parsedFirstOperand)+labelsUniqueBaseIndex, getPolishedIndexOfLabel(firstOffset, parsedFirstOperand));
+                if(!generatedLabels.containsKey(getPolishedIndexOfLabel(firstOffset, parsedFirstOperand))){
+                    generatedLabels.put(getPolishedIndexOfLabel(firstOffset, parsedFirstOperand), labelPrefix + labelsCounter++);
                 }
-                parsedFirstOperand = generatedLabels.get(Integer.parseInt(parsedFirstOperand)+labelsUniqueBaseIndex);
+                parsedFirstOperand = generatedLabels.get(getPolishedIndexOfLabel(firstOffset, parsedFirstOperand));
             }
         }
         if(((imod >>> 2) & 1) == 1){
-            //if(secondOffset.isEmpty()) secondOffset = "ds:";
             if(secondOperandIsValue){
-                if(!generatedLabels.containsKey(Integer.parseInt(parsedSecondOperand)+labelsUniqueBaseIndex+1) ||
-                    (labelsIndexTable.containsKey(Integer.parseInt(parsedSecondOperand)+labelsUniqueBaseIndex+1) &&
-                    getPolishedIndexOfLabel(secondOffset, parsedSecondOperand) != labelsIndexTable.get(Integer.parseInt(parsedSecondOperand)+labelsUniqueBaseIndex+1))){
-                    generatedLabels.put(Integer.parseInt(parsedSecondOperand)+labelsUniqueBaseIndex+1, "l" + labelsCounter++);
-                    labelsIndexTable.put(Integer.parseInt(parsedSecondOperand)+labelsUniqueBaseIndex+1, getPolishedIndexOfLabel(secondOffset, parsedSecondOperand));
+                if(!generatedLabels.containsKey(getPolishedIndexOfLabel(secondOffset, parsedSecondOperand))){
+                    generatedLabels.put(getPolishedIndexOfLabel(secondOffset, parsedSecondOperand), labelPrefix + labelsCounter++);
                 }
-                parsedSecondOperand = "[" + generatedLabels.get(Integer.parseInt(parsedSecondOperand)+labelsUniqueBaseIndex+1) + "]";
+                parsedSecondOperand = "[" + generatedLabels.get(getPolishedIndexOfLabel(secondOffset, parsedSecondOperand)) + "]";
             } else {
                 parsedSecondOperand = "[" + parsedSecondOperand + "]";
             }
         } else if (!secondOffset.isEmpty()) {
             if(secondOperandIsValue){
-                if(!generatedLabels.containsKey(Integer.parseInt(parsedSecondOperand)+labelsUniqueBaseIndex+1) ||
-                    (labelsIndexTable.containsKey(Integer.parseInt(parsedSecondOperand)+labelsUniqueBaseIndex+1) &&
-                    getPolishedIndexOfLabel(secondOffset, parsedSecondOperand) != labelsIndexTable.get(Integer.parseInt(parsedSecondOperand)+labelsUniqueBaseIndex+1))){
-                    generatedLabels.put(Integer.parseInt(parsedSecondOperand)+labelsUniqueBaseIndex+1, "l" + labelsCounter++);
-                    labelsIndexTable.put(Integer.parseInt(parsedSecondOperand)+labelsUniqueBaseIndex+1, getPolishedIndexOfLabel(secondOffset, parsedSecondOperand));
+                if(!generatedLabels.containsKey(getPolishedIndexOfLabel(secondOffset, parsedSecondOperand))){
+                    generatedLabels.put(getPolishedIndexOfLabel(secondOffset, parsedSecondOperand), labelPrefix + labelsCounter++);
                 }
-                parsedSecondOperand = generatedLabels.get(Integer.parseInt(parsedSecondOperand)+labelsUniqueBaseIndex+1);
+                parsedSecondOperand = generatedLabels.get(getPolishedIndexOfLabel(secondOffset, parsedSecondOperand));
             }
         }
-
+        //removing cs offset from jump commands
+        if(isOpcodeJumpCommand(opcodesTable.get(opcode)) && firstOffset.equals("cs:")){
+            firstOffset = "";
+        }
         //generating result line
         if(opcodesTable.containsKey(opcode)){
             //generating sections
@@ -207,14 +195,6 @@ public class CodeDisassembler {
                 }
                 parsedSecondOperand = generatedSections.get(parsedSecondOperand);
             }
-            //generating labels for jumps
-            //else if (isOpcodeJumpCommand(opcodesTable.get(opcode)) && firstOperandIsValue) {
-            //    if(!generatedLabels.containsKey(parsedFirstOperand)){
-            //        generatedLabels.put(parsedFirstOperand, "l" + labelsCounter++);
-            //    }
-            //    parsedFirstOperand = generatedLabels.get(parsedFirstOperand);
-            //}
-            labelsUniqueBaseIndex+=2;
             decompiledLineBuilder.append(opcodesTable.get(opcode));
             if(isOpcodeHasZeroOperands(opcodesTable.get(opcode))){
                 return decompiledLineBuilder.append("\n").toString();
@@ -239,8 +219,7 @@ public class CodeDisassembler {
                 }
             }
             for(int labelIndex : generatedLabels.keySet()){
-                //int index = Integer.parseInt(labelIndex) / 6;
-                int index = labelsIndexTable.get(labelIndex) / 6;
+                int index = labelIndex / 6 + labelIndex % 6;
                 if(index == lineCounter){
                     newCode.append(generatedLabels.get(labelIndex)).append(":\n");
                 }

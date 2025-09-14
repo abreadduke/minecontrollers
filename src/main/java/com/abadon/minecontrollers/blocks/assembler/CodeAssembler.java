@@ -18,6 +18,9 @@ public class CodeAssembler {
         public abstract String getMacroKey(String line);
         public abstract boolean isClosed(String line);
         public abstract String removeMacroPattern(String code);
+        public String removeGlobalMacroPattern(String code){
+            return code;
+        }
         public Preprocessor preprocessor;
         public Macros(Preprocessor preprocessor){
             this.preprocessor = preprocessor;
@@ -263,9 +266,12 @@ public class CodeAssembler {
                 return true;
             } else return false;
         }
-
         @Override
         public String removeMacroPattern(String code) {
+            return code;
+        }
+        @Override
+        public String removeGlobalMacroPattern(String code) {
             String lines[] = code.split("\n");
             boolean canFindNextSection = false;
             for(int i = 0; i < lines.length; i++){
@@ -323,6 +329,7 @@ public class CodeAssembler {
                                 macroTable.put(macroKey, macroInstance.getMacroValue());
                                 macroKey = "";
                                 source += sourceBackup.substring(index+line.length());
+                                source = macroInstance.removeGlobalMacroPattern(source);
                                 macroInstance = null;
                             }
                         }
@@ -671,7 +678,7 @@ public class CodeAssembler {
             //    }
             //}
             else {
-                Pattern sectionPattern = Pattern.compile("[^0-9][a-zA-Z]+");
+                Pattern sectionPattern = Pattern.compile("[^0-9][a-zA-Z0-9]+");
                 Matcher matcher = sectionPattern.matcher(argument);
                 boolean hasLabels = false;
                 while (matcher.find()){
