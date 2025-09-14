@@ -14,6 +14,8 @@ public class CodeDisassembler {
     protected int actualSSIndex = 0;
     private int labelsCounter = 0;
     private int sectionsCounter = 0;
+    private int linesAddressCount = 0;
+    private int linesCount = 0;
     protected void initOpcodes(){
         for(CommandAction opcode : CommandAction.values()){
             String code = Integer.toString(opcode.ordinal(), 16);
@@ -96,7 +98,12 @@ public class CodeDisassembler {
         return Integer.parseInt(label);
     }
     public String lineTranslator(String line){
-        if(line.length() < 12) return line + "\n";
+        String commentAddress = Integer.toString(linesAddressCount, 16);
+        commentAddress = "0".repeat(4 - commentAddress.length()) + commentAddress;
+        linesAddressCount += line.length()/2;
+        linesCount++;
+        commentAddress = "; " + commentAddress.toUpperCase() + ":" + linesCount + '\n';
+        if(line.length() < 12) return line + commentAddress;
         StringBuilder decompiledLineBuilder = new StringBuilder();
         String opcode = line.substring(0, 2).toLowerCase();
         String mod = line.substring(2, 4).toLowerCase();
@@ -197,11 +204,12 @@ public class CodeDisassembler {
             }
             decompiledLineBuilder.append(opcodesTable.get(opcode));
             if(isOpcodeHasZeroOperands(opcodesTable.get(opcode))){
-                return decompiledLineBuilder.append("\n").toString();
+
+                return decompiledLineBuilder.append(commentAddress).toString();
             } else if (isOpcodeHasSoloOperand(opcodesTable.get(opcode))) {
-                return decompiledLineBuilder.append(' ').append(firstOffset).append(parsedFirstOperand).append("\n").toString();
+                return decompiledLineBuilder.append(' ').append(firstOffset).append(parsedFirstOperand).append(commentAddress).toString();
             }
-            return decompiledLineBuilder.append(' ').append(firstOffset).append(parsedFirstOperand).append(", ").append(secondOffset).append(parsedSecondOperand).append("\n").toString();
+            return decompiledLineBuilder.append(' ').append(firstOffset).append(parsedFirstOperand).append(", ").append(secondOffset).append(parsedSecondOperand).append(commentAddress).toString();
         }
         return "";
     }
@@ -213,7 +221,7 @@ public class CodeDisassembler {
         int lineCounter = 0;
         for(String line : code.split("\n")){
             for(String sectionIndex : generatedSections.keySet()){
-                int index = Integer.parseInt(sectionIndex) / 6;
+                int index = Integer.parseInt(sectionIndex) / 6 + Integer.parseInt(sectionIndex) % 6;
                 if(index == lineCounter){
                     newCode.append("section ").append(generatedSections.get(sectionIndex)).append("\n");
                 }
