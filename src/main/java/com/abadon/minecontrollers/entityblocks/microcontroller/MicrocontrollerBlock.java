@@ -1,7 +1,7 @@
 package com.abadon.minecontrollers.entityblocks.microcontroller;
 
 import com.abadon.minecontrollers.blockstates.ControllersSide;
-import com.abadon.minecontrollers.entityblocks.MinecontrollersBlocks;
+import com.abadon.minecontrollers.MinecontrollersBlocks;
 import commoble.morered.api.ChanneledPowerSupplier;
 import commoble.morered.api.MoreRedAPI;
 import commoble.morered.bitwise_logic.BitwiseLogicPlateBlock;

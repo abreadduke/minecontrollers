@@ -1,7 +1,8 @@
-package com.abadon.minecontrollers.entityblocks;
+package com.abadon.minecontrollers;
 
-import com.abadon.minecontrollers.Minecontrollers;
 import com.abadon.minecontrollers.blocks.assembler.Assembler;
+import com.abadon.minecontrollers.blocks.disassembler.Disassembler;
+import com.abadon.minecontrollers.blocks.dumper.Dumper;
 import com.abadon.minecontrollers.entityblocks.microcontroller.MicrocontrollerBlock;
 import com.abadon.minecontrollers.entityblocks.microcontroller.MicrocontrollerBlockEntity;
 import com.abadon.minecontrollers.entityblocks.programmer.Programmer;
@@ -108,6 +109,8 @@ public class MinecontrollersBlocks {
     public static final String PROGRAMMER_ID = "bundled_programmer";
     public static final String FORMATTER_ID = "formatter";
     public static final String ASSEMBLER_ID = "assembler";
+    public static final String DUMPER_ID = "dumper";
+    public static final String DISASSEMBLER_ID = "disassembler";
     public static final SoundType defaultComponentSound = SoundType.WOOD;
     public static final int defaultDestroyTime = 2;
     public static final int defaultStrength = 3;
@@ -121,6 +124,8 @@ public class MinecontrollersBlocks {
     public static final String REDSTONE_CONTROLLER_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWFlNTY0MWY3YmI5ZTg3NWNkNDEyZDRiYTIwYjIyZjg3NjczYTZmMWJlMzI3OGE2MzFjODgxZDg0YzA0NDZmYiJ9fX0=";
     public static RegistryObject<PlayerHeadBlock> REDSTONE_CORE = registerSkullBlockItem("redstone_core", REDSTONE_CORE_TEXTURE, items, blocks);
     public static RegistryObject<PlayerHeadBlock> REDSTONE_CONTROLLER = registerSkullBlockItem("redstone_controller", REDSTONE_CONTROLLER_TEXTURE, items, blocks);
+    public static RegistryObject<Dumper> DUMPER_BLOCK = registerBlockItem(DUMPER_ID, items, blocks, b -> new BlockItem(b, new Item.Properties()), () -> new Dumper(BlockBehaviour.Properties.of().strength(defaultDestroyTime, defaultStrength).sound(defaultComponentSound)));
+    public static RegistryObject<Disassembler> DISASSEMBLER_BLOCK = registerBlockItem(DISASSEMBLER_ID, items, blocks, b -> new BlockItem(b, new Item.Properties()), () -> new Disassembler(BlockBehaviour.Properties.of().strength(defaultDestroyTime, defaultStrength).sound(defaultComponentSound)));
     public static void registerSkullBlocks(){
         for(Field validBlocksField : BlockEntityType.SKULL.getClass().getDeclaredFields()){
             boolean acces = validBlocksField.isAccessible();

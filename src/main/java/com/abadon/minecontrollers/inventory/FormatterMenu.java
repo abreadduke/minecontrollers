@@ -26,6 +26,7 @@ public class FormatterMenu extends TranslatorBlockMenu {
 
     @Override
     protected void translateBook(Container container) {
+        if(container.getItem(0) == ItemStack.EMPTY || container.getItem(1) != ItemStack.EMPTY) return;
         try{
             ItemStack newBook = new BookFormatter().format(container.getItem(0));
             if(!newBook.equals(ItemStack.EMPTY)){

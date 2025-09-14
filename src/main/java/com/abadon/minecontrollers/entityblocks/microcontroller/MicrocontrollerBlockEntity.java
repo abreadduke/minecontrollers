@@ -2,7 +2,7 @@ package com.abadon.minecontrollers.entityblocks.microcontroller;
 
 import com.abadon.minecontrollers.api.MinecontrollersAPI;
 import com.abadon.minecontrollers.blockstates.ControllersSide;
-import com.abadon.minecontrollers.entityblocks.MinecontrollersBlocks;
+import com.abadon.minecontrollers.MinecontrollersBlocks;
 import com.abadon.minecontrollers.utils.AddressingVariants;
 import com.abadon.minecontrollers.utils.CommandHandler;
 import com.abadon.minecontrollers.utils.ControllerMath;

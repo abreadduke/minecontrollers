@@ -649,21 +649,44 @@ public class CodeAssembler {
             } else if(checkKeyForRegister(argument)) {
                 valid = true;
                 argumentNum = registersTable.get(argument.toLowerCase());
-            } else if(labels.containsKey(argument)){
-                valid = true;
-                argumentNum = labels.get(argument);
-                if(!hasOffsetFlag)
-                    metaInfo += 1010;
-                else metaInfo += 1000;
-            } else if (sectionLabels.containsKey(argument)) {
+            }
+            //else if(labels.containsKey(argument)){
+            //    valid = true;
+            //    argumentNum = labels.get(argument);
+            //    if(!hasOffsetFlag)
+            //        metaInfo += 1010;
+            //    else metaInfo += 1000;
+            //}
+            else if (sectionLabels.containsKey(argument)) {
                 valid = true;
                 argumentNum = sectionLabels.get(argument);
                 metaInfo += 1000;
-            } else {
+            }
+            //else {
+            //    argument = MathParser.parse(argument);
+            //    if(checkKeyForNumber(argument)){
+            //        valid = true;
+            //        metaInfo += 1000;
+            //        argumentNum = getNumberFromKey(argument);
+            //    }
+            //}
+            else {
+                Pattern sectionPattern = Pattern.compile("[^0-9][a-zA-Z]+");
+                Matcher matcher = sectionPattern.matcher(argument);
+                boolean hasLabels = false;
+                while (matcher.find()){
+                    hasLabels = true;
+                    String label = matcher.group(0);
+                    if(labels.containsKey(label))
+                        argument = argument.replaceAll(label, String.valueOf(labels.get(label)));
+                }
                 argument = MathParser.parse(argument);
                 if(checkKeyForNumber(argument)){
                     valid = true;
-                    metaInfo += 1000;
+                    //metaInfo += 1000;
+                    if(!hasOffsetFlag && hasLabels)
+                        metaInfo += 1010;
+                    else metaInfo += 1000;
                     argumentNum = getNumberFromKey(argument);
                 }
             }
@@ -690,13 +713,13 @@ public class CodeAssembler {
         //compiling meta
         return Integer.valueOf(resultMetaBuilder.toString(), 2);
     }
-    protected void initComandlets(){
-        for(CommandAction commandlet : CommandAction.values()){
-            String code = Integer.toString(commandlet.ordinal(), 16);
+    protected void initOpcodes(){
+        for(CommandAction opcode : CommandAction.values()){
+            String code = Integer.toString(opcode.ordinal(), 16);
             if(code.length() == 1){
                 code = "0" + code;
             }
-            opcodesTable.put(commandlet.name(), code);
+            opcodesTable.put(opcode.name(), code);
         }
     }
     protected HashMap<String, Integer> labels = new HashMap<>();
@@ -705,7 +728,7 @@ public class CodeAssembler {
         hashTable = new HashMap();
         opcodesTable = new HashMap();
         specialCommands.put(CommandAction.LEA.name(), new LeaCommand());
-        initComandlets();
+        initOpcodes();
     }
     private String compileRawData(String dataType, String data){
         String result = null;

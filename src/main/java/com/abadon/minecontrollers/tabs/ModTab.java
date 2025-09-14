@@ -1,7 +1,7 @@
 package com.abadon.minecontrollers.tabs;
 
 import com.abadon.minecontrollers.Minecontrollers;
-import com.abadon.minecontrollers.entityblocks.MinecontrollersBlocks;
+import com.abadon.minecontrollers.MinecontrollersBlocks;
 import com.abadon.minecontrollers.items.MinecontrollersItems;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;

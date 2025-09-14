@@ -1,6 +1,6 @@
 package com.abadon.minecontrollers.entityblocks.programmer;
 
-import com.abadon.minecontrollers.entityblocks.MinecontrollersBlocks;
+import com.abadon.minecontrollers.MinecontrollersBlocks;
 import com.abadon.minecontrollers.inventory.ProgrammerMenu;
 import commoble.morered.api.ChanneledPowerSupplier;
 import commoble.morered.api.MoreRedAPI;

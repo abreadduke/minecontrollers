@@ -17,7 +17,8 @@ public class BookPagesWriter implements IBookPagesWriter{
                 pageBuilder = new StringBuilder();
             }
         }
-        book.getTag().remove("pages");
+        if(book.getTag() != null)
+            book.getTag().remove("pages");
         book.addTagElement("pages", pages);
     }
 }

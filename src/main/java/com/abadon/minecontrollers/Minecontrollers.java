@@ -1,7 +1,7 @@
 package com.abadon.minecontrollers;
 
-import com.abadon.minecontrollers.entityblocks.MinecontrollersBlocks;
 import com.abadon.minecontrollers.interrupts.MinecontrollersInterrupts;
+import com.abadon.minecontrollers.inventory.DumperMenu;
 import com.abadon.minecontrollers.inventory.ModMenu;
 import com.abadon.minecontrollers.items.MinecontrollersItems;
 import com.abadon.minecontrollers.items.debugger.PlayerInputCatcher;
@@ -46,6 +46,7 @@ public class Minecontrollers
         register(modEventBus);
         MinecraftForge.EVENT_BUS.register(this);
         MinecontrollersInterrupts.register();
+        DumperMenu.registerNetworkChannel();
     }
 
     //private void commonSetup(final FMLCommonSetupEvent event)

@@ -1,6 +1,6 @@
 package com.abadon.minecontrollers.entityblocks.programmer;
 
-import com.abadon.minecontrollers.entityblocks.MinecontrollersBlocks;
+import com.abadon.minecontrollers.MinecontrollersBlocks;
 import commoble.morered.bitwise_logic.BitwiseLogicPlateBlock;
 import commoble.morered.plate_blocks.PlateBlockStateProperties;
 import commoble.morered.util.BlockStateUtil;
