@@ -2,7 +2,6 @@ package com.abadon.minecontrollers.blocks.disassembler;
 
 import com.abadon.minecontrollers.utils.CommandAction;
 import java.util.HashMap;
-import java.util.Set;
 
 public class CodeDisassembler {
     protected StringBuilder asmCodeBuilder = new StringBuilder();
@@ -10,7 +9,7 @@ public class CodeDisassembler {
     protected HashMap<String, String> opcodesTable = new HashMap<>();
     protected HashMap<Integer, String> generatedLabels = new HashMap<>();
     protected HashMap<String, String> generatedSections = new HashMap<>();
-    protected HashMap<Character, Integer> sectionsAddressesTable = new HashMap<>();
+    protected HashMap<String, Integer> sectionsAddressesTable = new HashMap<>();
     protected int actualDSIndex = 0;
     protected int actualESIndex = 0;
     protected int actualSSIndex = 0;
@@ -80,7 +79,7 @@ public class CodeDisassembler {
         return (opcode.equals("jmp") || opcode.equals("jz") || opcode.equals("jnz")|| opcode.equals("jg")|| opcode.equals("jge")|| opcode.equals("jl")|| opcode.equals("jle")|| opcode.equals("jc")|| opcode.equals("jnc")|| opcode.equals("loop") || opcode.equals("call"));
     }
     protected boolean isOpcodeHasSoloOperand(String opcode){
-        return (isOpcodeJumpCommand(opcode) || opcode.equals("inc") || opcode.equals("dec") || opcode.equals("int") || opcode.equals("push") || opcode.equals("pop"));
+        return (isOpcodeJumpCommand(opcode) || opcode.equals("inc") || opcode.equals("dec") || opcode.equals("int") || opcode.equals("push") || opcode.equals("pop") || opcode.equals("lea"));
     }
     protected boolean isOpcodeHasZeroOperands(String opcode){
         return (opcode.equals("pusha") || opcode.equals("popa"));
@@ -137,6 +136,9 @@ public class CodeDisassembler {
         if(isOpcodeJumpCommand(opcodesTable.get(opcode)) && firstOffset.equals("ds:")){
             firstOffset = "cs:";
         }
+        if(opcodesTable.get(opcode).equals("lea")){
+            parsedFirstOperand = getLeaOperands(firstOperand, secondOperand);
+        }
         //defining of label/procedure prefix
         String labelPrefix = "l";
         if(opcodesTable.get(opcode).equals("call")) labelPrefix = "p";
@@ -189,17 +191,17 @@ public class CodeDisassembler {
                     switch (parsedFirstOperand){
                         case "ds":{
                             actualDSIndex = Integer.parseInt(parsedSecondOperand);
-                            sectionsAddressesTable.put('d', actualDSIndex);
+                            sectionsAddressesTable.put("d" + sectionsCounter, actualDSIndex);
                             break;
                         }
                         case "es":{
                             actualESIndex = Integer.parseInt(parsedSecondOperand);
-                            sectionsAddressesTable.put('e', actualESIndex);
+                            sectionsAddressesTable.put("e" + sectionsCounter, actualESIndex);
                             break;
                         }
                         case "ss":{
                             actualSSIndex = Integer.parseInt(parsedSecondOperand);
-                            sectionsAddressesTable.put('s', actualSSIndex);
+                            sectionsAddressesTable.put("s" + sectionsCounter, actualSSIndex);
                             break;
                         }
                     }
@@ -216,6 +218,34 @@ public class CodeDisassembler {
             return decompiledLineBuilder.append(' ').append(firstOffset).append(parsedFirstOperand).append(", ").append(secondOffset).append(parsedSecondOperand).append(commentAddress).toString();
         }
         return "";
+    }
+    protected String getLeaOperands(int first, int second){
+        StringBuilder resultBuilder = new StringBuilder();
+        boolean sumIndex = false;
+        boolean sumDisp = false;
+        int addressInfo = first;
+        int disp = second;
+        int sourceRegisterAddress = addressInfo >>> 12;
+        String sourceRegister = registersTable.get(sourceRegisterAddress);
+        sumIndex = ((addressInfo >>> 11) & 1) == 1;
+        sumDisp = ((addressInfo >>> 10) & 1) == 1;
+        int sizeMode = (addressInfo >>> 8) & 3;
+        int baseRegisterAddress = ((addressInfo >>> 4) & 0xF) - 1;
+        int indexRegisterAddress = (addressInfo & 0xF) - 1;
+        String baseRegister = registersTable.get(baseRegisterAddress);
+        String indexRegister = registersTable.get(indexRegisterAddress);
+        resultBuilder.append(sourceRegister).append(", [").append(baseRegister);
+        if(registersTable.containsKey(indexRegisterAddress)) {
+            if (sumIndex)
+                resultBuilder.append('+').append(indexRegister);
+            else resultBuilder.append('+').append(indexRegister);
+            resultBuilder.append('*').append((int) Math.pow(2, sizeMode));
+        }
+        if(sumDisp)
+            resultBuilder.append('+').append(disp);
+        else resultBuilder.append('-').append(disp);
+        resultBuilder.append(']');
+        return resultBuilder.toString();
     }
     public CodeDisassembler(){
         init();
@@ -252,15 +282,15 @@ public class CodeDisassembler {
         for(int i = 0; i < line.length(); i += 2){
             codeBuffer.append(line.charAt(i)).append(line.charAt(i+1));
             bufferBytesCount++;
-            Character[] sectionsKeySet =  sectionsAddressesTable.keySet().toArray(new Character[]{});
+            String[] sectionsKeySet =  sectionsAddressesTable.keySet().toArray(new String[]{});
             boolean isDataBytesArray = false;
             for(int s = 0; s < sectionsKeySet.length; s++){
-                if(sectionsKeySet[s] == 'd' && sectionsAddressesTable.get(sectionsKeySet[s]) < bufferBytesCount){
+                if(sectionsKeySet[s].charAt(0) == 'd' && sectionsAddressesTable.get(sectionsKeySet[s]) < bufferBytesCount){
                     if(s == sectionsKeySet.length - 1){
                         asmCodeBuilder.append(lineTranslator(codeBuffer.toString()));
                         codeBuffer = new StringBuilder();
                         isDataBytesArray = true;
-                    } else if(sectionsKeySet[s+1] != 'd' && sectionsAddressesTable.get(sectionsKeySet[s+1]) >= bufferBytesCount){
+                    } else if(sectionsKeySet[s+1].charAt(0) != 'd' && sectionsAddressesTable.get(sectionsKeySet[s+1]) >= bufferBytesCount){
                         asmCodeBuilder.append(lineTranslator(codeBuffer.toString()));
                         codeBuffer = new StringBuilder();
                         isDataBytesArray = true;
