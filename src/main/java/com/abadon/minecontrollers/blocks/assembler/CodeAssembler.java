@@ -797,7 +797,13 @@ public class CodeAssembler {
                     code = code.replace(labelSearcher.group(0), compiledData);
                 } else code = code.replace(labelSearcher.group(0), "");
             } else{
-                index += commandSize;
+                //computing index for raw bytes of data
+                try {
+                    Integer.valueOf(line, 16);
+                    index += line.length() / 2;
+                } catch (NumberFormatException exception){
+                    index += commandSize;
+                }
             }
         }
         return code;

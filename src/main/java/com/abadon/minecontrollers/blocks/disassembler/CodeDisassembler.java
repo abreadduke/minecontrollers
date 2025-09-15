@@ -2,6 +2,7 @@ package com.abadon.minecontrollers.blocks.disassembler;
 
 import com.abadon.minecontrollers.utils.CommandAction;
 import java.util.HashMap;
+import java.util.Set;
 
 public class CodeDisassembler {
     protected StringBuilder asmCodeBuilder = new StringBuilder();
@@ -9,6 +10,7 @@ public class CodeDisassembler {
     protected HashMap<String, String> opcodesTable = new HashMap<>();
     protected HashMap<Integer, String> generatedLabels = new HashMap<>();
     protected HashMap<String, String> generatedSections = new HashMap<>();
+    protected HashMap<Character, Integer> sectionsAddressesTable = new HashMap<>();
     protected int actualDSIndex = 0;
     protected int actualESIndex = 0;
     protected int actualSSIndex = 0;
@@ -101,7 +103,6 @@ public class CodeDisassembler {
         String commentAddress = Integer.toString(linesAddressCount, 16);
         commentAddress = "0".repeat(4 - commentAddress.length()) + commentAddress;
         linesAddressCount += line.length()/2;
-        linesCount++;
         commentAddress = "; " + commentAddress.toUpperCase() + ":" + linesCount + '\n';
         if(line.length() < 12) return line + commentAddress;
         StringBuilder decompiledLineBuilder = new StringBuilder();
@@ -188,14 +189,17 @@ public class CodeDisassembler {
                     switch (parsedFirstOperand){
                         case "ds":{
                             actualDSIndex = Integer.parseInt(parsedSecondOperand);
+                            sectionsAddressesTable.put('d', actualDSIndex);
                             break;
                         }
                         case "es":{
                             actualESIndex = Integer.parseInt(parsedSecondOperand);
+                            sectionsAddressesTable.put('e', actualESIndex);
                             break;
                         }
                         case "ss":{
                             actualSSIndex = Integer.parseInt(parsedSecondOperand);
+                            sectionsAddressesTable.put('s', actualSSIndex);
                             break;
                         }
                     }
@@ -218,28 +222,64 @@ public class CodeDisassembler {
     }
     protected String insertLabels(String code){
         StringBuilder newCode = new StringBuilder();
-        int lineCounter = 0;
+        int byteCounter = 0;
         for(String line : code.split("\n")){
             for(String sectionIndex : generatedSections.keySet()){
-                int index = Integer.parseInt(sectionIndex) / 6 + Integer.parseInt(sectionIndex) % 6;
-                if(index == lineCounter){
+                int index = Integer.parseInt(sectionIndex);
+                if(index == byteCounter){
                     newCode.append("section ").append(generatedSections.get(sectionIndex)).append("\n");
                 }
             }
             for(int labelIndex : generatedLabels.keySet()){
-                int index = labelIndex / 6 + labelIndex % 6;
-                if(index == lineCounter){
+                if(labelIndex == byteCounter){
                     newCode.append(generatedLabels.get(labelIndex)).append(":\n");
                 }
             }
             newCode.append(line).append("\n");
-            lineCounter++;
+            //checking for data bytes
+            if(line.indexOf(';') == 2)
+                byteCounter++;
+            else byteCounter+=6;
         }
         return newCode.toString();
     }
+    protected StringBuilder codeBuffer = new StringBuilder();
+    protected int bufferBytesCount = 0;
+    protected int commandByteCounter = 0;
+    protected void appendCodeToBuffer(String line){
+        if(line.length() % 2 != 0) return;
+        linesCount++;
+        for(int i = 0; i < line.length(); i += 2){
+            codeBuffer.append(line.charAt(i)).append(line.charAt(i+1));
+            bufferBytesCount++;
+            Character[] sectionsKeySet =  sectionsAddressesTable.keySet().toArray(new Character[]{});
+            boolean isDataBytesArray = false;
+            for(int s = 0; s < sectionsKeySet.length; s++){
+                if(sectionsKeySet[s] == 'd' && sectionsAddressesTable.get(sectionsKeySet[s]) < bufferBytesCount){
+                    if(s == sectionsKeySet.length - 1){
+                        asmCodeBuilder.append(lineTranslator(codeBuffer.toString()));
+                        codeBuffer = new StringBuilder();
+                        isDataBytesArray = true;
+                    } else if(sectionsKeySet[s+1] != 'd' && sectionsAddressesTable.get(sectionsKeySet[s+1]) >= bufferBytesCount){
+                        asmCodeBuilder.append(lineTranslator(codeBuffer.toString()));
+                        codeBuffer = new StringBuilder();
+                        isDataBytesArray = true;
+                    }
+                }
+            }
+            if(!isDataBytesArray){
+                commandByteCounter++;
+                if(commandByteCounter >= 6){
+                    asmCodeBuilder.append(lineTranslator(codeBuffer.toString()));
+                    codeBuffer = new StringBuilder();
+                    commandByteCounter = 0;
+                }
+            }
+        }
+    }
     public String disassembly(String mashineCodes){
         for(String codeline : mashineCodes.split("\\n+")){
-            asmCodeBuilder.append(lineTranslator(codeline));
+            appendCodeToBuffer(codeline);
         }
         return insertLabels(asmCodeBuilder.toString());
     }
