@@ -139,6 +139,51 @@ public class MinecontrollersInterrupts {
             microcontrollerBlockEntity.registerA = (short) nearbyPlayers.size();
         }
     }
+    public static void getEntityHash(MicrocontrollerBlockEntity microcontrollerBlockEntity){
+        for (ServerLevel level : ServerLifecycleHooks.getCurrentServer().getAllLevels()) {
+            BlockPos blockPos = microcontrollerBlockEntity.getBlockPos();
+            if (level == null || level.getBlockEntity(blockPos) == null || !level.getBlockEntity(blockPos).equals(microcontrollerBlockEntity)) return;
+            int cubeRadius = microcontrollerBlockEntity.registerA;
+            int entityIndex = microcontrollerBlockEntity.registerB;
+            int maxCubeRadius = ServerConfig.MAX_ENTITY_FIND_RANGE.get();
+            cubeRadius = Math.abs(cubeRadius);
+            cubeRadius = cubeRadius > maxCubeRadius ? maxCubeRadius : cubeRadius;
+            BlockPos firstPos = blockPos.offset(-cubeRadius, -cubeRadius, -cubeRadius);
+            BlockPos secondPos = blockPos.offset(cubeRadius, cubeRadius, cubeRadius);
+            List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(LivingEntity.class, new AABB(firstPos, secondPos));
+            if(entityIndex >= nearbyEntities.size()){
+                microcontrollerBlockEntity.registerA = 0;
+                return;
+            }
+            microcontrollerBlockEntity.registerA = 1;
+            int hash = nearbyEntities.get(entityIndex).getName().hashCode();
+            microcontrollerBlockEntity.registerB = (short) ((hash >>> 4) & 0xFFFF);
+            microcontrollerBlockEntity.registerC = (short) (hash & 0xFFFF);
+        }
+    }
+    public static void getEntityLocalCords(MicrocontrollerBlockEntity microcontrollerBlockEntity){
+        for (ServerLevel level : ServerLifecycleHooks.getCurrentServer().getAllLevels()) {
+            BlockPos blockPos = microcontrollerBlockEntity.getBlockPos();
+            if (level == null || level.getBlockEntity(blockPos) == null || !level.getBlockEntity(blockPos).equals(microcontrollerBlockEntity)) return;
+            int cubeRadius = microcontrollerBlockEntity.registerA;
+            int entityIndex = microcontrollerBlockEntity.registerB;
+            int maxCubeRadius = ServerConfig.MAX_ENTITY_FIND_RANGE.get();
+            cubeRadius = Math.abs(cubeRadius);
+            cubeRadius = cubeRadius > maxCubeRadius ? maxCubeRadius : cubeRadius;
+            BlockPos firstPos = blockPos.offset(-cubeRadius, -cubeRadius, -cubeRadius);
+            BlockPos secondPos = blockPos.offset(cubeRadius, cubeRadius, cubeRadius);
+            List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(LivingEntity.class, new AABB(firstPos, secondPos));
+            if(entityIndex >= nearbyEntities.size()){
+                microcontrollerBlockEntity.registerA = 0;
+                return;
+            }
+            microcontrollerBlockEntity.registerA = 1;
+            LivingEntity entity = nearbyEntities.get(entityIndex);
+            microcontrollerBlockEntity.registerB = (short) (entity.getBlockX() - blockPos.getX());
+            microcontrollerBlockEntity.registerC = (short) (entity.getBlockY() - blockPos.getY());
+            microcontrollerBlockEntity.registerD = (short) (entity.getBlockZ() - blockPos.getZ());
+        }
+    }
     public static void playSound(MicrocontrollerBlockEntity microcontrollerBlockEntity){
         for (ServerLevel level : ServerLifecycleHooks.getCurrentServer().getAllLevels()){
             BlockPos blockPos = microcontrollerBlockEntity.getBlockPos();
@@ -172,6 +217,8 @@ public class MinecontrollersInterrupts {
         MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getWatchCoordinates, 10);
         MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getNearbyEntitiesCount, 11);
         MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getNearbyPlayers, 12);
-        MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::playSound, 13);
+        MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getEntityHash, 13);
+        MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::getEntityLocalCords, 14);
+        MinecontrollersAPI.registerInterrupt(MinecontrollersInterrupts::playSound, 15);
     }
 }

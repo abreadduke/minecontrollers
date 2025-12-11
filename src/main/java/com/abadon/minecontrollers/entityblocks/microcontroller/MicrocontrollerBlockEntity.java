@@ -557,345 +557,347 @@ public class MicrocontrollerBlockEntity extends ChanneledPowerStorageBlockEntity
         addreader.calculateAddressTypes();
         firstAddress = addreader.firstAddress;
         secondAddress = addreader.secondAddress;
-        switch (commandHandler.getAction(commandSeq[0])){
-            case MOV: {
-                //LogUtils.getLogger().info("MOV command execution");
-                int secondValue = addressIO.getValueFromAddress(secondAddress);
-                addressIO.setValueToAddress(firstAddress, secondValue);
-                break;
-            }
-            case ADD:{
-                //LogUtils.getLogger().info("ADD command execution");
-                int newValue = addressIO.getValueFromAddress(firstAddress) + addressIO.getValueFromAddress(secondAddress);
-                applyFlags(newValue, firstAddress);
-                addressIO.setValueToAddress(firstAddress, newValue);
-                break;
-            }
-            case SUB:{
-                //LogUtils.getLogger().info("SUB command execution");
-                int newValue = addressIO.getValueFromAddress(firstAddress) - addressIO.getValueFromAddress(secondAddress);
-                applyFlags(newValue, firstAddress);
-                addressIO.setValueToAddress(firstAddress, newValue);
-                break;
-            }
-            case MUL:{
-                //LogUtils.getLogger().info("MUL command execution");
-                int newValue = addressIO.getValueFromAddress(firstAddress) * addressIO.getValueFromAddress(secondAddress);
-                applyFlags(newValue, firstAddress);
-                addressIO.setValueToAddress(firstAddress, newValue);
-                break;
-            }
-            case DIV:{
-                //LogUtils.getLogger().info("DIV command execution");
-                int newValue = addressIO.getValueFromAddress(firstAddress) / addressIO.getValueFromAddress(secondAddress);
-                applyFlags(newValue, firstAddress);
-                addressIO.setValueToAddress(firstAddress, newValue);
-                break;
-            }
-            case INC:{
-                //LogUtils.getLogger().info("INC command execution");
-                int newValue = addressIO.getValueFromAddress(firstAddress) + 1;
-                applyFlags(newValue, firstAddress);
-                addressIO.setValueToAddress(firstAddress, newValue);
-                break;
-            }
-            case DEC:{
-                //LogUtils.getLogger().info("DEC command execution");
-                int newValue = addressIO.getValueFromAddress(firstAddress) - 1;
-                applyFlags(newValue, firstAddress);
-                addressIO.setValueToAddress(firstAddress, newValue);
-                break;
-            }
-            case AND:{
-                //LogUtils.getLogger().info("AND command execution");
-                int newValue = addressIO.getValueFromAddress(firstAddress) & addressIO.getValueFromAddress(secondAddress);
-                applyFlags(newValue, firstAddress);
-                addressIO.setValueToAddress(firstAddress, newValue);
-                break;
-            }
-            case OR:{
-                //LogUtils.getLogger().info("OR command execution");
-                int newValue = addressIO.getValueFromAddress(firstAddress) | addressIO.getValueFromAddress(secondAddress);
-                applyFlags(newValue, firstAddress);
-                addressIO.setValueToAddress(firstAddress, newValue);
-                break;
-            }
-            case XOR:{
-                //LogUtils.getLogger().info("XOR command execution");
-                int newValue = addressIO.getValueFromAddress(firstAddress) ^ addressIO.getValueFromAddress(secondAddress);
-                applyFlags(newValue, firstAddress);
-                addressIO.setValueToAddress(firstAddress, newValue);
-                break;
-            }
-            case NOT:{
-                //LogUtils.getLogger().info("NOT command execution");
-                int newValue = ~addressIO.getValueFromAddress(firstAddress);
-                applyFlags(newValue, firstAddress);
-                addressIO.setValueToAddress(firstAddress, newValue);
-                break;
-            }
-            case CMP:{
-                //LogUtils.getLogger().info("CMP command execution");
-                int newValue = addressIO.getValueFromAddress(firstAddress) - addressIO.getValueFromAddress(secondAddress);
-                applyFlags(newValue, firstAddress);
-                break;
-            }
-            case JMP:{
-                //LogUtils.getLogger().info("JMP command execution " + String.valueOf((short) addressIO.getValueFromAddress(firstAddress)));
-                jumpToAddress(firstAddress, instructionSize);
-                break;
-            }
-            case JZ:{
-                //LogUtils.getLogger().info("JZ/JE command execution");
-                if((flags & 4) == 4) jumpToAddress(firstAddress, instructionSize);
-                break;
-            }
-            case JNZ:{
-                //LogUtils.getLogger().info("JNZ command execution");
-                if((flags & 4) != 4) jumpToAddress(firstAddress, instructionSize);
-                break;
-            }
-            case JG:{
-                //LogUtils.getLogger().info("JG command execution");
-                if((flags & 6) == 0) jumpToAddress(firstAddress, instructionSize);
-                break;
-            }
-            case JL:{
-                //LogUtils.getLogger().info("JL command execution");
-                if((flags & 2) == 2) jumpToAddress(firstAddress, instructionSize);
-                break;
-            }
-            case JGE:{
-                //LogUtils.getLogger().info("JGE command execution");
-                if((flags & 2) == 0 || (flags & 4) == 4) jumpToAddress(firstAddress, instructionSize);
-                break;
-            }
-            case JLE:{
-                //LogUtils.getLogger().info("JLE command execution");
-                if((flags & 2) == 2 || (flags & 4) == 4) jumpToAddress(firstAddress, instructionSize);
-                break;
-            }
-            case JC:{
-                //LogUtils.getLogger().info("JC command execution");
-                if((flags & 8) == 8) jumpToAddress(firstAddress, instructionSize);
-                break;
-            }
-            case JNC:{
-                //LogUtils.getLogger().info("JNC command execution");
-                if((flags & 8) != 8) jumpToAddress(firstAddress, instructionSize);
-                break;
-            }
-            case SHL:{
-                //LogUtils.getLogger().info("SHL command execution");
-                int newValue = addressIO.getValueFromAddress(firstAddress) << addressIO.getValueFromAddress(secondAddress);
-                if(firstAddress.IsAddress16bit)
-                    newValue &= 65535; //1111 1111 1111 1111
-                else newValue &= 255; //1111 1111
-                applyFlags(newValue, firstAddress);
-                addressIO.setValueToAddress(firstAddress, newValue);
-                break;
-            }
-            case SHR:{
-                //LogUtils.getLogger().info("SHR command execution");
-                int firstAddressValue = addressIO.getValueFromAddress(firstAddress);
-                if(firstAddress.IsAddress16bit)
-                    firstAddressValue &= 65535;
-                else firstAddressValue &= 255;
-                int newValue = firstAddressValue >>> addressIO.getValueFromAddress(secondAddress);
-                applyFlags(newValue, firstAddress);
-                addressIO.setValueToAddress(firstAddress, newValue);
-                break;
-            }
-            case SAR:{
-                //LogUtils.getLogger().info("SAR command execution");
-                int newValue = addressIO.getValueFromAddress(firstAddress) >> addressIO.getValueFromAddress(secondAddress);
-                applyFlags(newValue, firstAddress);
-                addressIO.setValueToAddress(firstAddress, newValue);
-                break;
-            }
-            case ROL:{
-                //LogUtils.getLogger().info("ROL command execution");
-                int newValue = addressIO.getValueFromAddress(firstAddress);
-                int roll = 0;
-                int rollValue = 0;
-                if(firstAddress.IsAddress16bit){
-                    newValue &= 65535; //1111 1111 1111 1111
-                    rollValue = addressIO.getValueFromAddress(secondAddress) % 16;
-                    roll = newValue >>> (16 - rollValue);
-                    flags |= (roll & 1) << 3;
-                    newValue <<= rollValue;
-                    newValue += roll;
-                    newValue &= 65535; //1111 1111 1111 1111
+        try {
+            switch (commandHandler.getAction(commandSeq[0])) {
+                case MOV: {
+                    //LogUtils.getLogger().info("MOV command execution");
+                    int secondValue = addressIO.getValueFromAddress(secondAddress);
+                    addressIO.setValueToAddress(firstAddress, secondValue);
+                    break;
                 }
-                else{
-                    newValue &= 255; //1111 1111
-                    rollValue = addressIO.getValueFromAddress(secondAddress) % 8;
-                    roll = newValue >>> (8 - rollValue);
-                    flags |= (roll & 1) << 3;
-                    newValue <<= rollValue;
-                    newValue += roll;
-                    newValue &= 255; //1111 1111
+                case ADD: {
+                    //LogUtils.getLogger().info("ADD command execution");
+                    int newValue = addressIO.getValueFromAddress(firstAddress) + addressIO.getValueFromAddress(secondAddress);
+                    applyFlags(newValue, firstAddress);
+                    addressIO.setValueToAddress(firstAddress, newValue);
+                    break;
                 }
-                addressIO.setValueToAddress(firstAddress, newValue);
-                //applyFlags(newValue, firstAddress);
-                break;
-            }
-            case ROR:{
-                //LogUtils.getLogger().info("ROR command execution");
-                int newValue = addressIO.getValueFromAddress(firstAddress);
-                int roll = 0;
-                int rollValue = 0;
-                if(firstAddress.IsAddress16bit){
-                    newValue &= 65535; //1111 1111 1111 1111
-                    rollValue = addressIO.getValueFromAddress(secondAddress) % 16;
-                    roll = (newValue & (int)(Math.pow(2, rollValue)-1)) << (16-rollValue);
-                    if(rollValue > 0)
-                        flags |= ((newValue >>> (rollValue - 1)) & 1) << 3;
-                    newValue >>>= rollValue;
-                    newValue += roll;
-                    newValue &= 65535; //1111 1111 1111 1111
+                case SUB: {
+                    //LogUtils.getLogger().info("SUB command execution");
+                    int newValue = addressIO.getValueFromAddress(firstAddress) - addressIO.getValueFromAddress(secondAddress);
+                    applyFlags(newValue, firstAddress);
+                    addressIO.setValueToAddress(firstAddress, newValue);
+                    break;
                 }
-                else{
-                    newValue &= 255; //1111 1111
-                    rollValue = addressIO.getValueFromAddress(secondAddress) % 8;
-                    roll = (newValue & (int)(Math.pow(2, rollValue)-1)) << (8-rollValue);
-                    if(rollValue > 0)
-                        flags |= ((newValue >>> (rollValue - 1)) & 1) << 3;
-                    newValue >>>= rollValue;
-                    newValue += roll;
-                    newValue &= 255; //1111 1111
+                case MUL: {
+                    //LogUtils.getLogger().info("MUL command execution");
+                    int newValue = addressIO.getValueFromAddress(firstAddress) * addressIO.getValueFromAddress(secondAddress);
+                    applyFlags(newValue, firstAddress);
+                    addressIO.setValueToAddress(firstAddress, newValue);
+                    break;
                 }
-                addressIO.setValueToAddress(firstAddress, newValue);
-                //applyFlags(newValue, firstAddress);
-                break;
-            }
-            case RCL: {
-                //LogUtils.getLogger().info("RCL command execution");
-                int newValue = addressIO.getValueFromAddress(firstAddress);
-                int cflag = (flags & 8) >>> 3;
-                if (firstAddress.IsAddress16bit){
-                    newValue &= 65535; //1111 1111 1111 1111
-                    for(int i = 0; i < addressIO.getValueFromAddress(secondAddress); i++){
-                        int oldCFlag = cflag;
-                        cflag = newValue >>> 15;
-                        newValue <<= 1;
-                        newValue += oldCFlag;
-                    }
+                case DIV: {
+                    //LogUtils.getLogger().info("DIV command execution");
+                    int newValue = addressIO.getValueFromAddress(firstAddress) / addressIO.getValueFromAddress(secondAddress);
+                    applyFlags(newValue, firstAddress);
+                    addressIO.setValueToAddress(firstAddress, newValue);
+                    break;
                 }
-                else {
-                    newValue &= 255; //1111 1111
-                    for(int i = 0; i < addressIO.getValueFromAddress(secondAddress); i++){
-                        int oldCFlag = cflag;
-                        cflag = newValue >>> 7;
-                        newValue <<= 1;
-                        newValue += oldCFlag;
-                    }
+                case INC: {
+                    //LogUtils.getLogger().info("INC command execution");
+                    int newValue = addressIO.getValueFromAddress(firstAddress) + 1;
+                    applyFlags(newValue, firstAddress);
+                    addressIO.setValueToAddress(firstAddress, newValue);
+                    break;
                 }
-                flags |= cflag << 3;
-                addressIO.setValueToAddress(firstAddress, newValue);
-                break;
-            }
-            case RCR:{
-                //LogUtils.getLogger().info("RCR command execution");
-                int newValue = addressIO.getValueFromAddress(firstAddress);
-                int cflag = (flags & 8) >>> 3;
-                if (firstAddress.IsAddress16bit){
-                    newValue &= 65535; //1111 1111 1111 1111
+                case DEC: {
+                    //LogUtils.getLogger().info("DEC command execution");
+                    int newValue = addressIO.getValueFromAddress(firstAddress) - 1;
+                    applyFlags(newValue, firstAddress);
+                    addressIO.setValueToAddress(firstAddress, newValue);
+                    break;
                 }
-                else {
-                    newValue &= 255; //1111 1111
+                case AND: {
+                    //LogUtils.getLogger().info("AND command execution");
+                    int newValue = addressIO.getValueFromAddress(firstAddress) & addressIO.getValueFromAddress(secondAddress);
+                    applyFlags(newValue, firstAddress);
+                    addressIO.setValueToAddress(firstAddress, newValue);
+                    break;
                 }
-                for(int i = 0; i < addressIO.getValueFromAddress(secondAddress); i++){
-                    int oldCFlag = cflag;
-                    cflag = newValue & 1;
-                    newValue >>>= 1;
-                    newValue += oldCFlag;
+                case OR: {
+                    //LogUtils.getLogger().info("OR command execution");
+                    int newValue = addressIO.getValueFromAddress(firstAddress) | addressIO.getValueFromAddress(secondAddress);
+                    applyFlags(newValue, firstAddress);
+                    addressIO.setValueToAddress(firstAddress, newValue);
+                    break;
                 }
-                flags |= cflag << 3;
-                addressIO.setValueToAddress(firstAddress, newValue);
-                break;
-            }
-            case PUSH:{
-                //LogUtils.getLogger().info("PUSH command execution");
-                pushStack(addressIO.getValueFromAddress(firstAddress));
-                break;
-            }
-            case POP:{
-                //LogUtils.getLogger().info("POP command execution");
-                addressIO.setValueToAddress(firstAddress, popStack());
-                break;
-            }
-            case CALL:{
-                //LogUtils.getLogger().info("CALL command execution");
-                call(firstAddress);
-                break;
-            }
-            case RET:{
-                //LogUtils.getLogger().info("RET command execution");
-                int clearCount = addressIO.getValueFromAddress(firstAddress);
-                for(int i = 0; i < clearCount; i++){
-                    popStack();
+                case XOR: {
+                    //LogUtils.getLogger().info("XOR command execution");
+                    int newValue = addressIO.getValueFromAddress(firstAddress) ^ addressIO.getValueFromAddress(secondAddress);
+                    applyFlags(newValue, firstAddress);
+                    addressIO.setValueToAddress(firstAddress, newValue);
+                    break;
                 }
-                if(addressIO.getValueFromAddress(secondAddress) == 0xFF || addressIO.getValueFromAddress(secondAddress) == 1) codeSegment = (short)popStack();
-                registerIp = (short)popStack();
-                if(addressIO.getValueFromAddress(secondAddress) == 0xFF) registerIp = (short)((registerIp & 0xFFFF) - instructionSize);
-                break;
-            }
-            case INT:{
-                //LogUtils.getLogger().info("INT command execution");
-                MinecontrollersAPI.invokeInterrupt(this, addressIO.getValueFromAddress(firstAddress));
-                break;
-            }
-            case LEA:{
-                //LogUtils.getLogger().info("LEA command execution");
-                boolean sumIndex = false;
-                boolean sumDisp = false;
-                int addressInfo = addressIO.getValueFromAddress(firstAddress);
-                int disp = addressIO.getValueFromAddress(secondAddress);
-                int sourceRegisterAddress = addressInfo >>> 12;
-                sumIndex = ((addressInfo >>> 11) & 1) == 1;
-                sumDisp = ((addressInfo >>> 10) & 1) == 1;
-                int sizeMode = (addressInfo >>> 8) & 3;
-                int baseRegisterAddress = ((addressInfo >>> 4) & 0xF) - 1;
-                int indexRegisterAddress = (addressInfo & 0xF) - 1;
-                Address baseRegister = new Address();
-                Address indexRegister = new Address();
-                baseRegister.IsAddress16bit = true;
-                indexRegister.IsAddress16bit = true;
-                baseRegister.address = baseRegisterAddress;
-                indexRegister.address = indexRegisterAddress;
-                int result = 0;
-                result += addressIO.getValueFromAddress(baseRegister);
-                if(sumIndex)
-                    result += addressIO.getValueFromAddress(indexRegister) * (int)Math.pow(2, sizeMode);
-                else result -= addressIO.getValueFromAddress(indexRegister) * (int)Math.pow(2, sizeMode);
-                result = sumDisp ? result + disp : result - disp;
-                Address sourceRegister = new Address();
-                sourceRegister.address = sourceRegisterAddress;
-                sourceRegister.IsAddress16bit = true;
-                addressIO.setValueToAddress(sourceRegister, result);
-                break;
-            }
-            case PUSHA:{
-                //LogUtils.getLogger().info("PUHSA command execution");
-                pushAllRegisters();
-                break;
-            }
-            case POPA:{
-                //LogUtils.getLogger().info("POPA command execution");
-                popAllRegisters();
-                break;
-            }
-            case LOOP:{
-                //LogUtils.getLogger().info("LOOP command execution");
-                if(--registerC != 0){
+                case NOT: {
+                    //LogUtils.getLogger().info("NOT command execution");
+                    int newValue = ~addressIO.getValueFromAddress(firstAddress);
+                    applyFlags(newValue, firstAddress);
+                    addressIO.setValueToAddress(firstAddress, newValue);
+                    break;
+                }
+                case CMP: {
+                    //LogUtils.getLogger().info("CMP command execution");
+                    int newValue = addressIO.getValueFromAddress(firstAddress) - addressIO.getValueFromAddress(secondAddress);
+                    applyFlags(newValue, firstAddress);
+                    break;
+                }
+                case JMP: {
+                    //LogUtils.getLogger().info("JMP command execution " + String.valueOf((short) addressIO.getValueFromAddress(firstAddress)));
                     jumpToAddress(firstAddress, instructionSize);
+                    break;
                 }
-                break;
+                case JZ: {
+                    //LogUtils.getLogger().info("JZ/JE command execution");
+                    if ((flags & 4) == 4) jumpToAddress(firstAddress, instructionSize);
+                    break;
+                }
+                case JNZ: {
+                    //LogUtils.getLogger().info("JNZ command execution");
+                    if ((flags & 4) != 4) jumpToAddress(firstAddress, instructionSize);
+                    break;
+                }
+                case JG: {
+                    //LogUtils.getLogger().info("JG command execution");
+                    if ((flags & 6) == 0) jumpToAddress(firstAddress, instructionSize);
+                    break;
+                }
+                case JL: {
+                    //LogUtils.getLogger().info("JL command execution");
+                    if ((flags & 2) == 2) jumpToAddress(firstAddress, instructionSize);
+                    break;
+                }
+                case JGE: {
+                    //LogUtils.getLogger().info("JGE command execution");
+                    if ((flags & 2) == 0 || (flags & 4) == 4) jumpToAddress(firstAddress, instructionSize);
+                    break;
+                }
+                case JLE: {
+                    //LogUtils.getLogger().info("JLE command execution");
+                    if ((flags & 2) == 2 || (flags & 4) == 4) jumpToAddress(firstAddress, instructionSize);
+                    break;
+                }
+                case JC: {
+                    //LogUtils.getLogger().info("JC command execution");
+                    if ((flags & 8) == 8) jumpToAddress(firstAddress, instructionSize);
+                    break;
+                }
+                case JNC: {
+                    //LogUtils.getLogger().info("JNC command execution");
+                    if ((flags & 8) != 8) jumpToAddress(firstAddress, instructionSize);
+                    break;
+                }
+                case SHL: {
+                    //LogUtils.getLogger().info("SHL command execution");
+                    int newValue = addressIO.getValueFromAddress(firstAddress) << addressIO.getValueFromAddress(secondAddress);
+                    if (firstAddress.IsAddress16bit)
+                        newValue &= 65535; //1111 1111 1111 1111
+                    else newValue &= 255; //1111 1111
+                    applyFlags(newValue, firstAddress);
+                    addressIO.setValueToAddress(firstAddress, newValue);
+                    break;
+                }
+                case SHR: {
+                    //LogUtils.getLogger().info("SHR command execution");
+                    int firstAddressValue = addressIO.getValueFromAddress(firstAddress);
+                    if (firstAddress.IsAddress16bit)
+                        firstAddressValue &= 65535;
+                    else firstAddressValue &= 255;
+                    int newValue = firstAddressValue >>> addressIO.getValueFromAddress(secondAddress);
+                    applyFlags(newValue, firstAddress);
+                    addressIO.setValueToAddress(firstAddress, newValue);
+                    break;
+                }
+                case SAR: {
+                    //LogUtils.getLogger().info("SAR command execution");
+                    int newValue = addressIO.getValueFromAddress(firstAddress) >> addressIO.getValueFromAddress(secondAddress);
+                    applyFlags(newValue, firstAddress);
+                    addressIO.setValueToAddress(firstAddress, newValue);
+                    break;
+                }
+                case ROL: {
+                    //LogUtils.getLogger().info("ROL command execution");
+                    int newValue = addressIO.getValueFromAddress(firstAddress);
+                    int roll = 0;
+                    int rollValue = 0;
+                    if (firstAddress.IsAddress16bit) {
+                        newValue &= 65535; //1111 1111 1111 1111
+                        rollValue = addressIO.getValueFromAddress(secondAddress) % 16;
+                        roll = newValue >>> (16 - rollValue);
+                        flags |= (roll & 1) << 3;
+                        newValue <<= rollValue;
+                        newValue += roll;
+                        newValue &= 65535; //1111 1111 1111 1111
+                    } else {
+                        newValue &= 255; //1111 1111
+                        rollValue = addressIO.getValueFromAddress(secondAddress) % 8;
+                        roll = newValue >>> (8 - rollValue);
+                        flags |= (roll & 1) << 3;
+                        newValue <<= rollValue;
+                        newValue += roll;
+                        newValue &= 255; //1111 1111
+                    }
+                    addressIO.setValueToAddress(firstAddress, newValue);
+                    //applyFlags(newValue, firstAddress);
+                    break;
+                }
+                case ROR: {
+                    //LogUtils.getLogger().info("ROR command execution");
+                    int newValue = addressIO.getValueFromAddress(firstAddress);
+                    int roll = 0;
+                    int rollValue = 0;
+                    if (firstAddress.IsAddress16bit) {
+                        newValue &= 65535; //1111 1111 1111 1111
+                        rollValue = addressIO.getValueFromAddress(secondAddress) % 16;
+                        roll = (newValue & (int) (Math.pow(2, rollValue) - 1)) << (16 - rollValue);
+                        if (rollValue > 0)
+                            flags |= ((newValue >>> (rollValue - 1)) & 1) << 3;
+                        newValue >>>= rollValue;
+                        newValue += roll;
+                        newValue &= 65535; //1111 1111 1111 1111
+                    } else {
+                        newValue &= 255; //1111 1111
+                        rollValue = addressIO.getValueFromAddress(secondAddress) % 8;
+                        roll = (newValue & (int) (Math.pow(2, rollValue) - 1)) << (8 - rollValue);
+                        if (rollValue > 0)
+                            flags |= ((newValue >>> (rollValue - 1)) & 1) << 3;
+                        newValue >>>= rollValue;
+                        newValue += roll;
+                        newValue &= 255; //1111 1111
+                    }
+                    addressIO.setValueToAddress(firstAddress, newValue);
+                    //applyFlags(newValue, firstAddress);
+                    break;
+                }
+                case RCL: {
+                    //LogUtils.getLogger().info("RCL command execution");
+                    int newValue = addressIO.getValueFromAddress(firstAddress);
+                    int cflag = (flags & 8) >>> 3;
+                    if (firstAddress.IsAddress16bit) {
+                        newValue &= 65535; //1111 1111 1111 1111
+                        for (int i = 0; i < addressIO.getValueFromAddress(secondAddress); i++) {
+                            int oldCFlag = cflag;
+                            cflag = newValue >>> 15;
+                            newValue <<= 1;
+                            newValue += oldCFlag;
+                        }
+                    } else {
+                        newValue &= 255; //1111 1111
+                        for (int i = 0; i < addressIO.getValueFromAddress(secondAddress); i++) {
+                            int oldCFlag = cflag;
+                            cflag = newValue >>> 7;
+                            newValue <<= 1;
+                            newValue += oldCFlag;
+                        }
+                    }
+                    flags |= cflag << 3;
+                    addressIO.setValueToAddress(firstAddress, newValue);
+                    break;
+                }
+                case RCR: {
+                    //LogUtils.getLogger().info("RCR command execution");
+                    int newValue = addressIO.getValueFromAddress(firstAddress);
+                    int cflag = (flags & 8) >>> 3;
+                    if (firstAddress.IsAddress16bit) {
+                        newValue &= 65535; //1111 1111 1111 1111
+                    } else {
+                        newValue &= 255; //1111 1111
+                    }
+                    for (int i = 0; i < addressIO.getValueFromAddress(secondAddress); i++) {
+                        int oldCFlag = cflag;
+                        cflag = newValue & 1;
+                        newValue >>>= 1;
+                        newValue += oldCFlag;
+                    }
+                    flags |= cflag << 3;
+                    addressIO.setValueToAddress(firstAddress, newValue);
+                    break;
+                }
+                case PUSH: {
+                    //LogUtils.getLogger().info("PUSH command execution");
+                    pushStack(addressIO.getValueFromAddress(firstAddress));
+                    break;
+                }
+                case POP: {
+                    //LogUtils.getLogger().info("POP command execution");
+                    addressIO.setValueToAddress(firstAddress, popStack());
+                    break;
+                }
+                case CALL: {
+                    //LogUtils.getLogger().info("CALL command execution");
+                    call(firstAddress);
+                    break;
+                }
+                case RET: {
+                    //LogUtils.getLogger().info("RET command execution");
+                    int clearCount = addressIO.getValueFromAddress(firstAddress);
+                    for (int i = 0; i < clearCount; i++) {
+                        popStack();
+                    }
+                    if (addressIO.getValueFromAddress(secondAddress) == 0xFF || addressIO.getValueFromAddress(secondAddress) == 1)
+                        codeSegment = (short) popStack();
+                    registerIp = (short) popStack();
+                    if (addressIO.getValueFromAddress(secondAddress) == 0xFF)
+                        registerIp = (short) ((registerIp & 0xFFFF) - instructionSize);
+                    break;
+                }
+                case INT: {
+                    //LogUtils.getLogger().info("INT command execution");
+                    MinecontrollersAPI.invokeInterrupt(this, addressIO.getValueFromAddress(firstAddress));
+                    break;
+                }
+                case LEA: {
+                    //LogUtils.getLogger().info("LEA command execution");
+                    boolean sumIndex = false;
+                    boolean sumDisp = false;
+                    int addressInfo = addressIO.getValueFromAddress(firstAddress);
+                    int disp = addressIO.getValueFromAddress(secondAddress);
+                    int sourceRegisterAddress = addressInfo >>> 12;
+                    sumIndex = ((addressInfo >>> 11) & 1) == 1;
+                    sumDisp = ((addressInfo >>> 10) & 1) == 1;
+                    int sizeMode = (addressInfo >>> 8) & 3;
+                    int baseRegisterAddress = ((addressInfo >>> 4) & 0xF) - 1;
+                    int indexRegisterAddress = (addressInfo & 0xF) - 1;
+                    Address baseRegister = new Address();
+                    Address indexRegister = new Address();
+                    baseRegister.IsAddress16bit = true;
+                    indexRegister.IsAddress16bit = true;
+                    baseRegister.address = baseRegisterAddress;
+                    indexRegister.address = indexRegisterAddress;
+                    int result = 0;
+                    result += addressIO.getValueFromAddress(baseRegister);
+                    if (sumIndex)
+                        result += addressIO.getValueFromAddress(indexRegister) * (int) Math.pow(2, sizeMode);
+                    else result -= addressIO.getValueFromAddress(indexRegister) * (int) Math.pow(2, sizeMode);
+                    result = sumDisp ? result + disp : result - disp;
+                    Address sourceRegister = new Address();
+                    sourceRegister.address = sourceRegisterAddress;
+                    sourceRegister.IsAddress16bit = true;
+                    addressIO.setValueToAddress(sourceRegister, result);
+                    break;
+                }
+                case PUSHA: {
+                    //LogUtils.getLogger().info("PUHSA command execution");
+                    pushAllRegisters();
+                    break;
+                }
+                case POPA: {
+                    //LogUtils.getLogger().info("POPA command execution");
+                    popAllRegisters();
+                    break;
+                }
+                case LOOP: {
+                    //LogUtils.getLogger().info("LOOP command execution");
+                    if (--registerC != 0) {
+                        jumpToAddress(firstAddress, instructionSize);
+                    }
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
-            default:{
-                break;
-            }
+        } catch (ArithmeticException exception){
+
         }
     }
     public void popAllRegisters(){

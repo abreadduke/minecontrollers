@@ -35,7 +35,11 @@
         },
         {
             "type": "patchouli:text",
-            "text": "If found, ax is set to 1. The maximum detection distance is 128.$(li)$(bold)11$() - returns the number of entities within a radius defined by ax and stores the result back in ax.$(li)$(bold)12$() - counts the number of players within a radius defined by ax and stores the result back in ax$(li)$(bold)13$() - plays a note with the pitch cx (500-1000) and a radius defined by ax. bx determines the instrument ID."
+            "text": "If found, ax is set to 1. The maximum detection distance is 128.$(li)$(bold)11$() - returns the number of entities within a radius defined by ax and stores the result back in ax.$(li)$(bold)12$() - counts the number of players within a radius defined by ax and stores the result back in ax$(li)$(bold)13$() - returns the hash of the mob's name with an index from bx in range ax. If the hash was extracted ax - 1, the hash result is bx, cx; otherwise, ax - 0"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "$(li)$(bold)14$() - returns coordinates relative to the microcontroller, at the bx index, within ax. If the coordinates were extracted, ax - 1, bx, cx, dx are the x, y, and z coordinates, respectively.$(li)$(bold)15$() - plays a note with the pitch cx (500-1000) and a radius defined by ax. bx determines the instrument ID."
         },
         {
             "type": "patchouli:text",
