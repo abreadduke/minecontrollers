@@ -52,6 +52,7 @@ public class ProgrammerBlockEntity extends BaseContainerBlockEntity implements C
             ListTag pages = items.get(0).getTag().getList("pages", 8);
             StringTag pagesArr[] = new StringTag[pages.size()];
             pages.toArray(pagesArr);
+            if(page >= pagesArr.length) page = 0;
             String lines[] = pagesArr[page].getAsString().split("\n");
             if(line >= lines.length) {
                 page++;
