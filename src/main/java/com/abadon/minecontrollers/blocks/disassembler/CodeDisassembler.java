@@ -308,6 +308,7 @@ public class CodeDisassembler {
         }
     }
     public String disassembly(String mashineCodes){
+        mashineCodes = mashineCodes.replaceAll("^\\n+", "");
         for(String codeline : mashineCodes.split("\\n+")){
             appendCodeToBuffer(codeline);
         }

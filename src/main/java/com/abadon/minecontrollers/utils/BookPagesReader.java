@@ -13,7 +13,7 @@ public class BookPagesReader implements IBookReader {
         pages.toArray(pagesArr);
         StringBuilder textBuilder = new StringBuilder();
         for(StringTag page : pagesArr){
-            textBuilder.append(page.getAsString());
+            textBuilder.append("\n").append(page.getAsString());
         }
         return textBuilder.toString();
     }
