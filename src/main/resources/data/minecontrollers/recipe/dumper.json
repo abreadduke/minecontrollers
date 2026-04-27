@@ -1,7 +1,7 @@
 {
     "type": "minecraft:crafting_shaped",
     "pattern": [
-        "RL#",
+        "RLR",
         "OMO",
         "#O#"
     ],
@@ -16,14 +16,14 @@
             "item": "minecraft:observer"
         },
         "M": {
-            "item": "minecontrollers:microcontroller"
+            "item": "minecontrollers:controller_debug_display"
         },
         "R": {
             "item": "minecraft:lightning_rod"
         }
     },
     "result": {
-        "item": "minecontrollers:assembler",
+        "id": "minecontrollers:dumper",
         "count": 1
     }
 }

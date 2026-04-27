@@ -23,7 +23,7 @@
         }
     },
     "result": {
-        "item": "minecontrollers:assembler",
+        "id": "minecontrollers:assembler",
         "count": 1
     }
 }

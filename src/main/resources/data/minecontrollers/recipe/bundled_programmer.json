@@ -23,7 +23,7 @@
         }
     },
     "result": {
-        "item": "minecontrollers:bundled_programmer",
+        "id": "minecontrollers:bundled_programmer",
         "count": 1
     }
 }

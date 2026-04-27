@@ -17,7 +17,7 @@
         }
     },
     "result": {
-        "item": "minecontrollers:controller_debug_display",
+        "id": "minecontrollers:controller_debug_display",
         "count": 1
     }
 }

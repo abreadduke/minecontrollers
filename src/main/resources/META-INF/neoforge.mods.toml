@@ -3,7 +3,8 @@ loaderVersion="[2,)"
 license="MIT"
 
 [[mods]]
-modId="minecontrollers" # Убедитесь, что это совпадает с тем, что в коде @Mod
+modId="minecontrollers"
+logoFile="logo.png"
 version="1.0.0"
 displayName="Minecontrollers"
 authors="Abadon"

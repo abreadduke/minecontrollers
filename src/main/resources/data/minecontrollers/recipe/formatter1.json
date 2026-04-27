@@ -1,7 +1,7 @@
 {
     "type": "minecraft:crafting_shaped",
     "pattern": [
-        "#LR",
+        "RL#",
         "OMO",
         "#O#"
     ],
@@ -23,7 +23,7 @@
         }
     },
     "result": {
-        "item": "minecontrollers:formatter",
+        "id": "minecontrollers:formatter",
         "count": 1
     }
 }
