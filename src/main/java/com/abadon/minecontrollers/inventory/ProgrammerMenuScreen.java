@@ -6,24 +6,30 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public class ProgrammerMenuScreen extends AbstractContainerScreen<ProgrammerMenu> {
     public static final ResourceLocation PROGRAMMER_MENU_TEXTURE = ResourceLocation.fromNamespaceAndPath(Minecontrollers.MODID, "textures/gui/container/programmer_menu.png");
-    public ProgrammerMenuScreen(ProgrammerMenu p_97741_, Inventory p_97742_, Component p_97743_) {
-        super(p_97741_, p_97742_, p_97743_);
+
+    public ProgrammerMenuScreen(ProgrammerMenu menu, Inventory inventory, Component title) {
+        super(menu, inventory, title);
     }
-    public void render(GuiGraphics guiGraphics, int p1, int p2, float p3) {
-        renderBackground(guiGraphics);
-        super.render(guiGraphics, p1, p2 ,p3);
-        this.renderTooltip(guiGraphics, p1, p2);
-    }
+
     @Override
-    protected void renderBg(GuiGraphics guiGraphics, float v, int i, int i1) {
-        int $$4 = (this.width - this.imageWidth) / 2;
-        int $$5 = (this.height - this.imageHeight) / 2;
-        guiGraphics.blit(PROGRAMMER_MENU_TEXTURE, $$4, $$5, 0, 0, this.imageWidth, this.imageHeight);
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        this.renderTooltip(guiGraphics, mouseX, mouseY);
+    }
+
+    @Override
+    protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
+        int x = (this.width - this.imageWidth) / 2;
+        int y = (this.height - this.imageHeight) / 2;
+
+        guiGraphics.blit(PROGRAMMER_MENU_TEXTURE, x, y, 0, 0, this.imageWidth, this.imageHeight);
+    }
+
+    @Override
+    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        super.renderLabels(guiGraphics, mouseX, mouseY);
     }
 }

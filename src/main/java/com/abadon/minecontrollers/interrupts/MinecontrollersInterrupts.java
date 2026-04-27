@@ -17,7 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.minecraft.world.phys.Vec3;
 import java.util.List;
 
 public class MinecontrollersInterrupts {
@@ -90,7 +90,7 @@ public class MinecontrollersInterrupts {
         if (level == null || level.getBlockEntity(blockPos) == null || !level.getBlockEntity(blockPos).equals(microcontrollerBlockEntity)) return;
         BlockState blockState = level.getBlockState(blockPos);
         Direction direction = blockState.getValue(PlateBlockStateProperties.ATTACHMENT_DIRECTION).getOpposite();
-        int observeDistance = ServerConfig.MAX_OBS_RANGE.get();
+        int observeDistance = ServerConfig.MAX_OBS_RANGE.getAsInt();
         for (int i = 1; i < observeDistance; i++) {
             BlockPos foundBlockPos = blockPos.relative(direction, i);
             Block foundBlock = level.getBlockState(foundBlockPos).getBlock();
@@ -116,7 +116,7 @@ public class MinecontrollersInterrupts {
         BlockPos secondPos = blockPos.offset(cubeRadius, cubeRadius, cubeRadius);
         List<Player> nearbyPlayers = Lists.newArrayList();
         for (Player player : level.players()) {
-            if (new AABB(firstPos, secondPos).contains(player.getX(), player.getY(), player.getZ())) {
+            if (new AABB(new Vec3(firstPos.getX(), firstPos.getY(), firstPos.getZ()), new Vec3(secondPos.getX(), secondPos.getY(), secondPos.getZ())).contains(player.getX(), player.getY(), player.getZ())) {
                 nearbyPlayers.add(player);
             }
         }
@@ -135,7 +135,7 @@ public class MinecontrollersInterrupts {
         BlockPos secondPos = blockPos.offset(cubeRadius, cubeRadius, cubeRadius);
         List<Player> nearbyPlayers = Lists.newArrayList();
         for (Player player : level.players()) {
-            if (new AABB(firstPos, secondPos).contains(player.getX(), player.getY(), player.getZ())) {
+            if (new AABB(new Vec3(firstPos.getX(), firstPos.getY(), firstPos.getZ()), new Vec3(secondPos.getX(), secondPos.getY(), secondPos.getZ())).contains(player.getX(), player.getY(), player.getZ())) {
                 nearbyPlayers.add(player);
             }
         }
@@ -161,7 +161,7 @@ public class MinecontrollersInterrupts {
         BlockPos secondPos = blockPos.offset(cubeRadius, cubeRadius, cubeRadius);
         List<Player> nearbyPlayers = Lists.newArrayList();
         for (Player player : level.players()) {
-            if (new AABB(firstPos, secondPos).contains(player.getX(), player.getY(), player.getZ())) {
+            if (new AABB(new Vec3(firstPos.getX(), firstPos.getY(), firstPos.getZ()), new Vec3(secondPos.getX(), secondPos.getY(), secondPos.getZ())).contains(player.getX(), player.getY(), player.getZ())) {
                 nearbyPlayers.add(player);
             }
         }
@@ -185,7 +185,7 @@ public class MinecontrollersInterrupts {
         cubeRadius = cubeRadius > maxCubeRadius ? maxCubeRadius : cubeRadius;
         BlockPos firstPos = blockPos.offset(-cubeRadius, -cubeRadius, -cubeRadius);
         BlockPos secondPos = blockPos.offset(cubeRadius, cubeRadius, cubeRadius);
-        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(LivingEntity.class, new AABB(firstPos, secondPos));
+        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(LivingEntity.class, new AABB(new Vec3(firstPos.getX(), firstPos.getY(), firstPos.getZ()), new Vec3(secondPos.getX(), secondPos.getY(), secondPos.getZ())));
         microcontrollerBlockEntity.registerA = (short) nearbyEntities.size();
     }
     public static void getEntityHash(MicrocontrollerBlockEntity microcontrollerBlockEntity){
@@ -199,7 +199,7 @@ public class MinecontrollersInterrupts {
         cubeRadius = cubeRadius > maxCubeRadius ? maxCubeRadius : cubeRadius;
         BlockPos firstPos = blockPos.offset(-cubeRadius, -cubeRadius, -cubeRadius);
         BlockPos secondPos = blockPos.offset(cubeRadius, cubeRadius, cubeRadius);
-        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(LivingEntity.class, new AABB(firstPos, secondPos));
+        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(LivingEntity.class, new AABB(new Vec3(firstPos.getX(), firstPos.getY(), firstPos.getZ()), new Vec3(secondPos.getX(), secondPos.getY(), secondPos.getZ())));
         if(entityIndex >= nearbyEntities.size()){
             microcontrollerBlockEntity.registerA = 0;
             return;
@@ -220,7 +220,7 @@ public class MinecontrollersInterrupts {
         cubeRadius = cubeRadius > maxCubeRadius ? maxCubeRadius : cubeRadius;
         BlockPos firstPos = blockPos.offset(-cubeRadius, -cubeRadius, -cubeRadius);
         BlockPos secondPos = blockPos.offset(cubeRadius, cubeRadius, cubeRadius);
-        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(LivingEntity.class, new AABB(firstPos, secondPos));
+        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(LivingEntity.class, new AABB(new Vec3(firstPos.getX(), firstPos.getY(), firstPos.getZ()), new Vec3(secondPos.getX(), secondPos.getY(), secondPos.getZ())));
         if(entityIndex >= nearbyEntities.size()){
             microcontrollerBlockEntity.registerA = 0;
             return;
@@ -243,7 +243,7 @@ public class MinecontrollersInterrupts {
         BlockPos secondPos = blockPos.offset(cubeRadius, cubeRadius, cubeRadius);
         SoundEvent sound = MinecontrollersAPI.formatNumberToSound(microcontrollerBlockEntity.registerB);
         for(Player player : level.players()) {
-            if (new AABB(firstPos, secondPos).contains(player.getX(), player.getY(), player.getZ())) {
+            if (new AABB(new Vec3(firstPos.getX(), firstPos.getY(), firstPos.getZ()), new Vec3(secondPos.getX(), secondPos.getY(), secondPos.getZ())).contains(player.getX(), player.getY(), player.getZ())) {
                 if (!level.isClientSide) {
                     ((ServerLevel) level).sendParticles(ParticleTypes.NOTE,
                             blockPos.getX() + 0.5D, blockPos.getY(), blockPos.getZ() + 0.5D,

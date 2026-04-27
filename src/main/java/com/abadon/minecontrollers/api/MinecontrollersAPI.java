@@ -18,91 +18,91 @@ public class MinecontrollersAPI {
         SoundEvent sound = null;
         switch (number){
             case 1:{
-                sound = SoundEvents.NOTE_BLOCK_BASS.get();
+                sound = SoundEvents.NOTE_BLOCK_BASS.value();
                 break;
             }
             case 2:{
-                sound = SoundEvents.NOTE_BLOCK_BELL.get();
+                sound = SoundEvents.NOTE_BLOCK_BELL.value();
                 break;
             }
             case 3:{
-                sound = SoundEvents.NOTE_BLOCK_CHIME.get();
+                sound = SoundEvents.NOTE_BLOCK_CHIME.value();
                 break;
             }
             case 4:{
-                sound = SoundEvents.NOTE_BLOCK_FLUTE.get();
+                sound = SoundEvents.NOTE_BLOCK_FLUTE.value();
                 break;
             }
             case 5:{
-                sound = SoundEvents.NOTE_BLOCK_GUITAR.get();
+                sound = SoundEvents.NOTE_BLOCK_GUITAR.value();
                 break;
             }
             case 6:{
-                sound = SoundEvents.NOTE_BLOCK_HARP.get();
+                sound = SoundEvents.NOTE_BLOCK_HARP.value();
                 break;
             }
             case 7:{
-                sound = SoundEvents.NOTE_BLOCK_HAT.get();
+                sound = SoundEvents.NOTE_BLOCK_HAT.value();
                 break;
             }
             case 8:{
-                sound = SoundEvents.NOTE_BLOCK_PLING.get();
+                sound = SoundEvents.NOTE_BLOCK_PLING.value();
                 break;
             }
             case 9:{
-                sound = SoundEvents.NOTE_BLOCK_SNARE.get();
+                sound = SoundEvents.NOTE_BLOCK_SNARE.value();
                 break;
             }
             case 10:{
-                sound = SoundEvents.NOTE_BLOCK_XYLOPHONE.get();
+                sound = SoundEvents.NOTE_BLOCK_XYLOPHONE.value();
                 break;
             }
             case 11:{
-                sound = SoundEvents.NOTE_BLOCK_IRON_XYLOPHONE.get();
+                sound = SoundEvents.NOTE_BLOCK_IRON_XYLOPHONE.value();
                 break;
             }
             case 12:{
-                sound = SoundEvents.NOTE_BLOCK_COW_BELL.get();
+                sound = SoundEvents.NOTE_BLOCK_COW_BELL.value();
                 break;
             }
             case 13:{
-                sound = SoundEvents.NOTE_BLOCK_DIDGERIDOO.get();
+                sound = SoundEvents.NOTE_BLOCK_DIDGERIDOO.value();
                 break;
             }
             case 14:{
-                sound = SoundEvents.NOTE_BLOCK_BIT.get();
+                sound = SoundEvents.NOTE_BLOCK_BIT.value();
                 break;
             }
             case 15:{
-                sound = SoundEvents.NOTE_BLOCK_BANJO.get();
+                sound = SoundEvents.NOTE_BLOCK_BANJO.value();
                 break;
             }
             case 16:{
-                sound = SoundEvents.NOTE_BLOCK_IMITATE_ZOMBIE.get();
+                sound = SoundEvents.NOTE_BLOCK_IMITATE_ZOMBIE.value();
                 break;
             }
             case 17:{
-                sound = SoundEvents.NOTE_BLOCK_IMITATE_SKELETON.get();
+                sound = SoundEvents.NOTE_BLOCK_IMITATE_SKELETON.value();
                 break;
             }
             case 18:{
-                sound = SoundEvents.NOTE_BLOCK_IMITATE_CREEPER.get();
+                sound = SoundEvents.NOTE_BLOCK_IMITATE_CREEPER.value();
                 break;
             }
             case 19:{
-                sound = SoundEvents.NOTE_BLOCK_IMITATE_ENDER_DRAGON.get();
+                sound = SoundEvents.NOTE_BLOCK_IMITATE_ENDER_DRAGON.value();
                 break;
             }
             case 20:{
-                sound = SoundEvents.NOTE_BLOCK_IMITATE_WITHER_SKELETON.get();
+                sound = SoundEvents.NOTE_BLOCK_IMITATE_WITHER_SKELETON.value();
                 break;
             }
             case 21:{
-                sound = SoundEvents.NOTE_BLOCK_IMITATE_PIGLIN.get();
+                sound = SoundEvents.NOTE_BLOCK_IMITATE_PIGLIN.value();
                 break;
             }
             default:{
-                sound = SoundEvents.NOTE_BLOCK_BASEDRUM.get();
+                sound = SoundEvents.NOTE_BLOCK_BASEDRUM.value();
             }
         }
         return sound;

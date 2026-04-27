@@ -1,0 +1,24 @@
+modLoader="javafml"
+loaderVersion="[2,)"
+license="MIT"
+
+[[mods]]
+modId="minecontrollers" # Убедитесь, что это совпадает с тем, что в коде @Mod
+version="1.0.0"
+displayName="Minecontrollers"
+authors="Abadon"
+description="Control everything with microcontrollers"
+
+[[dependencies.minecontrollers]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.0,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.minecontrollers]]
+modId="minecraft"
+type="required"
+versionRange="1.21.1"
+ordering="NONE"
+side="BOTH"

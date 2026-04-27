@@ -17,6 +17,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class MicrocontrollerBlock extends BitwiseLogicPlateBlock {
 
@@ -26,14 +27,12 @@ public class MicrocontrollerBlock extends BitwiseLogicPlateBlock {
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        //LogUtils.getLogger().info("(microprocessor_test) " + MinecontrollersBlocks.BITWISE_LOGIC_BE_TYPE.get().getClass().getName());
         return MinecontrollersBlocks.MICROCONTROLLER_BE.get().create(pos, state);
     }
     @Override
     protected void updatePower(Level world, BlockPos thisPos, BlockState thisState) {
         BlockEntity te = world.getBlockEntity(thisPos);
         if (te instanceof MicrocontrollerBlockEntity logicTE) {
-            //byte[] power = new byte[16*4];
             Direction attachmentDir = (Direction)thisState.getValue(PlateBlockStateProperties.ATTACHMENT_DIRECTION);
             int rotationIndex = (Integer)thisState.getValue(PlateBlockStateProperties.ROTATION);
             Direction inputSideA = BlockStateUtil.getInputDirection(attachmentDir, rotationIndex, ControllersSide.A.rotationsFromOutput);
@@ -44,31 +43,36 @@ public class MicrocontrollerBlock extends BitwiseLogicPlateBlock {
             BlockEntity inputTileB = world.getBlockEntity(thisPos.relative(inputSideB));
             BlockEntity inputTileC = world.getBlockEntity(thisPos.relative(inputSideC));
             BlockEntity inputTileD = world.getBlockEntity(thisPos.relative(inputSideD));
-            ChanneledPowerSupplier inputA = inputTileA == null ? BitwiseLogicPlateBlock.NO_POWER_SUPPLIER : (ChanneledPowerSupplier)inputTileA.getCapability(MoreRedAPI.CHANNELED_POWER_CAPABILITY, inputSideA.getOpposite()).orElse(NO_POWER_SUPPLIER);
-            ChanneledPowerSupplier inputB = inputTileB == null ? BitwiseLogicPlateBlock.NO_POWER_SUPPLIER : (ChanneledPowerSupplier)inputTileB.getCapability(MoreRedAPI.CHANNELED_POWER_CAPABILITY, inputSideB.getOpposite()).orElse(NO_POWER_SUPPLIER);
-            ChanneledPowerSupplier inputC = inputTileC == null ? BitwiseLogicPlateBlock.NO_POWER_SUPPLIER : (ChanneledPowerSupplier)inputTileC.getCapability(MoreRedAPI.CHANNELED_POWER_CAPABILITY, inputSideC.getOpposite()).orElse(NO_POWER_SUPPLIER);
-            ChanneledPowerSupplier inputD = inputTileD == null ? BitwiseLogicPlateBlock.NO_POWER_SUPPLIER : (ChanneledPowerSupplier)inputTileD.getCapability(MoreRedAPI.CHANNELED_POWER_CAPABILITY, inputSideD.getOpposite()).orElse(NO_POWER_SUPPLIER);
+            ChanneledPowerSupplier inputA = BitwiseLogicPlateBlock.NO_POWER_SUPPLIER;
+            ChanneledPowerSupplier inputB = BitwiseLogicPlateBlock.NO_POWER_SUPPLIER;
+            ChanneledPowerSupplier inputC = BitwiseLogicPlateBlock.NO_POWER_SUPPLIER;
+            ChanneledPowerSupplier inputD = BitwiseLogicPlateBlock.NO_POWER_SUPPLIER;
+            if (inputTileA != null){
+                inputA = Optional.ofNullable(world.getCapability(MoreRedAPI.CHANNELED_POWER_CAPABILITY, inputTileA.getBlockPos(), inputSideA.getOpposite()))
+                        .orElse(BitwiseLogicPlateBlock.NO_POWER_SUPPLIER);
+            }
+            if (inputTileB != null){
+                inputB = Optional.ofNullable(world.getCapability(MoreRedAPI.CHANNELED_POWER_CAPABILITY, inputTileB.getBlockPos(), inputSideB.getOpposite()))
+                        .orElse(BitwiseLogicPlateBlock.NO_POWER_SUPPLIER);
+            }
+            if (inputTileC != null){
+                inputC = Optional.ofNullable(world.getCapability(MoreRedAPI.CHANNELED_POWER_CAPABILITY, inputTileC.getBlockPos(), inputSideC.getOpposite()))
+                        .orElse(BitwiseLogicPlateBlock.NO_POWER_SUPPLIER);
+            }
+            if (inputTileD != null){
+                inputD = Optional.ofNullable(world.getCapability(MoreRedAPI.CHANNELED_POWER_CAPABILITY, inputTileD.getBlockPos(), inputSideD.getOpposite()))
+                        .orElse(BitwiseLogicPlateBlock.NO_POWER_SUPPLIER);
+            }
 
-            //int offset = 0;
             ArrayList<Byte> cabbleA = new ArrayList<>();
             ArrayList<Byte> cabbleB = new ArrayList<>();
             ArrayList<Byte> cabbleC = new ArrayList<>();
             ArrayList<Byte> cabbleD = new ArrayList<>();
             for(int i = 0; i < 16; ++i) {
-                //boolean inputBitA = inputA.getPowerOnChannel(world, thisPos, thisState, attachmentDir, i) > 0;
-                //boolean inputBitB = inputB.getPowerOnChannel(world, thisPos, thisState, attachmentDir, i) > 0;
-                //boolean inputBitC = inputC.getPowerOnChannel(world, thisPos, thisState, attachmentDir, i) > 0;
-                //boolean inputBitD = inputD.getPowerOnChannel(world, thisPos, thisState, attachmentDir, i) > 0;
-                //LogUtils.getLogger().info(String.valueOf(i));
                 cabbleA.add((byte)inputA.getPowerOnChannel(world, thisPos, thisState, attachmentDir, i));
                 cabbleB.add((byte)inputB.getPowerOnChannel(world, thisPos, thisState, attachmentDir, i));
                 cabbleC.add((byte)inputC.getPowerOnChannel(world, thisPos, thisState, attachmentDir, i));
                 cabbleD.add((byte)inputD.getPowerOnChannel(world, thisPos, thisState, attachmentDir, i));
-                //power[i + offset * 3] = (byte)inputD.getPowerOnChannel(world, thisPos, thisState, attachmentDir, i);
-                //power[i + offset * 3 + 1] = (byte)inputA.getPowerOnChannel(world, thisPos, thisState, attachmentDir, i);
-                //power[i + offset * 3 + 2] = (byte)inputB.getPowerOnChannel(world, thisPos, thisState, attachmentDir, i);
-                //power[i + offset * 3 + 3] = (byte)inputC.getPowerOnChannel(world, thisPos, thisState, attachmentDir, i);
-                //offset++;
             }
             ArrayList<Byte> power = new ArrayList<Byte>();
             power.addAll(cabbleD);
@@ -79,7 +83,6 @@ public class MicrocontrollerBlock extends BitwiseLogicPlateBlock {
             power.toArray(bytes);
             logicTE.setPower(ArrayUtils.toPrimitive(bytes).clone());
             logicTE.applySettings();
-            //logicTE.setPower(ArrayUtils.toPrimitive(bytes).clone());
         }
 
     }

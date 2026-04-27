@@ -19,11 +19,5 @@ public class TranslatorMenuScreen extends AbstractContainerScreen<TranslatorBloc
         int i = this.leftPos;
         int j = this.topPos;
         guiGraphics.blit(this.texture, i, j, 0, 0, this.imageWidth, this.imageHeight);
-        //if (this.menu.isLit()) {
-        //    int k = this.menu.getLitProgress();
-        //    guiGraphics.blit(this.texture, i + 56, j + 36 + 12 - k, 176, 12 - k, 14, k + 1);
-        //}
-        //int l = this.menu.getBurnProgress();
-        //guiGraphics.blit(this.texture, i + 79, j + 34, 176, 14, l + 1, 16);
     }
 }

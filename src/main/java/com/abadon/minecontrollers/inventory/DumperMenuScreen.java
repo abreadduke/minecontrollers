@@ -1,7 +1,6 @@
 package com.abadon.minecontrollers.inventory;
 
 import com.abadon.minecontrollers.Minecontrollers;
-import com.abadon.minecontrollers.network.packets.DumperPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
@@ -24,6 +23,11 @@ public class DumperMenuScreen extends AbstractContainerScreen<DumperMenu> {
     protected String previousEndValue = "0000";
     protected int startValue = 0;
     protected int endValue = 0;
+
+    public DumperMenuScreen(DumperMenu menu, Inventory inventory, Component title) {
+        super(menu, inventory, title);
+    }
+
     @Override
     protected void init() {
         super.init();
@@ -36,13 +40,20 @@ public class DumperMenuScreen extends AbstractContainerScreen<DumperMenu> {
         startValueText = new StringWidget((this.width - this.imageWidth) + 43, (this.height - this.imageHeight) + 43, Component.translatable("container.minecontrollers.dumper.begin_text"), font);
         endValueText = new StringWidget((this.width - this.imageWidth) + 43, (this.height - this.imageHeight) + 95, Component.translatable("container.minecontrollers.dumper.bytes_text"), font);
 
-        dumpButton = new ImageButton(i + 76, j + 53, 24, 24, 0, 0, 24, ResourceLocation.fromNamespaceAndPath(Minecontrollers.MODID, "textures/gui/container/start_button.png"), 24, 24, (Button button) -> {
-            button.active = false;
-            isDumpButtonActive = true;
-            menu.sendDumpPacket(new DumperPacket(startValue, endValue));
-        });
-        pressedDumpButton = new ImageWidget(i + 76, j + 53, 24, 24, ResourceLocation.fromNamespaceAndPath(Minecontrollers.MODID, "textures/gui/container/pressed_start_button.png"));
-
+        dumpButton = new ImageButton(i + 76, j + 53, 24, 24,
+                new WidgetSprites(
+                        ResourceLocation.fromNamespaceAndPath(Minecontrollers.MODID, "container/start_button"),
+                        ResourceLocation.fromNamespaceAndPath(Minecontrollers.MODID, "container/start_button") // hover
+                ),
+                (button) -> {
+                    button.active = false;
+                    isDumpButtonActive = true;
+                    // Отправляем новый Payload
+                    this.menu.sendDumpPacket(startValue, endValue);
+                });
+        pressedDumpButton = ImageWidget.sprite(24, 24, ResourceLocation.fromNamespaceAndPath(Minecontrollers.MODID, "container/pressed_start_button"));
+        pressedDumpButton.setX(i + 76);
+        pressedDumpButton.setY(j + 53);
         startValueField.setCanLoseFocus(false);
         startValueField.setTextColor(-1);
         startValueField.setTextColorUneditable(-1);
@@ -52,7 +63,6 @@ public class DumperMenuScreen extends AbstractContainerScreen<DumperMenu> {
         startValueField.setResponder(this::onStartValueChanged);
         startValueField.setEditable(true);
         startValueText.setColor(7237230);
-
         endValueField.setCanLoseFocus(false);
         endValueField.setTextColor(-1);
         endValueField.setTextColorUneditable(-1);
@@ -62,10 +72,15 @@ public class DumperMenuScreen extends AbstractContainerScreen<DumperMenu> {
         endValueField.setResponder(this::onEndValueChanged);
         endValueField.setEditable(true);
         endValueText.setColor(7237230);
-
         addWidget(this.startValueField);
         addWidget(this.endValueField);
     }
+    @Override
+    public boolean mouseClicked(double x, double y, int s) {
+        dumpButton.mouseClicked(x, y, s);
+        return super.mouseClicked(x, y, s);
+    }
+
     protected void onStartValueChanged(String value){
         try{
             startValue = Integer.valueOf(value, 16);
@@ -82,27 +97,28 @@ public class DumperMenuScreen extends AbstractContainerScreen<DumperMenu> {
             endValueField.setValue(previousEndValue);
         }
     }
-    public DumperMenuScreen(DumperMenu p_97741_, Inventory p_97742_, Component p_97743_) {
-        super(p_97741_, p_97742_, p_97743_);
-    }
 
     @Override
-    public boolean mouseClicked(double x, double y, int s) {
-        dumpButton.mouseClicked(x, y, s);
-        return super.mouseClicked(x, y, s);
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        this.renderTooltip(guiGraphics, mouseX, mouseY);
     }
-
-    @Override
-    public boolean keyPressed(int p_97878_, int p_97879_, int p_97880_) {
-        if (p_97878_ == 69) {
-            return true;
-        } else return super.keyPressed(p_97878_, p_97879_, p_97880_);
-    }
-    @Override
-    public void render(GuiGraphics guiGraphics, int p1, int p2, float p3) {
-        renderBackground(guiGraphics);
-        super.render(guiGraphics, p1, p2 ,p3);
-        this.renderTooltip(guiGraphics, p1, p2);
+    public void renderFg(GuiGraphics guiGraphics, float v, int i, int i1) {
+        startValueField.render(guiGraphics, i, i1, v);
+        endValueField.render(guiGraphics, i, i1, v);
+        startValueText.renderWidget(guiGraphics, i, i1, v);
+        endValueText.renderWidget(guiGraphics, i, i1, v);
+        if(!isDumpButtonActive)
+            dumpButton.renderWidget(guiGraphics, i, i1, v);
+        else {
+            pressedDumpButton.render(guiGraphics, i, i1, v);
+            activeButtonTicks += Minecraft.getInstance().getFrameTimeNs();
+            if(activeButtonTicks > 1.5){
+                activeButtonTicks = 0;
+                isDumpButtonActive = false;
+                dumpButton.active = true;
+            }
+        }
     }
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float v, int i, int i1) {
@@ -112,21 +128,10 @@ public class DumperMenuScreen extends AbstractContainerScreen<DumperMenu> {
         renderFg(guiGraphics, v, i, i1);
     }
 
-    public void renderFg(GuiGraphics guiGraphics, float v, int i, int i1) {
-        startValueField.render(guiGraphics, i, i1, v);
-        endValueField.render(guiGraphics, i, i1, v);
-        startValueText.renderWidget(guiGraphics, i, i1, v);
-        endValueText.renderWidget(guiGraphics, i, i1, v);
-        if(!isDumpButtonActive)
-            dumpButton.renderWidget(guiGraphics, i, i1, v);
-        else {
-            pressedDumpButton.renderWidget(guiGraphics, i, i1, v);
-            activeButtonTicks += Minecraft.getInstance().getDeltaFrameTime();
-            if(activeButtonTicks > 1.5){
-                activeButtonTicks = 0;
-                isDumpButtonActive = false;
-                dumpButton.active = true;
-            }
-        }
+    @Override
+    public boolean keyPressed(int p_97878_, int p_97879_, int p_97880_) {
+        if (p_97878_ == 69) {
+            return true;
+        } else return super.keyPressed(p_97878_, p_97879_, p_97880_);
     }
 }
