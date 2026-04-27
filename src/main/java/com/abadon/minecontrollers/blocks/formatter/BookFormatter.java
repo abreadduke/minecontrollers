@@ -1,23 +1,24 @@
 package com.abadon.minecontrollers.blocks.formatter;
 
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.network.Filterable;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.WritableBookContent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BookFormatter {
     private final String OFFSET_PARAMETER = "^OFFSET:.*";
     private final String GLOBAL_OFFSET_PARAMETER = "^GLOFFSET:.*";
-    //TODO: point in the documentation that minecraft vanilla book can contain only 100 pages +documentation
     public ItemStack format(ItemStack book){
         ItemStack newbook = book.copy();
-        ListTag pages = book.getTag().getList("pages", 8);
-        StringTag pagesArr[] = new StringTag[pages.size()];
-        pages.toArray(pagesArr);
-        ListTag formattedPages = new ListTag();
+        List<Filterable<String>> pages = book.get(DataComponents.WRITABLE_BOOK_CONTENT).pages();
+        List<Filterable<String>> formattedPages = new ArrayList<>();
         int address = 0;
         StringBuilder formattedPageBuilder = new StringBuilder();
-        for(StringTag page : pagesArr){
-            String lines[] = page.getAsString().split("\n");
+        for(Filterable<String> page : pages){
+            String lines[] = page.raw().split("\n");
             int compiledLines = 0;
             for(int l = 0; l < lines.length; l++){
                 if(lines[l].matches(OFFSET_PARAMETER)){
@@ -44,14 +45,14 @@ public class BookFormatter {
                 }
                 if(compiledLines % 12 == 0 || l == lines.length - 1) {
                     compiledLines = 0;
-                    formattedPages.add(StringTag.valueOf(formattedPageBuilder.toString()));
+                    formattedPages.add(Filterable.passThrough(formattedPageBuilder.toString()));
                     formattedPageBuilder = new StringBuilder();
                 }
                 //}
             }
         }
-        newbook.getTag().remove("pages");
-        newbook.addTagElement("pages", formattedPages);
+        WritableBookContent content = new WritableBookContent(formattedPages);
+        newbook.set(DataComponents.WRITABLE_BOOK_CONTENT, content);
         return newbook;
     }
 }

@@ -3,43 +3,46 @@ package com.abadon.minecontrollers.entityblocks.programmer;
 import com.abadon.minecontrollers.MinecontrollersBlocks;
 import com.abadon.minecontrollers.inventory.ProgrammerMenu;
 import commoble.morered.api.ChanneledPowerSupplier;
-import commoble.morered.api.MoreRedAPI;
 import commoble.morered.plate_blocks.PlateBlockStateProperties;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.network.Filterable;
 import net.minecraft.world.Container;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
+import net.minecraft.core.HolderLookup.Provider;
+import net.neoforged.neoforge.common.util.Lazy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class ProgrammerBlockEntity extends BaseContainerBlockEntity implements ChanneledPowerSupplier {
     protected int page = 0;
     protected int line = 0;
     protected byte power[] = new byte[16];
-    protected LazyOptional<ChanneledPowerSupplier> powerHolder = LazyOptional.of(() -> this);
-    protected NonNullList<ItemStack> items;
+    protected Lazy<ChanneledPowerSupplier> powerHolder = Lazy.of(() -> this);
+    protected ItemStack item = ItemStack.EMPTY;
     protected boolean exitFlag = false;
     public ProgrammerBlockEntity(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
         super(p_155228_, p_155229_, p_155230_);
-        this.items = NonNullList.withSize(1, ItemStack.EMPTY);
     }
     public boolean getWorkStatus(){
         return exitFlag;
@@ -47,18 +50,16 @@ public class ProgrammerBlockEntity extends BaseContainerBlockEntity implements C
     public void invokeSeeker(Level level, BlockState blockState, BlockPos blockPos){
         //Logger logger = LogUtils.getLogger();
         //logger.info("seeker was invoked");
-
-        if(items.get(0).getTag() != null && items.get(0).getTag().contains("pages")){
-            ListTag pages = items.get(0).getTag().getList("pages", 8);
-            StringTag pagesArr[] = new StringTag[pages.size()];
-            pages.toArray(pagesArr);
-            if(page >= pagesArr.length) page = 0;
-            String lines[] = pagesArr[page].getAsString().split("\n");
+        var bookData = item.get(DataComponents.WRITABLE_BOOK_CONTENT);
+        if(!item.getComponents().isEmpty() && bookData != null){
+            List<Filterable<String>> pages = item.get(DataComponents.WRITABLE_BOOK_CONTENT).pages();
+            if(page >= pages.size()) page = 0;
+            String lines[] = pages.get(page).raw().split("\n");
             if(line >= lines.length) {
                 page++;
                 line = 0;
             }
-            if(page >= pagesArr.length){
+            if(page >= pages.size()){
                 page = 0;
                 exitFlag = true;
                 return;
@@ -67,7 +68,7 @@ public class ProgrammerBlockEntity extends BaseContainerBlockEntity implements C
                 exitFlag = false;
             }
             //logger.info("serializing line - " + pagesArr[page].getAsString().split("\n")[line]);
-            char[] data = pagesArr[page].getAsString().split("\n")[line].toCharArray();
+            char[] data = pages.get(page).raw().split("\n")[line].toCharArray();
             if(data.length <= 16){
                 for(int i = 0; i < 16; i++){
                     if(data.length > i){
@@ -94,22 +95,12 @@ public class ProgrammerBlockEntity extends BaseContainerBlockEntity implements C
         this(MinecontrollersBlocks.PROGRAMMER_BE.get(), pos, state);
     }
     @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side)
-    {
-        if (cap == MoreRedAPI.CHANNELED_POWER_CAPABILITY)
-            return side == PlateBlockStateProperties.getOutputDirection(this.getBlockState()) ? (LazyOptional<T>) this.powerHolder : LazyOptional.empty();
-        return super.getCapability(cap, side);
-    }
-    @Override
-    public void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(CompoundTag compound, Provider registries) {
+        super.saveAdditional(compound, registries);
         compound.putInt("page", page);
         compound.putByteArray("power", power);
         compound.remove("textbook");
-        compound.put("textbook", items.get(0).serializeNBT());
-        //CompoundTag textbookTag = compound.getCompound("textbook");
-        //if(items.get(0).getTag() == null)
-        //    textbookTag.put("tag", new CompoundTag());
+        compound.put("textbook", item.save(level.registryAccess()));
         compound.putInt("line", line);
         compound.putBoolean("exitFlag", exitFlag);
     }
@@ -120,68 +111,100 @@ public class ProgrammerBlockEntity extends BaseContainerBlockEntity implements C
     }
 
     @Override
+    protected NonNullList<ItemStack> getItems() {
+        return NonNullList.withSize(1, item);
+    }
+
+    @Override
+    protected void setItems(NonNullList<ItemStack> nonNullList) {
+        item = nonNullList.get(0);
+    }
+
+    @Override
     protected AbstractContainerMenu createMenu(int i, Inventory inventory) {
         if(canOpen(inventory.player))
             return new ProgrammerMenu(i, inventory, this);
         else return null;
     }
+    @Override
+    protected void applyImplicitComponents(BlockEntity.DataComponentInput input) {
+        super.applyImplicitComponents(input);
+        CustomData data = input.get(DataComponents.BLOCK_ENTITY_DATA);
+        if (data != null) {
+            data.loadInto(this, this.level.registryAccess());
+        }
+    }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    protected void collectImplicitComponents(DataComponentMap.Builder builder) {
+        super.collectImplicitComponents(builder);
+        CompoundTag compound = new CompoundTag();
+        compound.putInt("page", page);
+        compound.putByteArray("power", power);
+        compound.remove("textbook");
+        compound.put("textbook", item.save(level.registryAccess()));
+        compound.putInt("line", line);
+        compound.putBoolean("exitFlag", exitFlag);
+        this.saveAdditional(compound, this.level.registryAccess());
+        builder.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(compound));
+    }
+    @Override
+    public void loadAdditional(CompoundTag compound, Provider registries) {
+        super.loadAdditional(compound, registries);
         page = compound.getInt("page");
         power = compound.getByteArray("power").clone();
         line = compound.getInt("line");
-        if(compound.contains("textbook")){
-            items.set(0, ItemStack.of(compound.getCompound("textbook")));
+        if(compound.contains("textbook", Tag.TAG_COMPOUND)){
+            item = ItemStack.parse(registries, compound.getCompound("textbook")).orElse(ItemStack.EMPTY);
         }
         exitFlag = compound.getBoolean("exitFlag");
     }
 
     @Override
     public int getContainerSize() {
-        return items.size();
+        return 1;
     }
 
     @Override
     public boolean isEmpty() {
-        return items.get(0).equals(ItemStack.EMPTY);
+        return item.equals(ItemStack.EMPTY);
     }
 
     @Override
     public ItemStack getItem(int i) {
-        return items.get(i);
+        return item;
     }
 
     @Override
     public ItemStack removeItem(int i, int i1) {
-        ItemStack itemstack = ContainerHelper.removeItem(items, i, i1);
-        if (!itemstack.isEmpty()) {
+        ItemStack ret = item;
+        item = ItemStack.EMPTY;
+        if (!item.isEmpty()) {
             BlockState blockState = getBlockState();
             RedStoneWireBlock.updateOrDestroy(blockState, blockState.setValue(Programmer.HAS_BOOK, false), getLevel(), getBlockPos(), Block.UPDATE_ALL);
             this.setChanged();
         }
 
-        return itemstack;
+        return ret;
     }
 
     @Override
     public ItemStack removeItemNoUpdate(int i) {
-        return ContainerHelper.takeItem(items, i);
+        return ItemStack.EMPTY;
     }
 
     @Override
     public void setItem(int i, ItemStack itemStack) {
         if(itemStack.getItem().getDefaultInstance().getItem().equals(Items.WRITABLE_BOOK) ||
                 itemStack.getItem().getDefaultInstance().getItem().equals(Items.WRITTEN_BOOK)){
-            items.set(i, itemStack);
+            item = itemStack;
             BlockState blockState = getBlockState();
             RedStoneWireBlock.updateOrDestroy(blockState, blockState.setValue(Programmer.HAS_BOOK, true), getLevel(), getBlockPos(), Block.UPDATE_ALL);
         }
         else{
             BlockState blockState = getBlockState();
             RedStoneWireBlock.updateOrDestroy(blockState, blockState.setValue(Programmer.HAS_BOOK, false), getLevel(), getBlockPos(), Block.UPDATE_ALL);
-            items.set(i, ItemStack.EMPTY);
+            item = ItemStack.EMPTY;
         }
         setChanged();
     }
@@ -204,5 +227,11 @@ public class ProgrammerBlockEntity extends BaseContainerBlockEntity implements C
             }
         }
         return 0;
+    }
+
+    public @Nullable ChanneledPowerSupplier getChanneledPower(@NotNull Direction side) {
+        return side == PlateBlockStateProperties.getOutputDirection(this.getBlockState())
+                ? this::getPowerOnChannel
+                : null;
     }
 }

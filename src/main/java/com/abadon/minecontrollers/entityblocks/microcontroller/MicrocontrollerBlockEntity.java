@@ -8,19 +8,24 @@ import com.abadon.minecontrollers.utils.CommandHandler;
 import com.abadon.minecontrollers.utils.ControllerMath;
 import com.abadon.minecontrollers.utils.MicrocontrollerMemory;
 import com.mojang.logging.LogUtils;
+import commoble.morered.api.ChanneledPowerSupplier;
 import commoble.morered.bitwise_logic.ChanneledPowerStorageBlockEntity;
 import commoble.morered.plate_blocks.PlateBlock;
 import commoble.morered.plate_blocks.PlateBlockStateProperties;
 import commoble.morered.util.BlockStateUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
+import net.minecraft.core.HolderLookup.Provider;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -120,16 +125,17 @@ public class MicrocontrollerBlockEntity extends ChanneledPowerStorageBlockEntity
     public static MicrocontrollerBlockEntity create(BlockPos pos, BlockState state) {
         return new MicrocontrollerBlockEntity(MinecontrollersBlocks.MICROCONTROLLER_BE.get(), pos, state);
     }
-    @Override
-    @NotNull
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-        //if (cap == MoreRedAPI.CHANNELED_POWER_CAPABILITY) {
-        //    return side == PlateBlockStateProperties.getOutputDirection(this.getBlockState()) ? this.powerHolder : LazyOptional.empty();
-        //} else {
-        //    return super.getCapability(cap, side);
-        //}
-        return (LazyOptional<T>) this.powerHolder;
-    }
+    // ns
+    //@Override
+    //@NotNull
+    //public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
+    //    //if (cap == MoreRedAPI.CHANNELED_POWER_CAPABILITY) {
+    //    //    return side == PlateBlockStateProperties.getOutputDirection(this.getBlockState()) ? this.powerHolder : LazyOptional.empty();
+    //    //} else {
+    //    //    return super.getCapability(cap, side);
+    //    //}
+    //    return (LazyOptional<T>) this.powerHolder;
+    //}
     public void changeIOState(){
         for(int i = 0; i < powerPinsCount; i++){
             if(outputPins[i] > 0){
@@ -161,6 +167,9 @@ public class MicrocontrollerBlockEntity extends ChanneledPowerStorageBlockEntity
             offset = 0;
         }
         return getOutputPower(channel + offset * channels);
+    }
+    public @Nullable ChanneledPowerSupplier getChanneledPower(@NotNull Direction side) {
+        return this::getPowerOnChannel;
     }
     public byte getOutputPower(int channel){
         return this.outputPins[channel];
@@ -414,7 +423,6 @@ public class MicrocontrollerBlockEntity extends ChanneledPowerStorageBlockEntity
                 address.offset = offset;
                 address.address = oldAddress;
                 address.useValueAsAddress = true;
-                //LogUtils.getLogger().info(String.valueOf((short)memoryAddress));
                 if(!address.IsAddress16bit)
                     memory.setValue(Integer.valueOf(memoryAddress), Byte.valueOf((byte)value));
                 else{
@@ -923,8 +931,30 @@ public class MicrocontrollerBlockEntity extends ChanneledPowerStorageBlockEntity
         pushStack(extraSegment);
     }
     @Override
-    public void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
+    protected void applyImplicitComponents(BlockEntity.DataComponentInput input) {
+        super.applyImplicitComponents(input);
+        CustomData data = input.get(DataComponents.BLOCK_ENTITY_DATA);
+        if (data != null) {
+            data.loadInto(this, this.level.registryAccess());
+        }
+    }
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder builder) {
+        super.collectImplicitComponents(builder);
+        CompoundTag compound = new CompoundTag();
+        CompoundTag memoryCompound = new CompoundTag();
+        for (int address : memory.getUsedAddresses()) {
+            memoryCompound.putByte(String.valueOf((int) address), memory.readValue(address));
+        }
+        compound.putString("id", "minecontrollers:microcontroller");
+        compound.put("memory", memoryCompound);
+        this.saveAdditional(compound, this.level.registryAccess());
+        builder.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(compound));
+    }
+    @Override
+    public void saveAdditional(CompoundTag compound, Provider registries) {
+        super.saveAdditional(compound, registries);
         compound.putByteArray("power", (byte[])this.power.clone());
         compound.putByteArray("outputPins", (byte[])this.outputPins.clone());
         compound.putShort("AX", registerA);
@@ -950,8 +980,8 @@ public class MicrocontrollerBlockEntity extends ChanneledPowerStorageBlockEntity
         compound.put("memory", memoryCompound);
     }
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    public void loadAdditional(CompoundTag compound, Provider registries) {
+        super.loadAdditional(compound, registries);
         byte[] newPower = compound.getByteArray("power");
         byte[] newOutputPower = compound.getByteArray("outputPins");
         if (newPower.length == powerPinsCount) {

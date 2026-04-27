@@ -1,20 +1,22 @@
 package com.abadon.minecontrollers.utils;
 
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.network.Filterable;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
 
 public class BookPagesReader implements IBookReader {
 
     @Override
     public String readBook(ItemStack book) {
-        ListTag pages = book.getTag().getList("pages", 8);
-        StringTag pagesArr[] = new StringTag[pages.size()];
-        pages.toArray(pagesArr);
+        List<Filterable<String>> pages = book.get(DataComponents.WRITABLE_BOOK_CONTENT).pages();
         StringBuilder textBuilder = new StringBuilder();
-        for(StringTag page : pagesArr){
-            textBuilder.append("\n").append(page.getAsString());
+
+        for (net.minecraft.server.network.Filterable<String> page : pages) {
+            textBuilder.append("\n").append(page.raw());
         }
+
         return textBuilder.toString();
     }
 }
