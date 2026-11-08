@@ -141,16 +141,23 @@ public class DebugDisplay extends Item {
         if (player == null) return InteractionResult.PASS;
 
         if (player.isShiftKeyDown() && level.isClientSide) {
-            changeWorkingMode();
-            player.displayClientMessage(MutableComponent.create(new PlainTextContents.LiteralContents(settingsMode.name())), true);
+            changeWorkingMode(stack);
+            CustomData data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+            String modeName = data.copyTag().getString("mode");
+            player.displayClientMessage(MutableComponent.create(new PlainTextContents.LiteralContents(
+                    modeName.isEmpty() ? DebugSettingsMode.ONE.name() : modeName)), true);
             return InteractionResult.SUCCESS;
         }
 
         if (!level.isClientSide) {
             if (level.getBlockEntity(context.getClickedPos()) instanceof MicrocontrollerBlockEntity microcontroller) {
+                // Читаем адрес из NBT стека — он синхронизируется с клиента через DebugSyncPayload
+                CustomData data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+                int address = data.copyTag().getInt("address");
+
                 ArrayList<MutableComponent> debugInfo = new ArrayList<>();
                 debugInfo.addAll(getRegistersSegment(microcontroller));
-                debugInfo.add(getMemoryDumpInfo(microcontroller));
+                debugInfo.add(getMemoryDumpInfo(microcontroller, address));
                 for (MutableComponent component : debugInfo)
                     player.displayClientMessage(component, false);
             }
@@ -159,10 +166,10 @@ public class DebugDisplay extends Item {
         return InteractionResult.SUCCESS;
     }
 
-    protected MutableComponent getMemoryDumpInfo(MicrocontrollerBlockEntity microcontroller){
+    protected MutableComponent getMemoryDumpInfo(MicrocontrollerBlockEntity microcontroller, int startAddress){
         StringBuilder dumpInfoBuilder = new StringBuilder();
         dumpInfoBuilder.append("memory dump: ");
-        for(int i = memoryDumpStartAddress; i < memoryDumpStartAddress + dumpSize; i++){
+        for(int i = startAddress; i < startAddress + dumpSize; i++){
             if(i > 65535) break;
             dumpInfoBuilder.append(Integer.toString(i, 16).toUpperCase()).append(':').append(Integer.toString(microcontroller.getValueByAddress(i) & 0xFF, 16).toUpperCase()).append(' ');
         }

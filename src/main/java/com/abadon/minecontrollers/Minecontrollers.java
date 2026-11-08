@@ -7,6 +7,7 @@ import com.abadon.minecontrollers.items.MinecontrollersItems;
 import com.abadon.minecontrollers.items.debugger.DebugDisplay;
 import com.abadon.minecontrollers.items.debugger.PlayerInputCatcher;
 import com.abadon.minecontrollers.network.packets.DebugSyncPayload;
+import com.abadon.minecontrollers.network.packets.DebugSyncResponsePayload;
 import com.abadon.minecontrollers.network.packets.DumperPayload;
 import com.abadon.minecontrollers.tabs.ModTab;
 import com.mojang.logging.LogUtils;
@@ -28,7 +29,11 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
+
+import java.util.function.Supplier;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(Minecontrollers.MODID)
@@ -48,29 +53,19 @@ public class Minecontrollers
         context.registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
         LOGGER.info("registration custom blocks/items");
         register(modEventBus);
-        NeoForge.EVENT_BUS.addListener(PlayerInputCatcher::debuggerDisplayDumpScroll);
+        modEventBus.addListener(Minecontrollers::onRegisterCapabilities);
         MinecontrollersInterrupts.register();
     }
 
-    @EventBusSubscriber(modid = Minecontrollers.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static class ClientModEvents
-    {
-        @SubscribeEvent
-        public static void onClientSetup(FMLClientSetupEvent event) {
-            NeoForge.EVENT_BUS.addListener(PlayerInputCatcher::debuggerDisplayDumpScroll);
+    // Runs on both sides — registers MoreRed capabilities for the block entities
+    public static void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(MoreRedAPI.CHANNELED_POWER_CAPABILITY, MinecontrollersBlocks.PROGRAMMER_BE.get(), (be, side) -> be.getChanneledPower(side));
+        event.registerBlockEntity(MoreRedAPI.CHANNELED_POWER_CAPABILITY, MinecontrollersBlocks.MICROCONTROLLER_BE.get(), (be, side) -> be.getChanneledPower(side));
+    }
 
-            MinecontrollersBlocks.registerSkullBlocks();
-        }
-        @SubscribeEvent
-        public static void onRegisterCapabilities(RegisterCapabilitiesEvent event)
-        {
-            event.registerBlockEntity(MoreRedAPI.CHANNELED_POWER_CAPABILITY, MinecontrollersBlocks.PROGRAMMER_BE.get(), (be,side) -> be.getChanneledPower(side));
-            event.registerBlockEntity(MoreRedAPI.CHANNELED_POWER_CAPABILITY, MinecontrollersBlocks.MICROCONTROLLER_BE.get(), (be,side) -> be.getChanneledPower(side));
-        }
-        @SubscribeEvent
-        public static void registerScreens(RegisterMenuScreensEvent event) {
-            ModMenu.registerScreens(event);
-        }
+    @EventBusSubscriber(modid = Minecontrollers.MODID, bus = EventBusSubscriber.Bus.MOD)
+    public static class CommonModEvents
+    {
         @SubscribeEvent
         public static void registerNetworking(RegisterPayloadHandlersEvent event) {
             final PayloadRegistrar registrar = event.registrar(Minecontrollers.MODID);
@@ -79,10 +74,30 @@ public class Minecontrollers
                     DebugSyncPayload.TYPE,
                     DebugSyncPayload.STREAM_CODEC,
                     (payload, context) -> {
+                        context.enqueueWork(() -> {
+                            ServerPlayer player = (ServerPlayer)context.player();
+                            if (player.getMainHandItem().getItem() instanceof DebugDisplay item) {
+                                ItemStack stack = player.getMainHandItem();
+
+                                // Сохраняем новый адрес в кастомные данные предмета
+                                stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, customData ->
+                                        customData.update(tag -> tag.putInt("address", payload.address()))
+                                );
+
+                                // Отправляем подтверждение на клиент
+                                PacketDistributor.sendToPlayer(player, new DebugSyncResponsePayload(payload.address()));
+                            }
+                        });
+                    }
+            );
+            registrar.playToClient(
+                    DebugSyncResponsePayload.TYPE,
+                    DebugSyncResponsePayload.STREAM_CODEC,
+                    (payload, context) -> {
                         if (context.player().getMainHandItem().getItem() instanceof DebugDisplay item) {
                             ItemStack stack = context.player().getMainHandItem();
 
-                            // Сохраняем новый адрес в кастомные данные предмета
+                            // Обновляем адрес на клиенте
                             stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, customData ->
                                     customData.update(tag -> tag.putInt("address", payload.address()))
                             );
@@ -100,6 +115,24 @@ public class Minecontrollers
                         });
                     }
             );
+        }
+    }
+
+    @EventBusSubscriber(modid = Minecontrollers.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    public static class ClientModEvents
+    {
+        @SubscribeEvent
+        public static void onClientSetup(FMLClientSetupEvent event) {
+            // Safe: executed only on the client dist, so loading the client-only
+            // PlayerInputCatcher class (which references Minecraft) won't crash
+            // a dedicated server.
+            NeoForge.EVENT_BUS.addListener(PlayerInputCatcher::debuggerDisplayDumpScroll);
+
+            MinecontrollersBlocks.registerSkullBlocks();
+        }
+        @SubscribeEvent
+        public static void registerScreens(RegisterMenuScreensEvent event) {
+            ModMenu.registerScreens(event);
         }
     }
 }
