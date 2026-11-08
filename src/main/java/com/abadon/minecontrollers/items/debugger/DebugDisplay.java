@@ -39,6 +39,34 @@ public class DebugDisplay extends Item {
         memoryDumpStartAddress -= memoryStep;
         if(memoryDumpStartAddress < 0) memoryDumpStartAddress = 0;
     }
+
+    private int stepFromStack(ItemStack stack) {
+        CustomData data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+        String modeName = data.copyTag().getString("mode");
+        DebugSettingsMode mode = modeName.isEmpty() ? DebugSettingsMode.ONE : DebugSettingsMode.valueOf(modeName);
+        return switch (mode) {
+            case ONE      -> 1;
+            case TEN      -> 10;
+            case HUNDRED  -> 100;
+            case THOUSAND -> 1000;
+        };
+    }
+
+    public int addAddressDumpStartPoint(ItemStack stack) {
+        CustomData data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+        int address = Math.min(data.copyTag().getInt("address") + stepFromStack(stack), 65535);
+        updateStackData(stack, address, DebugSettingsMode.valueOf(
+                data.copyTag().getString("mode").isEmpty() ? "ONE" : data.copyTag().getString("mode")));
+        return address;
+    }
+
+    public int subAddressDumpStartPoint(ItemStack stack) {
+        CustomData data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+        int address = Math.max(data.copyTag().getInt("address") - stepFromStack(stack), 0);
+        updateStackData(stack, address, DebugSettingsMode.valueOf(
+                data.copyTag().getString("mode").isEmpty() ? "ONE" : data.copyTag().getString("mode")));
+        return address;
+    }
     public void changeWorkingMode(){
         switch (settingsMode){
             case ONE -> {
@@ -62,8 +90,9 @@ public class DebugDisplay extends Item {
     public DebugDisplay(Properties properties) {
         super(properties);
     }
-    public void sendDataToServer(int address) {
-        PacketDistributor.sendToServer(new DebugSyncPayload(address));
+    public void sendDataToServer(ItemStack stack) {
+        CustomData data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+        PacketDistributor.sendToServer(new DebugSyncPayload(data.copyTag().getInt("address")));
     }
     private void updateStackData(ItemStack stack, int address, DebugSettingsMode mode) {
         stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, customData ->

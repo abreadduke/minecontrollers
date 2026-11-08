@@ -20,16 +20,16 @@ public class PlayerInputCatcher {
         Item playerItem = itemStack.getItem();
         if(player != null && playerItem instanceof DebugDisplay display && player.isShiftKeyDown()) {
             if (event.getScrollDeltaY() > 0){
-                display.addAddressDumpStartPoint();
-                player.displayClientMessage(MutableComponent.create(new PlainTextContents.LiteralContents(settingMessage.getString() + String.valueOf(display.memoryDumpStartAddress))), true);
+                int address = display.addAddressDumpStartPoint(itemStack);
+                player.displayClientMessage(MutableComponent.create(new PlainTextContents.LiteralContents(settingMessage.getString() + address)), true);
                 playerInventory.selected = playerInventory.selected + 1;
             }
             else if (event.getScrollDeltaY() < 0) {
-                display.subAddressDumpStartPoint();
-                player.displayClientMessage(MutableComponent.create(new PlainTextContents.LiteralContents(settingMessage.getString() + String.valueOf(display.memoryDumpStartAddress))), true);
+                int address = display.subAddressDumpStartPoint(itemStack);
+                player.displayClientMessage(MutableComponent.create(new PlainTextContents.LiteralContents(settingMessage.getString() + address)), true);
                 playerInventory.selected = playerInventory.selected - 1;
             }
-            display.sendDataToServer(display.memoryDumpStartAddress);
+            display.sendDataToServer(itemStack);
         }
     }
 }
