@@ -100,7 +100,10 @@ public class ProgrammerBlockEntity extends BaseContainerBlockEntity implements C
         compound.putInt("page", page);
         compound.putByteArray("power", power);
         compound.remove("textbook");
-        compound.put("textbook", item.save(level.registryAccess()));
+        try{
+            if(item != null)
+                compound.put("textbook", item.save(level.registryAccess()));
+        } catch (Exception exception){}
         compound.putInt("line", line);
         compound.putBoolean("exitFlag", exitFlag);
     }
