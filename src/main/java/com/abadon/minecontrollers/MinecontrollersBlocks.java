@@ -59,18 +59,15 @@ public class MinecontrollersBlocks {
         DeferredHolder<Block, PlayerHeadBlock> skullBlock = BLOCKS.register(blockId,
                 () -> new PlayerHeadBlock(BlockBehaviour.Properties.of().strength(1.0F).pushReaction(PushReaction.DESTROY)));
 
-        BLOCKS.register(blockId + "_wall",
+        DeferredHolder<Block, PlayerWallHeadBlock> wallBlock = BLOCKS.register(blockId + "_wall",
                 () -> new PlayerWallHeadBlock(BlockBehaviour.Properties.of().strength(1.0F).pushReaction(PushReaction.DESTROY).dropsLike(skullBlock.get())) {
                     @Override
                     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
                         skullBlock.get().setPlacedBy(level, pos, state, entity, stack);
                     }
                 });
-        DeferredHolder<Block, ? extends Block> wallBlockHolder = BLOCKS.getEntries().stream()
-                .filter(holder -> holder.getId().getPath().equals(blockId + "_wall"))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Block not found: " + blockId + "_wall"));
-        DeferredHolder<Item, PlayerHeadItem> item = ITEMS.register(blockId, () -> new PlayerHeadItem(skullBlock.get(), wallBlockHolder.get(), new Item.Properties()) {
+
+        DeferredHolder<Item, PlayerHeadItem> item = ITEMS.register(blockId, () -> new PlayerHeadItem(skullBlock.get(), wallBlock.get(), new Item.Properties()) {
             @Override
             public ItemStack getDefaultInstance() {
                 ItemStack stack = super.getDefaultInstance();
@@ -81,6 +78,7 @@ public class MinecontrollersBlocks {
 
         blockItems.put(blockId, item);
         skullBlocks.add(skullBlock);
+        skullBlocks.add(wallBlock);
         return skullBlock;
     }
 
